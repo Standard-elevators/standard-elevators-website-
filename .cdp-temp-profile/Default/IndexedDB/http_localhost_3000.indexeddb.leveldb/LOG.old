@@ -1,0 +1,7 @@
+2026/10/04-13:32:00.558 2924 Reusing MANIFEST C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default\IndexedDB\http_localhost_3000.indexeddb.leveldb/MANIFEST-000001
+2026/10/04-13:32:00.559 2924 Recovering log #3
+2026/10/04-13:32:00.561 2924 Reusing old log C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default\IndexedDB\http_localhost_3000.indexeddb.leveldb/000003.log 
+2026/10/04-13:32:00.614 90c Level-0 table #5: started
+2026/10/04-13:32:00.619 90c Level-0 table #5: 38278 bytes OK
+2026/10/04-13:32:00.623 90c Delete type=0 #3
+2026/10/04-13:32:00.624 90c Manual compaction at level-0 from '\x00\x02\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x03\x00\x00\x00' @ 0 : 0; will stop at (end)

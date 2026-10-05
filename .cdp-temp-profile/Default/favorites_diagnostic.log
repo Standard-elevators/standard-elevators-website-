@@ -1,0 +1,127 @@
+2026-10-02 14:11:54.671: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:11:54.671: [INFO] Profiles total count: 1
+2026-10-02 14:11:54.671: [INFO] Profile: name=Profile 1 path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=null
+2026-10-02 14:11:54.671: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:11:54.671: [INFO] VisibilityChanged: 0
+2026-10-02 14:11:54.687: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.690: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.691: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.692: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.694: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.695: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.696: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.698: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.699: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.700: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:54.716: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-02 14:11:54.716: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-02 14:11:54.716: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-02 14:11:54.716: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-02 14:11:54.717: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-02 14:11:54.717: [INFO] OnDoneLoading sync enabled: 0
+2026-10-02 14:11:54.717: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-02 14:11:54.717: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-02 14:11:54.717: [INFO] BookmarksSnapshot Startup total=5 bar=5 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-10-02 14:11:54.824: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:56.705: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-02 14:11:56.719: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-02 14:11:56.731: [INFO] Primary account changed.
+2026-10-02 14:11:56.731: [INFO] OnPrimaryAccountChanged PrimaryAccountChangeEvent::Type::kSet
+2026-10-02 14:11:56.760: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-02 14:11:56.785: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-02 14:12:02.581: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-02 14:12:02.581: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-02 14:12:02.582: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-02 14:12:02.598: [INFO] BookmarkBarPrefChanged showBar=0 showBarNTP=0
+2026-10-02 14:12:02.674: [INFO] VisibilityChanged: 1
+2026-10-02 14:12:02.936: [INFO] Sync initialization duration: 6018ms
+2026-10-02 14:14:43.031: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:14:43.031: [INFO] Profiles total count: 1
+2026-10-02 14:14:43.032: [INFO] Profile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:14:43.018Z
+2026-10-02 14:14:43.032: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:14:43.032: [INFO] MostRecentlyActiveProfile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:14:43.018Z
+2026-10-02 14:14:43.032: [INFO] OnDoneLoading sync enabled: 1
+2026-10-02 14:14:43.032: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-02 14:14:43.032: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-02 14:14:43.032: [INFO] BookmarksSnapshot Startup total=8 bar=7 other=0 mobile=1 showBar=1 showBarNTP=0
+2026-10-02 14:14:44.156: [INFO] Sync initialization duration: 68ms
+2026-10-02 14:19:38.661: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:19:38.661: [INFO] Profiles total count: 1
+2026-10-02 14:19:38.661: [INFO] Profile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:19:38.628Z
+2026-10-02 14:19:38.661: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:19:38.661: [INFO] MostRecentlyActiveProfile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:19:38.628Z
+2026-10-02 14:19:38.661: [INFO] OnDoneLoading sync enabled: 1
+2026-10-02 14:19:38.661: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-02 14:19:38.661: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-02 14:19:38.661: [INFO] BookmarksSnapshot Startup total=8 bar=7 other=0 mobile=1 showBar=1 showBarNTP=0
+2026-10-02 14:19:39.971: [INFO] Sync initialization duration: 54ms
+2026-10-02 14:23:19.376: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:23:19.376: [INFO] Profiles total count: 1
+2026-10-02 14:23:19.376: [INFO] Profile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:23:19.350Z
+2026-10-02 14:23:19.376: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:23:19.376: [INFO] MostRecentlyActiveProfile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:23:19.350Z
+2026-10-02 14:23:19.376: [INFO] OnDoneLoading sync enabled: 1
+2026-10-02 14:23:19.376: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-02 14:23:19.376: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-02 14:23:19.376: [INFO] BookmarksSnapshot Startup total=8 bar=7 other=0 mobile=1 showBar=1 showBarNTP=0
+2026-10-02 14:23:20.222: [INFO] Sync initialization duration: 53ms
+2026-10-02 14:40:36.399: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:40:36.399: [INFO] Profiles total count: 1
+2026-10-02 14:40:36.399: [INFO] Profile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:40:36.373Z
+2026-10-02 14:40:36.399: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:40:36.399: [INFO] MostRecentlyActiveProfile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:40:36.373Z
+2026-10-02 14:40:36.399: [INFO] OnDoneLoading sync enabled: 1
+2026-10-02 14:40:36.399: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-02 14:40:36.399: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-02 14:40:36.399: [INFO] BookmarksSnapshot Startup total=8 bar=7 other=0 mobile=1 showBar=1 showBarNTP=0
+2026-10-02 14:40:37.351: [INFO] Sync initialization duration: 28ms
+2026-10-02 14:42:27.659: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:42:27.659: [INFO] Profiles total count: 1
+2026-10-02 14:42:27.659: [INFO] Profile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:42:27.641Z
+2026-10-02 14:42:27.659: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:42:27.659: [INFO] MostRecentlyActiveProfile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:42:27.641Z
+2026-10-02 14:42:27.659: [INFO] OnDoneLoading sync enabled: 1
+2026-10-02 14:42:27.659: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-02 14:42:27.659: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-02 14:42:27.659: [INFO] BookmarksSnapshot Startup total=8 bar=7 other=0 mobile=1 showBar=1 showBarNTP=0
+2026-10-02 14:42:28.205: [INFO] Sync initialization duration: 19ms
+2026-10-02 14:46:25.689: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:46:25.689: [INFO] Profiles total count: 1
+2026-10-02 14:46:25.689: [INFO] Profile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:46:25.671Z
+2026-10-02 14:46:25.689: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:46:25.689: [INFO] MostRecentlyActiveProfile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:46:25.671Z
+2026-10-02 14:46:25.689: [INFO] OnDoneLoading sync enabled: 1
+2026-10-02 14:46:25.689: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-02 14:46:25.689: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-02 14:46:25.689: [INFO] BookmarksSnapshot Startup total=8 bar=7 other=0 mobile=1 showBar=1 showBarNTP=0
+2026-10-02 14:46:26.087: [INFO] Sync initialization duration: 24ms
+2026-10-02 14:50:27.205: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:50:27.205: [INFO] Profiles total count: 1
+2026-10-02 14:50:27.206: [INFO] Profile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:50:27.188Z
+2026-10-02 14:50:27.206: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-02 14:50:27.206: [INFO] MostRecentlyActiveProfile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-02T14:50:27.188Z
+2026-10-02 14:50:27.206: [INFO] OnDoneLoading sync enabled: 1
+2026-10-02 14:50:27.206: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-02 14:50:27.206: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-02 14:50:27.206: [INFO] BookmarksSnapshot Startup total=8 bar=7 other=0 mobile=1 showBar=1 showBarNTP=0
+2026-10-02 14:50:27.789: [INFO] Sync initialization duration: 18ms
+2026-10-04 08:01:59.795: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-04 08:01:59.795: [INFO] Profiles total count: 1
+2026-10-04 08:01:59.795: [INFO] Profile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-04T08:01:59.774Z
+2026-10-04 08:01:59.795: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-04 08:01:59.795: [INFO] MostRecentlyActiveProfile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-04T08:01:59.774Z
+2026-10-04 08:01:59.795: [INFO] OnDoneLoading sync enabled: 1
+2026-10-04 08:01:59.795: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-04 08:01:59.795: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-04 08:01:59.795: [INFO] BookmarksSnapshot Startup total=8 bar=7 other=0 mobile=1 showBar=1 showBarNTP=0
+2026-10-04 08:02:00.776: [INFO] Sync initialization duration: 31ms
+2026-10-04 08:03:02.694: [INFO] CurrentProfilePath: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-04 08:03:02.694: [INFO] Profiles total count: 1
+2026-10-04 08:03:02.695: [INFO] Profile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-04T08:03:02.670Z
+2026-10-04 08:03:02.695: [INFO] LastUsedProfileDir: C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default
+2026-10-04 08:03:02.695: [INFO] MostRecentlyActiveProfile: name=Personal path=C:\Users\sai veni\OneDrive\Desktop\standard elevators web\.cdp-temp-profile\Default lastActive=2026-10-04T08:03:02.670Z
+2026-10-04 08:03:02.695: [INFO] OnDoneLoading sync enabled: 1
+2026-10-04 08:03:02.695: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-04 08:03:02.695: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-04 08:03:02.695: [INFO] BookmarksSnapshot Startup total=8 bar=7 other=0 mobile=1 showBar=1 showBarNTP=0
+2026-10-04 08:03:03.541: [INFO] Sync initialization duration: 32ms

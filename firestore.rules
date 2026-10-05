@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Check if requesting user is authenticated with Firebase Auth
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Explicit Admin Check:
+    // User must be authenticated AND exist in the admins allowlist with isActive == true.
+    function isAuthorizedAdmin() {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.isActive == true;
+    }
+
+    // Admins Allowlist:
+    // - Authenticated user can read only their own record to verify authorization status
+    // - Active admins can view all admin records
+    // - Client-side writes are strictly forbidden (allow write: if false;)
+    match /admins/{adminId} {
+      allow read: if isAuthenticated() && (request.auth.uid == adminId || isAuthorizedAdmin());
+      allow write: if false;
+    }
+
+    // Services Collection:
+    // - Public visitors can only read published services
+    // - Active admins can read drafts and perform create, update, delete
+    match /services/{serviceId} {
+      allow read: if resource.data.status == 'published' || isAuthorizedAdmin();
+      allow create, update, delete: if isAuthorizedAdmin();
+    }
+
+    // Gallery Collection:
+    // - Public visitors can only read published gallery items
+    // - Active admins can read drafts and perform create, update, delete
+    match /gallery/{imageId} {
+      allow read: if resource.data.status == 'published' || isAuthorizedAdmin();
+      allow create, update, delete: if isAuthorizedAdmin();
+    }
+
+    // Customer Inquiries & Quotes:
+    // Public submission allowed with required schema checks; admin-only read and management
+    match /inquiries/{inquiryId} {
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.phone is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.phone.size() >= 10;
+      allow read, update, delete: if isAuthorizedAdmin();
+    }
+
+    match /contacts/{contactId} {
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.phone is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.phone.size() >= 10;
+      allow read, update, delete: if isAuthorizedAdmin();
+    }
+
+    // Default deny for all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,26 +1,148 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@theme {
+  --color-primary-navy: #10233F;
+  --color-deep-navy: #14253D;
+  --color-accent-blue: #0878F9;
+  --color-accent-blue-hover: #0666D8;
+  --color-primary-white: #FFFFFF;
+  --color-soft-background: #F5F7FA;
+  --color-pale-glass: rgba(255, 255, 255, 0.82);
+  --color-body-text: #43516A;
+  --color-muted-text: #6B778A;
+  --color-subtle-border: #DCE3EC;
+  --color-pale-steel: #EEF2F6;
+  --color-warm-white: #F8FAFC;
+  --color-midnight: #0B192C;
+  --color-engineering: #0878F9;
+  --color-electric: #0878F9;
+  --color-electric-hover: #0666D8;
+  --color-gold: #F59A2A;
+  --color-graphite: #1E293B;
+  --color-slate-muted: #64748B;
+  
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+:root {
+  --background: var(--color-primary-white);
+  --foreground: var(--color-primary-navy);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--color-deep-navy);
+    --foreground: var(--color-primary-white);
   }
 }
 
+html {
+  overflow-x: clip;
+  max-width: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
+  overflow-x: clip;
+  max-width: 100%;
+  position: relative;
+  width: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+  }
+}
+
+/* Accessibility Focus Ring */
+:focus-visible {
+  outline: 2px solid #0877F9;
+  outline-offset: 2px;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #0066FF, #00B3FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Light mode support for hardcoded dark sections */
+html.light-mode {
+  filter: invert(1) hue-rotate(180deg);
+  background: #020617;
+}
+
+html.light-mode img,
+html.light-mode video,
+html.light-mode [style*="background-image"] {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* ========================================================================= */
+/* GLOBAL CONTENT CONTAINER SYSTEM (Controlled 1320px Max-Width Grid)        */
+/* ========================================================================= */
+
+.site-container {
+  width: min(1320px, calc(100% - 48px));
+  max-width: 1320px;
+  margin-inline: auto;
+}
+
+@media (max-width: 640px) {
+  .site-container {
+    width: 100%;
+    padding-inline: 16px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .site-container {
+    width: calc(100% - 40px);
+    margin-inline: auto;
+  }
+}
+
+/* Constrain all existing .container usage to max-width 1320px */
+.container {
+  max-width: 1320px !important;
+  width: min(1320px, calc(100% - 48px)) !important;
+  margin-inline: auto !important;
+}
+
+@media (max-width: 640px) {
+  .container {
+    width: 100% !important;
+    padding-inline: 16px !important;
+  }
+}
+
+/* Mobile Safe Area utilities */
+.safe-area-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.safe-area-top {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/* Hide Next.js Development Indicator & Portal */
+nextjs-portal,
+[data-nextjs-toast],
+[data-nextjs-dialog-overlay] {
+  display: none !important;
 }

@@ -1,0 +1,184 @@
+import { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { constructMetadata, getBreadcrumbSchema } from "@/lib/seo";
+
+export const metadata: Metadata = constructMetadata({
+  title: "About Us | Standard Engineering Works Elevators",
+  description:
+    "Learn about Standard Engineering Works Elevators, a pioneer in design, manufacturing, supplying, installation, and maintenance of elevators in Hyderabad, Telangana, and AP since 2003.",
+  path: "/about",
+});
+
+export default function AboutPage() {
+  const breadcrumbSchema = getBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "About Us", url: "/about" },
+  ]);
+
+  return (
+    <div className="flex flex-col w-full bg-warm-white text-graphite">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
+      {/* Hero Section */}
+      <section className="relative w-full pt-32 pb-24 md:pt-40 md:pb-32 bg-midnight text-warm-white overflow-hidden">
+        <div className="absolute inset-0 opacity-20 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+        <div className="site-container px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-xs font-bold tracking-[0.2em] text-[#38BDF8] uppercase">
+                ESTABLISHED 2003
+              </span>
+              <div className="h-px w-10 bg-[#38BDF8]/40" />
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+              Engineering <span className="text-[#38BDF8]">Excellence</span> Since 2003.
+            </h1>
+            <p className="text-lg md:text-xl text-pale-steel font-light max-w-2xl leading-relaxed">
+              Standard Engineering Works Elevators is a pioneer in the design, manufacturing, supplying, installation, and maintenance of premium elevator systems across Telangana and Andhra Pradesh.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Story & History */}
+      <section className="py-20 md:py-24 bg-warm-white">
+        <div className="site-container px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="order-2 md:order-1 relative aspect-square md:aspect-[4/5] rounded-2xl overflow-hidden bg-pale-steel shadow-lg">
+              <Image 
+                src="/hero-elevator.jpg" 
+                alt="Architectural Elevator Design by Standard Engineering Works" 
+                fill 
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-center grayscale brightness-90 contrast-125"
+              />
+            </div>
+            <div className="order-1 md:order-2 max-w-xl">
+              <h2 className="text-xs font-semibold tracking-[0.2em] text-engineering uppercase mb-4 flex items-center gap-3">
+                <div className="w-8 h-px bg-engineering"></div>
+                Our History
+              </h2>
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-light text-midnight leading-tight mb-6">
+                Over two decades of <span className="font-bold">vertical mobility</span> innovation.
+              </h3>
+              <p className="text-slate-muted leading-relaxed font-light mb-5 text-sm sm:text-base">
+                Established in the year 2003, Standard Engineering Works Elevators has quickly scaled to become a leading elevator company in the region. We operate a full-fledged design centre and manufacturing unit in Hyderabad, ensuring strict quality control at every stage of production.
+              </p>
+              <p className="text-slate-muted leading-relaxed font-light mb-8 text-sm sm:text-base">
+                Our corporate office is centrally located in Hyderabad and features an exclusive showroom that showcases fully functional elevators with a wide range of aesthetic choices for our customers.
+              </p>
+              <ul className="space-y-3.5 text-midnight font-medium text-sm sm:text-base">
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-electric shrink-0" />
+                  <span>100+ Verified Units Installed</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-electric shrink-0" />
+                  <span>Dedicated In-house Manufacturing & Design</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-electric shrink-0" />
+                  <span>Comprehensive Services across Telangana & AP</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Founder & Leadership */}
+      <section className="py-20 md:py-24 bg-white">
+        <div className="site-container px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="max-w-xl">
+              <h2 className="text-xs font-semibold tracking-[0.2em] text-engineering uppercase mb-4 flex items-center gap-3">
+                <div className="w-8 h-px bg-engineering"></div>
+                Our Leadership
+              </h2>
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-light text-midnight leading-tight mb-6">
+                Visionary leadership driving <span className="font-bold">engineering excellence</span>.
+              </h3>
+              <p className="text-slate-muted leading-relaxed font-light mb-5 text-sm sm:text-base">
+                Under the strategic guidance of our founder, Standard Engineering Works Elevators was established with a singular vision: to revolutionize vertical mobility through uncompromising quality and innovative engineering. Since 2003, this vision has guided every project we undertake.
+              </p>
+              <p className="text-slate-muted leading-relaxed font-light mb-8 text-sm sm:text-base">
+                Our leadership believes in fostering a culture of continuous improvement, where safety, reliability, and customer satisfaction remain the core pillars of our operational philosophy. We are dedicated to building elevator systems that stand the test of time and elevate the standard of modern infrastructure.
+              </p>
+            </div>
+            <div className="relative aspect-[3/4] md:aspect-[4/5] rounded-2xl overflow-hidden bg-pale-steel shadow-xl">
+              <Image 
+                src="/hero-elevator.jpg" 
+                alt="Founder of Standard Engineering Works Elevators" 
+                fill 
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-top"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-midnight/90 via-midnight/20 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+                <h4 className="text-xl sm:text-2xl font-bold text-white mb-1">Founder / Director</h4>
+                <p className="text-[#38BDF8] text-sm sm:text-base font-medium">Standard Engineering Works Elevators</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Core Principles */}
+      <section className="py-20 md:py-24 bg-pale-steel border-t border-slate-muted/10">
+        <div className="site-container px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-xs font-semibold tracking-[0.2em] text-engineering uppercase mb-3">
+            Core Philosophy
+          </h2>
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-midnight mb-12 lg:mb-16">
+            Smooth | Smart | Spacious
+          </h3>
+          
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto text-left">
+            <div className="bg-white p-7 sm:p-8 rounded-2xl shadow-xs border border-slate-200">
+              <h4 className="text-lg sm:text-xl font-bold text-midnight mb-3">Smooth Rides</h4>
+              <p className="text-slate-muted font-light leading-relaxed text-sm">
+                Utilizing advanced gearless traction technology and intellectual microprocessor controls with VVVF drives to achieve perfect levelling accuracy and a seamless ride experience.
+              </p>
+            </div>
+            <div className="bg-white p-7 sm:p-8 rounded-2xl shadow-xs border border-slate-200">
+              <h4 className="text-lg sm:text-xl font-bold text-midnight mb-3">Smart Technology</h4>
+              <p className="text-slate-muted font-light leading-relaxed text-sm">
+                Integration of automatic rescue devices, advanced safety gears, and energy-efficient systems that guarantee high reliability and substantial energy savings.
+              </p>
+            </div>
+            <div className="bg-white p-7 sm:p-8 rounded-2xl shadow-xs border border-slate-200">
+              <h4 className="text-lg sm:text-xl font-bold text-midnight mb-3">Spacious Cabins</h4>
+              <p className="text-slate-muted font-light leading-relaxed text-sm">
+                Aesthetically designed cabins customized to suit the interiors of commercial buildings, bungalows, and high-rise apartments, maximizing usable interior volume.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* CTA */}
+      <section className="py-20 bg-midnight text-center">
+        <div className="site-container px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-warm-white mb-4">
+            Ready to elevate your project?
+          </h2>
+          <p className="text-pale-steel text-sm sm:text-base max-w-lg mx-auto mb-8 font-light">
+            Contact our engineering specialists for structural consultation and turnkey elevator solutions.
+          </p>
+          <Link 
+            href="/contact" 
+            className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-[#0062FF] to-[#0088FF] hover:from-[#0052DF] hover:to-[#007AE6] text-white rounded-xl font-semibold transition-all shadow-lg active:scale-95"
+          >
+            <span>Contact Our Team</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
+}

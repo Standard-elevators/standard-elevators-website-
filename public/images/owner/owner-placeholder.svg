@@ -1,0 +1,82 @@
+<svg width="800" height="1000" viewBox="0 0 800 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="800" y2="1000" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0A182E"/>
+      <stop offset="50%" stop-color="#071324"/>
+      <stop offset="100%" stop-color="#030A14"/>
+    </linearGradient>
+    <linearGradient id="rimGrad" x1="0" y1="0" x2="800" y2="1000" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#28B8FF" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#0877F9" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#26384D" stop-opacity="0.4"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#0877F9" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#0877F9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="1000" fill="url(#bgGrad)"/>
+  <rect width="800" height="1000" fill="url(#glow)"/>
+
+  <!-- Blueprint Grid Pattern -->
+  <g opacity="0.06" stroke="#28B8FF" stroke-width="1">
+    <line x1="0" y1="200" x2="800" y2="200"/>
+    <line x1="0" y1="400" x2="800" y2="400"/>
+    <line x1="0" y1="600" x2="800" y2="600"/>
+    <line x1="0" y1="800" x2="800" y2="800"/>
+    <line x1="200" y1="0" x2="200" y2="1000"/>
+    <line x1="400" y1="0" x2="400" y2="1000"/>
+    <line x1="600" y1="0" x2="600" y2="1000"/>
+  </g>
+
+  <!-- Architectural Frame Edge -->
+  <rect x="24" y="24" width="752" height="952" rx="16" stroke="url(#rimGrad)" stroke-width="2"/>
+  
+  <!-- Corner Crosshairs -->
+  <text x="36" y="52" fill="#28B8FF" opacity="0.7" font-family="monospace" font-size="16">+</text>
+  <text x="750" y="52" fill="#28B8FF" opacity="0.7" font-family="monospace" font-size="16">+</text>
+  <text x="36" y="964" fill="#28B8FF" opacity="0.7" font-family="monospace" font-size="16">+</text>
+  <text x="750" y="964" fill="#28B8FF" opacity="0.7" font-family="monospace" font-size="16">+</text>
+
+  <!-- Central Executive Silhouette -->
+  <g transform="translate(400, 420)" opacity="0.85">
+    <!-- Outer Glow Circle -->
+    <circle r="140" fill="#0D213A" stroke="#26384D" stroke-width="2"/>
+    <circle r="140" fill="none" stroke="#0877F9" stroke-width="1" stroke-dasharray="4 6" opacity="0.6"/>
+
+    <!-- Head -->
+    <circle cx="0" cy="-45" r="48" fill="#1A2D47" stroke="#28B8FF" stroke-width="1.5" stroke-opacity="0.4"/>
+    
+    <!-- Torso / Shoulders -->
+    <path d="M-85,90 C-85,25 -50,15 0,15 C50,15 85,25 85,90 Z" fill="#1A2D47" stroke="#28B8FF" stroke-width="1.5" stroke-opacity="0.4"/>
+    <!-- Collar / Tie Accent -->
+    <polygon points="0,25 -14,60 0,90 14,60" fill="#0877F9" opacity="0.4"/>
+  </g>
+
+  <!-- Top Brand Tag -->
+  <text x="400" y="100" text-anchor="middle" fill="#28B8FF" font-family="sans-serif" font-weight="700" font-size="13" letter-spacing="4">
+    STANDARD ENGINEERING WORKS
+  </text>
+  <text x="400" y="125" text-anchor="middle" fill="#CBD5E1" font-family="sans-serif" font-weight="600" font-size="18" letter-spacing="2">
+    LEADERSHIP &amp; FOUNDATION
+  </text>
+
+  <!-- Bottom Instruction Box -->
+  <g transform="translate(100, 780)">
+    <rect width="600" height="130" rx="12" fill="#071426" fill-opacity="0.9" stroke="#26384D" stroke-width="1.5"/>
+    <circle cx="40" cy="40" r="14" fill="#0877F9" fill-opacity="0.2"/>
+    <circle cx="40" cy="40" r="6" fill="#28B8FF"/>
+    
+    <text x="70" y="44" fill="#FFFFFF" font-family="sans-serif" font-weight="700" font-size="16">
+      FOUNDER PHOTOGRAPH RESERVED SPACE
+    </text>
+    <text x="70" y="74" fill="#94A3B8" font-family="monospace" font-size="13">
+      Replace: /public/images/owner/owner-portrait.jpg
+    </text>
+    <text x="70" y="98" fill="#38BDF8" font-family="sans-serif" font-size="12">
+      • Facial identity, proportions and real portrait will be preserved automatically
+    </text>
+  </g>
+</svg>
