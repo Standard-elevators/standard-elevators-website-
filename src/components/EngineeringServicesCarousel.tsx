@@ -153,8 +153,8 @@ export default function EngineeringServicesCarousel() {
           onMouseMove={onTouchMove}
           onMouseUp={onTouchEnd}
           onMouseEnter={() => setIsHoverPaused(true)}
-          onMouseLeave={(e) => {
-            onTouchEnd(e as any);
+          onMouseLeave={() => {
+            onTouchEnd();
             setIsHoverPaused(false);
           }}
           onKeyDown={handleKeyDown}
