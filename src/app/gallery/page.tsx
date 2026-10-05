@@ -391,11 +391,6 @@ export default function GalleryPage() {
                 <h3 className="text-xl md:text-2xl font-bold text-white">
                   {selectedItem.title}
                 </h3>
-                {selectedItem.description && (
-                  <p className="text-sm text-[#8FA2B8] mt-2 max-w-2xl font-light">
-                    {selectedItem.description}
-                  </p>
-                )}
               </div>
 
               <Link

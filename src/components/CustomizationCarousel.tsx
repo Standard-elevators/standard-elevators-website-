@@ -193,7 +193,7 @@ export default function CustomizationCarousel() {
           onMouseDown={onTouchStart}
           onMouseMove={onTouchMove}
           onMouseUp={onTouchEnd}
-          onMouseLeaveCapture={onTouchEnd}
+          onMouseLeave={onTouchEnd}
           onKeyDown={handleKeyDown}
           tabIndex={0}
         >

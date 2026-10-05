@@ -18,6 +18,7 @@ export default function Header() {
 
   // Close menus on route change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileMenuOpen(false);
     setActiveDropdown(null);
     setActiveMobileDropdown(null);
@@ -125,7 +126,7 @@ export default function Header() {
   }
 
   // REUSABLE MEGA MENU ITEM COMPONENT
-  const MenuItem = ({ item, onClick }: { item: any, onClick: () => void }) => (
+  const MenuItem = ({ item, onClick }: { item: { name: string; href: string; desc: string; image: string }, onClick: () => void }) => (
     <Link
       href={item.href}
       onClick={onClick}

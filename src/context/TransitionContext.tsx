@@ -62,6 +62,7 @@ export function TransitionProvider({
     mountedRef.current = true;
     // Check if loader should play on client mount (only if never played before)
     if (!getHasPlayed()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsInitialLoad(true);
     }
     return () => {
