@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { usePathname } from "next/navigation";
 
-export default function RouteLoader() {
+function RouteLoaderBar() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Navigation completed
     setIsLoading(false);
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -24,7 +23,7 @@ export default function RouteLoader() {
       
       // Ignore external links or blank targets
       if (target.getAttribute("target") === "_blank") return;
-      if (href.startsWith("http") || href.startsWith("mailto") || href.startsWith("tel")) return;
+      if (href.startsWith("http") || href.startsWith("mailto") || href.startsWith("tel") || href.startsWith("#")) return;
       
       try {
         const targetUrl = new URL(target.href, window.location.origin);
@@ -32,7 +31,7 @@ export default function RouteLoader() {
         if (targetUrl.pathname !== window.location.pathname) {
           setIsLoading(true);
         }
-      } catch (err) {
+      } catch {
         // Ignore invalid URLs
       }
     };
@@ -44,7 +43,7 @@ export default function RouteLoader() {
   if (!isLoading) return null;
 
   return (
-    <div className="fixed top-0 left-0 z-[99999] w-full h-[3px] overflow-hidden bg-white/5">
+    <div className="fixed top-0 left-0 z-[99999] w-full h-[3px] overflow-hidden bg-white/5 pointer-events-none">
       <div className="h-full bg-[#0070F3] relative shadow-[0_0_10px_#0070F3] animate-[routing_1s_ease-in-out_infinite]"></div>
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes routing {
@@ -54,5 +53,13 @@ export default function RouteLoader() {
         }
       `}} />
     </div>
+  );
+}
+
+export default function RouteLoader() {
+  return (
+    <Suspense fallback={null}>
+      <RouteLoaderBar />
+    </Suspense>
   );
 }

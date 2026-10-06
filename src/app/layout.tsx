@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -95,7 +96,9 @@ export default function RootLayout({
         />
       </head>
       <body className="flex flex-col bg-soft-background text-body-text min-h-screen">
-        <RouteLoader />
+        <Suspense fallback={null}>
+          <RouteLoader />
+        </Suspense>
         <SmoothScrolling>
           <TransitionProvider>
             <SiteLoader />

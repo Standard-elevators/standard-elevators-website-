@@ -75,6 +75,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+function parseDate(val: unknown): Date {
+  if (!val) return new Date();
+  if (val instanceof Date && !isNaN(val.getTime())) return val;
+  if (typeof val === "object" && val !== null) {
+    if ("toDate" in val && typeof (val as { toDate: () => unknown }).toDate === "function") {
+      try {
+        const d = (val as { toDate: () => unknown }).toDate();
+        if (d instanceof Date && !isNaN(d.getTime())) return d;
+      } catch {}
+    }
+    if ("seconds" in val && typeof (val as { seconds: unknown }).seconds === "number") {
+      const d = new Date((val as { seconds: number }).seconds * 1000);
+      if (!isNaN(d.getTime())) return d;
+    }
+  }
+  if (typeof val === "string" || typeof val === "number") {
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return new Date();
+}
+
   // Dynamically include any published services from Firestore
   try {
     const services = await getPublishedServices();
@@ -84,7 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((s) => s.slug && !coreSlugs.has(s.slug))
       .map((s) => ({
         url: `${SITE_URL}/services/${s.slug}`,
-        lastModified: s.updatedAt ? new Date(s.updatedAt as string) : now,
+        lastModified: parseDate(s.updatedAt),
         changeFrequency: "monthly" as const,
         priority: 0.8,
       }));

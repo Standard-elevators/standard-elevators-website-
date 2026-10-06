@@ -156,7 +156,7 @@ export async function getAllServices(): Promise<ServiceItem[]> {
 
     const servicesRef = collection(db, "services");
     const q = query(servicesRef, orderBy("orderIndex", "asc"));
-    const snapshot = await getDocs(q);
+    const snapshot = await withTimeout(getDocs(q), 2500);
 
     if (snapshot.empty) {
       return DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
@@ -369,7 +369,7 @@ export async function getAllGallery(): Promise<GalleryItem[]> {
 
     const galleryRef = collection(db, "gallery");
     const q = query(galleryRef, orderBy("orderIndex", "asc"));
-    const snapshot = await getDocs(q);
+    const snapshot = await withTimeout(getDocs(q), 2500);
 
     if (snapshot.empty) {
       return DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
@@ -524,12 +524,21 @@ const DEFAULT_SERVICES_PAGE_SETTINGS: ServicesPageSettings = {
 };
 
 export async function getServicesPageSettings(): Promise<ServicesPageSettings> {
-  const docRef = doc(db, "settings", "services_page");
-  const snapshot = await getDoc(docRef);
-  if (snapshot.exists()) {
-    return snapshot.data() as ServicesPageSettings;
+  try {
+    const { validateFirebaseConfig } = await import('@/lib/firebase');
+    if (!validateFirebaseConfig().isValid) {
+      return DEFAULT_SERVICES_PAGE_SETTINGS;
+    }
+    const docRef = doc(db, "settings", "services_page");
+    const snapshot = await withTimeout(getDoc(docRef), 2000);
+    if (snapshot.exists()) {
+      return snapshot.data() as ServicesPageSettings;
+    }
+    return DEFAULT_SERVICES_PAGE_SETTINGS;
+  } catch (err) {
+    console.warn("Failed to get services page settings, using defaults:", err);
+    return DEFAULT_SERVICES_PAGE_SETTINGS;
   }
-  return DEFAULT_SERVICES_PAGE_SETTINGS;
 }
 
 export async function updateServicesPageSettings(data: Partial<ServicesPageSettings>): Promise<void> {
@@ -551,24 +560,29 @@ export interface InquiryItem {
 }
 
 export async function getAllInquiries(): Promise<InquiryItem[]> {
-  const q = query(collection(db, "inquiries"), orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(q);
-  
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      name: data.name || "",
-      phone: data.phone || "",
-      email: data.email || "",
-      buildingType: data.buildingType || "",
-      serviceRequired: data.serviceRequired || "",
-      projectLocation: data.projectLocation || "",
-      message: data.message || "",
-      status: data.status || "new",
-      createdAt: data.createdAt,
-    } as InquiryItem;
-  });
+  try {
+    const q = query(collection(db, "inquiries"), orderBy("createdAt", "desc"));
+    const snapshot = await withTimeout(getDocs(q), 2500);
+    
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.name || "",
+        phone: data.phone || "",
+        email: data.email || "",
+        buildingType: data.buildingType || "",
+        serviceRequired: data.serviceRequired || "",
+        projectLocation: data.projectLocation || "",
+        message: data.message || "",
+        status: data.status || "new",
+        createdAt: data.createdAt,
+      } as InquiryItem;
+    });
+  } catch (err) {
+    console.warn("Failed to fetch inquiries, returning empty array:", err);
+    return [];
+  }
 }
 
 export async function updateInquiryStatus(id: string, status: "new" | "in-progress" | "resolved"): Promise<void> {
