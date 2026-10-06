@@ -7,6 +7,34 @@ import { ArrowLeft, Settings, Plus, Trash2, Save, Loader2, GripVertical } from "
 import { getServicesPageSettings, updateServicesPageSettings, EngineeringServiceSetting } from "@/lib/firestore-data";
 import ImageUpload from "@/components/admin/ImageUpload";
 
+const DEFAULT_ENGINEERING_SERVICES: EngineeringServiceSetting[] = [
+  {
+    title: "New Installation",
+    image: "/images/card_installation.jpg",
+    desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
+  },
+  {
+    title: "Modernization",
+    image: "/images/card_modernization.jpg",
+    desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
+  },
+  {
+    title: "Repairs",
+    image: "/images/3d_service.jpg",
+    desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
+  },
+  {
+    title: "Maintenance",
+    image: "/images/card_maintenance.jpg",
+    desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
+  },
+  {
+    title: "Aftersales Services",
+    image: "/images/3d_apartments.jpg",
+    desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
+  }
+];
+
 export default function EngineeringAdminPage() {
   const [items, setItems] = useState<EngineeringServiceSetting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +42,9 @@ export default function EngineeringAdminPage() {
 
   useEffect(() => {
     getServicesPageSettings().then(data => {
-      setItems(data.engineeringServices || []);
+      const fetchedItems = data.engineeringServices || [];
+      // Use default data if no data exists in Firestore
+      setItems(fetchedItems.length > 0 ? fetchedItems : DEFAULT_ENGINEERING_SERVICES);
       setIsLoading(false);
     });
   }, []);

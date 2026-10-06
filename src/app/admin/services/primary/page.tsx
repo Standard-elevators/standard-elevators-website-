@@ -595,7 +595,10 @@ function AdminServicesContent() {
 
       {/* CREATE / EDIT MODAL */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start justify-center p-4 pt-10 sm:pt-16 overflow-y-auto">
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-start justify-center p-4 pt-10 sm:pt-16 overflow-y-auto"
+          data-lenis-prevent="true"
+        >
           <div className="bg-[#0C1A2E] border border-white/15 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl mb-16 relative">
             <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
               <div>

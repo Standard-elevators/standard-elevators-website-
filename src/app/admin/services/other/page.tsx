@@ -7,6 +7,16 @@ import { ArrowLeft, Wrench, Plus, Trash2, Save, Loader2 } from "lucide-react";
 import { getServicesPageSettings, updateServicesPageSettings, OtherServiceSetting } from "@/lib/firestore-data";
 import ImageUpload from "@/components/admin/ImageUpload";
 
+const DEFAULT_OTHER_SERVICES: OtherServiceSetting[] = [
+  { title: "Structural Fabrication", image: "", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
+  { title: "Glass & ACP Sheets", image: "", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
+  { title: "UPVC Window & Door", image: "", desc: "High-quality UPVC systems for residential and commercial spaces." },
+  { title: "Renovation Works", image: "", desc: "Complete architectural and interior renovation services." },
+  { title: "SS Railing", image: "", desc: "Custom stainless steel handrails and balustrades." },
+  { title: "Electrical House Wirings", image: "", desc: "Complete residential and commercial electrical wiring systems." },
+  { title: "Civil Works", image: "", desc: "Comprehensive civil construction and shaft preparation." },
+];
+
 export default function OtherServicesAdminPage() {
   const [items, setItems] = useState<OtherServiceSetting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +24,9 @@ export default function OtherServicesAdminPage() {
 
   useEffect(() => {
     getServicesPageSettings().then(data => {
-      setItems(data.otherServices || []);
+      const fetchedItems = data.otherServices || [];
+      // Use default data if no data exists in Firestore
+      setItems(fetchedItems.length > 0 ? fetchedItems : DEFAULT_OTHER_SERVICES);
       setIsLoading(false);
     });
   }, []);
