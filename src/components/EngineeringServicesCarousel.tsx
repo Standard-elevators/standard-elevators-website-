@@ -118,28 +118,32 @@ export default function EngineeringServicesCarousel({ initialData }: { initialDa
   return (
     <section 
       id="engineering-services"
-      className="py-20 md:py-32 bg-[#020813] text-white relative overflow-hidden"
+      className="py-20 md:py-32 bg-white text-slate-900 relative overflow-hidden"
       aria-labelledby="engineering-heading"
     >
-      {/* Background Ambience */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Subtle grid */}
-        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)", backgroundSize: "32px 32px" }}></div>
-        {/* Deep blue radial glows */}
-        <div className="absolute top-0 right-0 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] bg-[#0062FF]/10 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3" />
-        <div className="absolute bottom-0 left-0 w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-[#38BDF8]/5 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/4" />
+      {/* Creative Light Background Ambience */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-gradient-to-br from-[#F8FAFC] to-white">
+        {/* Elegant structural grid */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(#0062FF 1px, transparent 1px), linear-gradient(90deg, #0062FF 1px, transparent 1px)", backgroundSize: "40px 40px" }}></div>
+        
+        {/* Soft, creative colorful Orbs for light theme */}
+        <div className="absolute top-0 right-0 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] bg-gradient-to-br from-[#0062FF]/[0.06] to-purple-500/[0.04] rounded-full blur-[100px] translate-x-1/4 -translate-y-1/4" />
+        <div className="absolute bottom-0 left-0 w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-gradient-to-tr from-[#38BDF8]/[0.08] to-[#0062FF]/[0.04] rounded-full blur-[90px] -translate-x-1/4 translate-y-1/4" />
+        
+        {/* Diagonal Light Beam */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[200px] bg-gradient-to-r from-transparent via-[#0062FF]/[0.02] to-transparent -rotate-45 blur-[20px]" />
       </div>
 
       <div className="site-container px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center">
         {/* Section Heading */}
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full border border-[#0062FF]/30 bg-[#0062FF]/10 text-[#38BDF8] text-xs font-bold uppercase tracking-widest mb-4 backdrop-blur-sm">
+          <span className="inline-block px-4 py-1.5 rounded-full border border-[#0062FF]/20 bg-[#0062FF]/5 text-[#0062FF] text-xs font-bold uppercase tracking-widest mb-4 backdrop-blur-sm">
             Comprehensive Support
           </span>
-          <h2 id="engineering-heading" className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
+          <h2 id="engineering-heading" className="text-3xl md:text-5xl font-extrabold text-[#0B1F38] mb-6 tracking-tight">
             Engineering Services
           </h2>
-          <p className="text-[#94A3B8] text-base md:text-xl font-light leading-relaxed">
+          <p className="text-slate-600 text-base md:text-xl font-light leading-relaxed">
             Beyond manufacturing, we provide comprehensive lifecycle support for vertical mobility infrastructure.
           </p>
         </div>
@@ -181,8 +185,8 @@ export default function EngineeringServicesCarousel({ initialData }: { initialDa
                 }}
                 className={`group relative rounded-[2rem] overflow-hidden cursor-pointer ${
                   isActive 
-                    ? "h-full w-full md:flex-[5] shadow-2xl ring-1 ring-inset ring-white/20 block" 
-                    : "h-[90%] md:h-[85%] hidden md:block md:flex-[1] shadow-lg hover:ring-1 hover:ring-inset hover:ring-white/30 opacity-70 hover:opacity-100"
+                    ? "h-full w-full md:flex-[5] shadow-[0_20px_50px_rgba(0,30,80,0.15)] ring-1 ring-inset ring-[#0062FF]/20 block" 
+                    : "h-[90%] md:h-[85%] hidden md:block md:flex-[1] shadow-lg hover:ring-1 hover:ring-inset hover:ring-[#0062FF]/30 opacity-[0.85] hover:opacity-100"
                 }`}
               >
                 {/* Background Image */}
