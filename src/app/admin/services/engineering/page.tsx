@@ -109,13 +109,17 @@ export default function EngineeringAdminPage() {
           <div className="space-y-6">
             {items.map((item, index) => (
               <div key={index} className="bg-[#0C1A2E] border border-white/10 rounded-2xl p-6 relative group">
-                <button
-                  onClick={() => handleRemoveItem(index)}
-                  className="absolute top-4 right-4 p-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                  title="Remove Item"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+                  <h3 className="text-white font-semibold text-sm">Service Item #{index + 1}</h3>
+                  <button
+                    onClick={() => handleRemoveItem(index)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors text-xs font-semibold"
+                    title="Remove Item"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Remove
+                  </button>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Title</label>
