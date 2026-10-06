@@ -5,18 +5,13 @@ import Image from "next/image";
 import Link from "@/components/TransitionLink";
 import { motion } from "framer-motion";
 import {
-  Building2,
-  CheckCircle2,
   ArrowRight,
   ShieldCheck,
-  Wrench,
   Cog,
-  MapPin,
   Activity,
   Layers,
   Phone,
   Sparkles,
-  Award,
   Maximize2,
 } from "lucide-react";
 

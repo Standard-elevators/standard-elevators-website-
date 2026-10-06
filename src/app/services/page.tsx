@@ -5,9 +5,7 @@ import CustomizationCarousel from "@/components/CustomizationCarousel";
 import EngineeringServicesCarousel from "@/components/EngineeringServicesCarousel";
 import { 
   ArrowRight, Building2, Box, Stethoscope, ArrowUpFromLine, Layers, 
-  Wrench, Settings, Hammer, RotateCw, Headset, Construction,
-  DoorOpen, Settings2, ShieldCheck, Component, GripHorizontal, 
-  Zap, PaintRoller, Frame, Maximize
+  Hammer, Zap, PaintRoller, Frame, Maximize
 } from "lucide-react";
 import { getPublishedServices } from "@/lib/firestore-data";
 import { constructMetadata, getBreadcrumbSchema } from "@/lib/seo";
@@ -28,44 +26,6 @@ function getServiceIcon(slug: string, category?: string) {
   if (slug.includes("hydraulic") || cat.includes("hydraulic")) return <Layers className="w-6 h-6" />;
   return <Layers className="w-6 h-6" />;
 }
-
-// Data for Engineering Services
-const ENGINEERING_SERVICES = [
-  {
-    title: "New Installation",
-    icon: <Construction className="w-6 h-6" />,
-    desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
-  },
-  {
-    title: "Modernization",
-    icon: <RotateCw className="w-6 h-6" />,
-    desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
-  },
-  {
-    title: "Repairs",
-    icon: <Wrench className="w-6 h-6" />,
-    desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
-  },
-  {
-    title: "Maintenance",
-    icon: <Settings className="w-6 h-6" />,
-    desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
-  },
-  {
-    title: "Aftersales Services",
-    icon: <Headset className="w-6 h-6" />,
-    desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
-  }
-];
-
-// Data for Customization & Components
-const CUSTOMIZATION = [
-  { title: "Cabin Models", icon: <Component className="w-5 h-5" />, items: ["Standard SS", "Premium Glass", "Custom Designs"] },
-  { title: "Door Options", icon: <DoorOpen className="w-5 h-5" />, items: ["Collapsible Doors", "Imperforated Doors", "Swing Doors", "Manual Telescopic", "S.S. Auto Door", "Glass Doors"] },
-  { title: "Control & Safety", icon: <ShieldCheck className="w-5 h-5" />, items: ["Micro Processor Control", "ARD (Auto Rescue)", "Safety Gears", "COPs & LOPs"] },
-  { title: "Machinery", icon: <Settings2 className="w-5 h-5" />, items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"] },
-  { title: "Interiors", icon: <GripHorizontal className="w-5 h-5" />, items: ["Flooring Options", "Ceiling Designs", "Custom Handles", "LED Lighting"] },
-];
 
 // Data for Other Engineering Services
 const OTHER_SERVICES = [

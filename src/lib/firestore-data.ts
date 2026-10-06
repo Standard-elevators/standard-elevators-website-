@@ -115,8 +115,7 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
     const servicesRef = collection(db, "services");
     const q = query(
       servicesRef,
-      where("status", "==", "published"),
-      orderBy("orderIndex", "asc")
+      where("status", "==", "published")
     );
     const snapshot = await withTimeout(getDocs(q), 1500);
 
@@ -127,7 +126,9 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
       return fallback;
     }
 
-    const result = snapshot.docs.map(snapshotToService);
+    const result = snapshot.docs
+      .map(snapshotToService)
+      .sort((a, b) => a.orderIndex - b.orderIndex);
     cachedServices = result;
     lastServicesFetchTime = now;
     return result;
@@ -312,8 +313,7 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
     const galleryRef = collection(db, "gallery");
     const q = query(
       galleryRef,
-      where("status", "==", "published"),
-      orderBy("orderIndex", "asc")
+      where("status", "==", "published")
     );
     const snapshot = await withTimeout(getDocs(q), 1500);
 
@@ -324,7 +324,9 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
       return fallback;
     }
 
-    const result = snapshot.docs.map(snapshotToGallery);
+    const result = snapshot.docs
+      .map(snapshotToGallery)
+      .sort((a, b) => a.orderIndex - b.orderIndex);
     cachedGallery = result;
     lastGalleryFetchTime = now;
     return result;

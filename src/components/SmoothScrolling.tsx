@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
 export default function SmoothScrolling({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const lenisRef = useRef<Lenis | null>(null);
   useEffect(() => {
     // Initialize Lenis
@@ -76,7 +75,7 @@ export default function SmoothScrolling({ children }: { children: React.ReactNod
         lenisRef.current.scrollTo(0, { immediate: true });
       }
     }
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   return <>{children}</>;
 }
