@@ -162,7 +162,18 @@ export async function getAllServices(): Promise<ServiceItem[]> {
       return DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
     }
 
-    return snapshot.docs.map(snapshotToService);
+    const firestoreServices = snapshot.docs.map(snapshotToService);
+    const existingSlugs = new Set(firestoreServices.map(s => s.slug));
+    
+    // Merge any missing default services (so editing just 1 doesn't make the other 5 disappear)
+    // We treat the hardcoded defaults as a base layer, and Firestore as overrides.
+    const missingDefaults = DEFAULT_SERVICES.filter(s => !existingSlugs.has(s.slug))
+      .map(s => ({ ...s, id: s.slug }));
+
+    // Combine and re-sort by orderIndex
+    const combined = [...firestoreServices, ...missingDefaults];
+    return combined.sort((a, b) => a.orderIndex - b.orderIndex);
+
   } catch (error) {
     console.warn("Firestore admin services query failed, using verified fallback data:", error);
     return DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
@@ -273,18 +284,18 @@ export async function seedInitialServices(): Promise<number> {
   const servicesRef = collection(db, "services");
   const snapshot = await getDocs(servicesRef);
 
-  if (!snapshot.empty) {
-    return 0; // Already has data
-  }
+  const existingSlugs = new Set(snapshot.docs.map(d => d.data().slug));
 
   let count = 0;
   for (const item of DEFAULT_SERVICES) {
-    await addDoc(servicesRef, {
-      ...item,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
-    count++;
+    if (!existingSlugs.has(item.slug)) {
+      await addDoc(servicesRef, {
+        ...item,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+      count++;
+    }
   }
   return count;
 }
