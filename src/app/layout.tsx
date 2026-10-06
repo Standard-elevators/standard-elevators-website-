@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SiteLoader from "@/components/SiteLoader";
 import MobileStickyBar from "@/components/MobileStickyBar";
+import RouteLoader from "@/components/RouteLoader";
 import { TransitionProvider } from "@/context/TransitionContext";
 import SmoothScrolling from "@/components/SmoothScrolling";
 import FloatingActions from "@/components/FloatingActions";
@@ -94,6 +95,7 @@ export default function RootLayout({
         />
       </head>
       <body className="flex flex-col bg-soft-background text-body-text min-h-screen">
+        <RouteLoader />
         <SmoothScrolling>
           <TransitionProvider>
             <SiteLoader />
