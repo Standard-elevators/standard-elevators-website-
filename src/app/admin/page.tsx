@@ -196,66 +196,76 @@ function AdminDashboardContent() {
   return (
     <div className="min-h-screen bg-[#071221] text-slate-100 flex flex-col">
       {/* Admin Top Navigation Bar */}
-      <header className="sticky top-0 z-30 bg-[#0C1A2E]/95 border-b border-white/10 backdrop-blur-md px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-[#071221]/80 backdrop-blur-xl border-b border-white/5 px-4 sm:px-8 py-4 flex items-center justify-between shadow-sm">
+        {/* Left Side: Logo & Badge */}
         <div className="flex items-center gap-6">
-          <Link href="/admin" className="flex items-center">
-            <Image
-              src="/logo-header.png"
-              alt="Standard Engineering Works Elevators Logo"
-              width={190}
-              height={36}
-              priority
-              className="h-8 w-auto object-contain"
-            />
+          <Link href="/admin" className="flex items-center group">
+            <div className="relative h-10 sm:h-12 w-[180px] sm:w-[220px] transition-transform duration-300 group-hover:scale-[1.02]">
+              <Image
+                src="/logo-header.png"
+                alt="Standard Engineering Works Elevators Logo"
+                fill
+                priority
+                className="object-contain object-left"
+              />
+            </div>
           </Link>
-          <div className="hidden md:flex items-center gap-2 px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[11px] font-semibold tracking-wider uppercase text-[#38BDF8]">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Admin Console</span>
+          <div className="hidden md:flex items-center gap-2.5 px-3 py-1.5 bg-[#0062FF]/10 border border-[#0062FF]/20 rounded-lg shadow-inner">
+            <div className="relative flex items-center justify-center w-2 h-2">
+              <span className="absolute w-full h-full rounded-full bg-emerald-400 animate-ping opacity-75" />
+              <span className="relative w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            </div>
+            <span className="text-[11px] font-bold tracking-widest uppercase text-[#38BDF8]">
+              Admin Control
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-4">
-          <button
-            onClick={handleRefresh}
-            disabled={isRefreshing || isLoading}
-            title="Refresh Firestore Data"
-            aria-label="Refresh Firestore Data"
-            className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors disabled:opacity-50"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#0070F3]" : ""}`} />
-            <span className="hidden sm:inline">Refresh</span>
-          </button>
+        {/* Right Side: Controls & Profile */}
+        <div className="flex items-center gap-4 sm:gap-6">
+          <div className="hidden sm:flex items-center gap-2">
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing || isLoading}
+              title="Refresh Data"
+              className="flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#0062FF]" : ""}`} />
+              <span>Refresh</span>
+            </button>
 
-          <Link
-            href="/"
-            target="_blank"
-            className="hidden sm:flex items-center gap-1.5 text-xs text-slate-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
-          >
-            <span>Live Website</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Link>
+            <Link
+              href="/"
+              target="_blank"
+              className="flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+            >
+              <span>Live Website</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+          </div>
 
-          {/* User Badge */}
-          <div className="flex items-center gap-2 pl-3 border-l border-white/10 text-right">
-            <div className="hidden sm:block">
-              <div className="text-xs font-medium text-white truncate max-w-[180px]">
-                {user?.email}
+          <div className="h-6 w-px bg-white/10 hidden sm:block" />
+
+          {/* User Profile & Sign Out */}
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex flex-col items-end justify-center">
+              <div className="text-[13px] font-semibold text-white tracking-wide">
+                {user?.email?.split('@')[0] || "Administrator"}
               </div>
-              <div className="text-[10px] text-emerald-400 font-medium">
-                {adminProfile?.role?.toUpperCase() || "ADMIN"}
+              <div className="text-[10px] text-[#0062FF] font-bold uppercase tracking-wider">
+                {adminProfile?.role || "ADMIN"}
               </div>
             </div>
 
-            {/* Logout Button */}
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
               aria-label="Sign Out"
               title="Sign Out"
-              className="p-2 sm:px-3 sm:py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-red-400"
+              className="p-2 sm:px-4 sm:py-2 bg-[#0C1A2E] hover:bg-red-500/10 text-slate-300 hover:text-red-400 border border-white/5 hover:border-red-500/20 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500/50 shadow-sm"
             >
               {isLoggingOut ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin text-red-400" />
               ) : (
                 <>
                   <LogOut className="w-4 h-4" />
@@ -349,7 +359,7 @@ function AdminDashboardContent() {
                 className="bg-[#0C1A2E] hover:bg-[#10243E] border border-white/10 hover:border-[#0070F3]/40 transition-all rounded-xl p-5 shadow-lg group block"
               >
                 <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-                  <span>Elevator Services</span>
+                  <span>Services</span>
                   <Building className="w-4 h-4 text-[#0070F3] group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="text-2xl sm:text-3xl font-bold text-white mb-2 flex items-center justify-between">
@@ -422,7 +432,7 @@ function AdminDashboardContent() {
                   </span>
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-[#38BDF8] transition-colors">
-                  Elevator Services
+                  Services
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed mb-6">
                   Manage passenger, MRL, hospital, and freight lift specifications, slug routes, and publishing status.
@@ -490,6 +500,33 @@ function AdminDashboardContent() {
               <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-medium text-slate-300 group-hover:text-white">
                 <span>Real-time Inquiries</span>
                 <ChevronRight className="w-4 h-4 text-slate-500 group-hover:translate-x-1 group-hover:text-emerald-300 transition-all" />
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/leadership"
+              className="group bg-[#0C1A2E] hover:bg-[#10243E] border border-white/10 hover:border-orange-500/50 rounded-2xl p-6 transition-all duration-200 shadow-lg hover:shadow-2xl flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-300 group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <ImageIcon className="w-6 h-6" />
+                  </div>
+                  <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-300">
+                    Profile
+                  </span>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-orange-300 transition-colors">
+                  Leadership Photo
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed mb-6">
+                  Upload, replace, and visually adjust the founder image displayed on the About page.
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-medium text-slate-300 group-hover:text-white">
+                <span>Edit Photo Profile</span>
+                <ChevronRight className="w-4 h-4 text-slate-500 group-hover:translate-x-1 group-hover:text-orange-300 transition-all" />
               </div>
             </Link>
           </div>

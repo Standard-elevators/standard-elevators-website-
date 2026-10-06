@@ -14,13 +14,18 @@ export default function SiteLoader() {
   // If user is on ANY subpage (/about, /gallery, /services, /contact, etc.), NEVER show the intro video loader!
   const isHomePage = pathname === "/";
 
-  // 1. Guaranteed, un-cancellable safety timeout: dismiss after 1.8s max NO MATTER WHAT
+  const handleDismiss = () => {
+    window.scrollTo(0, 0);
+    dismissLoader();
+  };
+
+  // 1. Guaranteed timeout: dismiss after 3.0s to keep the loading animation at exactly 3 seconds
   useEffect(() => {
     if (!isInitialLoad || !isHomePage) return;
 
     const safetyTimer = setTimeout(() => {
-      dismissLoader();
-    }, 1800);
+      handleDismiss();
+    }, 3000);
 
     return () => {
       clearTimeout(safetyTimer);
@@ -33,7 +38,7 @@ export default function SiteLoader() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
-        dismissLoader();
+        handleDismiss();
       }
     };
 
@@ -56,7 +61,7 @@ export default function SiteLoader() {
         playPromise.catch(() => {
           // Autoplay was prevented or stalled, gracefully dismiss
           setHasError(true);
-          dismissLoader();
+          handleDismiss();
         });
       }
     }
@@ -75,13 +80,14 @@ export default function SiteLoader() {
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{
+            y: "-100%",
             opacity: 0,
             transition: {
-              duration: 0.35,
-              ease: "easeOut",
+              duration: 0.7,
+              ease: [0.76, 0, 0.24, 1], // cinematic smooth easing
             },
           }}
-          onClick={dismissLoader}
+          onClick={handleDismiss}
           className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-black overflow-hidden select-none cursor-pointer"
           aria-live="polite"
           aria-busy="true"
@@ -101,8 +107,8 @@ export default function SiteLoader() {
                   preload="auto"
                   disablePictureInPicture
                   controls={false}
-                  onEnded={dismissLoader}
-                  onError={dismissLoader}
+                  onEnded={handleDismiss}
+                  onError={handleDismiss}
                   className="w-full h-full object-contain pointer-events-none bg-black"
                 >
                   <source src="/videos/site-loader-trimmed.mp4" type="video/mp4" />
@@ -137,9 +143,6 @@ export default function SiteLoader() {
                   }}
                 />
               </div>
-              <span className="text-[9px] text-slate-500 tracking-wider mt-2">
-                Tap anywhere to continue
-              </span>
             </div>
           </div>
         </motion.div>

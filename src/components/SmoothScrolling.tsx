@@ -10,13 +10,14 @@ export default function SmoothScrolling({ children }: { children: React.ReactNod
   useEffect(() => {
     // Initialize Lenis
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      touchMultiplier: 1.5,
-      autoResize: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 1, // Reset multiplier
+      syncTouch: false, // Don't intercept touch events
     });
 
     // Expose lenis instance globally for smooth scroll-to-top and navigation

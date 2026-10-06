@@ -191,19 +191,23 @@ export default function ElevatorSystems() {
               {/* Indicator connector line to top-floor elevator */}
               <div className="absolute left-full top-1/2 -translate-y-1/2 flex items-center w-[120px] xl:w-[170px] pointer-events-none">
                 <div
-                  className={`h-[2px] w-full transition-all duration-300 ${
+                  className={`h-[3px] w-full transition-all duration-300 ${
                     hoveredCard === "passenger"
-                      ? "bg-[#0A78F5] shadow-[0_0_8px_#0A78F5]"
-                      : "bg-[#0A78F5]/50"
+                      ? "bg-[#0A78F5] shadow-[0_0_10px_#0A78F5]"
+                      : "bg-[#0A78F5]/90"
                   }`}
                 />
                 <div
-                  className={`w-3 h-3 rounded-full shrink-0 -ml-1 transition-all duration-300 ${
+                  className={`shrink-0 -ml-1 transition-all duration-300 ${
                     hoveredCard === "passenger"
-                      ? "bg-[#38BDF8] ring-4 ring-[#38BDF8]/40 shadow-[0_0_14px_#38BDF8] scale-125"
-                      : "bg-[#38BDF8] ring-2 ring-[#38BDF8]/30 shadow-[0_0_8px_#38BDF8]"
+                      ? "text-[#0A78F5] scale-125 drop-shadow-[0_0_10px_#0A78F5]"
+                      : "text-[#0A78F5]/90"
                   }`}
-                />
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </div>
               </div>
             </div>
 
@@ -241,19 +245,23 @@ export default function ElevatorSystems() {
               {/* Indicator connector line to middle-floor elevator */}
               <div className="absolute left-full top-1/2 -translate-y-1/2 flex items-center w-[120px] xl:w-[170px] pointer-events-none">
                 <div
-                  className={`h-[2px] w-full transition-all duration-300 ${
+                  className={`h-[3px] w-full transition-all duration-300 ${
                     hoveredCard === "goods"
-                      ? "bg-[#D99B4B] shadow-[0_0_8px_#D99B4B]"
-                      : "bg-[#D99B4B]/50"
+                      ? "bg-[#D99B4B] shadow-[0_0_10px_#D99B4B]"
+                      : "bg-[#D99B4B]/90"
                   }`}
                 />
                 <div
-                  className={`w-3 h-3 rounded-full shrink-0 -ml-1 transition-all duration-300 ${
+                  className={`shrink-0 -ml-1 transition-all duration-300 ${
                     hoveredCard === "goods"
-                      ? "bg-[#FDE68A] ring-4 ring-[#FDE68A]/40 shadow-[0_0_14px_#FDE68A] scale-125"
-                      : "bg-[#FDE68A] ring-2 ring-[#FDE68A]/30 shadow-[0_0_8px_#FDE68A]"
+                      ? "text-[#D99B4B] scale-125 drop-shadow-[0_0_10px_#D99B4B]"
+                      : "text-[#D99B4B]/90"
                   }`}
-                />
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </div>
               </div>
             </div>
 
@@ -291,19 +299,23 @@ export default function ElevatorSystems() {
               {/* Indicator connector line to bottom-floor elevator */}
               <div className="absolute left-full top-1/2 -translate-y-1/2 flex items-center w-[120px] xl:w-[170px] pointer-events-none">
                 <div
-                  className={`h-[2px] w-full transition-all duration-300 ${
+                  className={`h-[3px] w-full transition-all duration-300 ${
                     hoveredCard === "hospital"
-                      ? "bg-[#00A896] shadow-[0_0_8px_#00A896]"
-                      : "bg-[#00A896]/50"
+                      ? "bg-[#00A896] shadow-[0_0_10px_#00A896]"
+                      : "bg-[#00A896]/90"
                   }`}
                 />
                 <div
-                  className={`w-3 h-3 rounded-full shrink-0 -ml-1 transition-all duration-300 ${
+                  className={`shrink-0 -ml-1 transition-all duration-300 ${
                     hoveredCard === "hospital"
-                      ? "bg-[#2DD4BF] ring-4 ring-[#2DD4BF]/40 shadow-[0_0_14px_#2DD4BF] scale-125"
-                      : "bg-[#2DD4BF] ring-2 ring-[#2DD4BF]/30 shadow-[0_0_8px_#2DD4BF]"
+                      ? "text-[#00A896] scale-125 drop-shadow-[0_0_10px_#00A896]"
+                      : "text-[#00A896]/90"
                   }`}
-                />
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </div>
               </div>
             </div>
 

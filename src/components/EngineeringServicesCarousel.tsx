@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-const ENGINEERING_SERVICES = [
+const DEFAULT_ENGINEERING_SERVICES = [
   {
     id: "01",
     title: "New Installation",
@@ -43,7 +43,7 @@ const ENGINEERING_SERVICES = [
   }
 ];
 
-export default function EngineeringServicesCarousel() {
+export default function EngineeringServicesCarousel({ initialData }: { initialData?: any[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [interactionState, setInteractionState] = useState(0);
   
@@ -53,7 +53,8 @@ export default function EngineeringServicesCarousel() {
 
   const interact = () => setInteractionState((c) => c + 1);
 
-  const length = ENGINEERING_SERVICES.length;
+  const services = initialData && initialData.length > 0 ? initialData : DEFAULT_ENGINEERING_SERVICES;
+  const length = services.length;
 
   const nextSlide = useCallback(() => {
     setActiveIndex((current) => (current === length - 1 ? 0 : current + 1));
@@ -116,6 +117,7 @@ export default function EngineeringServicesCarousel() {
 
   return (
     <section 
+      id="engineering-services"
       className="py-20 md:py-32 bg-[#020813] text-white relative overflow-hidden"
       aria-labelledby="engineering-heading"
     >
@@ -159,7 +161,7 @@ export default function EngineeringServicesCarousel() {
           onKeyDown={handleKeyDown}
           tabIndex={0}
         >
-          {ENGINEERING_SERVICES.map((srv, index) => {
+          {services.map((srv, index) => {
             const isActive = index === activeIndex;
             
             return (
@@ -268,7 +270,7 @@ export default function EngineeringServicesCarousel() {
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div className="flex gap-2">
-            {ENGINEERING_SERVICES.map((_, i) => (
+            {services.map((_, i) => (
               <button
                 key={i}
                 onClick={() => { setActiveIndex(i); interact(); }}

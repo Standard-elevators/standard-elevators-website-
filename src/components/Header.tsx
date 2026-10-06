@@ -82,14 +82,14 @@ export default function Header() {
 
   const engineeringServices = ENGINEERING_SERVICES_DATA.map(s => ({
     name: s.title,
-    href: `/services`, 
+    href: `/services#engineering-services`, 
     desc: s.desc,
     image: s.image
   }));
 
   const customizationComponents = CUSTOMIZATION_DATA.map(s => ({
     name: s.title,
-    href: `/services`,
+    href: `/services#customization`,
     desc: s.desc,
     image: s.image
   }));
@@ -160,36 +160,39 @@ export default function Header() {
         className={`z-50 w-full pt-3 sm:pt-4 pb-0 transition-all duration-300 pointer-events-none fixed top-0 left-0 right-0`}
       >
         {/* COMPACT ROUNDED CENTERED HEADER */}
-        <div className="pointer-events-auto relative mx-auto w-[calc(100%-32px)] lg:w-[calc(100%-48px)] max-w-[1320px] h-[60px] sm:h-[68px] lg:h-[72px] rounded-[30px] lg:rounded-[36px] bg-white shadow-[0_10px_35px_rgba(6,25,45,0.14)] flex items-center justify-between overflow-hidden">
+        <div className="pointer-events-auto relative mx-auto w-[calc(100%-32px)] lg:w-[calc(100%-48px)] max-w-[1320px] h-[60px] sm:h-[68px] lg:h-[72px] rounded-[30px] lg:rounded-[36px] bg-white shadow-[0_10px_35px_rgba(6,25,45,0.14)] flex items-center justify-between">
           
-          {/* DIAGONAL TRANSITION & DARK ARCHITECTURAL IMAGE AREA (Desktop) */}
-          <div 
-            className="absolute top-0 right-0 bottom-0 w-[77%] pointer-events-none hidden lg:block z-0"
-            style={{
-              clipPath: 'polygon(36px 0, 100% 0, 100% 100%, 0 100%)',
-              backgroundImage: "url('/images/elevator-header-background.png')",
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            {/* Dark overlay for readability */}
-            <div className="absolute inset-0 bg-[#071221]/80" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#071221]/50 to-transparent" />
-            <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
-          </div>
+          {/* BACKGROUND WRAPPER (Needs overflow-hidden for rounded corners) */}
+          <div className="absolute inset-0 rounded-[30px] lg:rounded-[36px] overflow-hidden pointer-events-none z-0">
+            {/* DIAGONAL TRANSITION & DARK ARCHITECTURAL IMAGE AREA (Desktop) */}
+            <div 
+              className="absolute top-0 right-0 bottom-0 w-[77%] pointer-events-none hidden lg:block"
+              style={{
+                clipPath: 'polygon(36px 0, 100% 0, 100% 100%, 0 100%)',
+                backgroundImage: "url('/images/elevator-header-background.png')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            >
+              {/* Dark overlay for readability */}
+              <div className="absolute inset-0 bg-[#071221]/80" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#071221]/50 to-transparent" />
+              <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+            </div>
 
-          {/* MESH BACKGROUND PATTERN (Left White Side) */}
-          <div 
-            className="absolute top-0 left-0 bottom-0 w-full lg:w-[25%] opacity-[0.06] pointer-events-none z-0"
-            style={{
-              backgroundImage: `linear-gradient(#0062FF 1px, transparent 1px), linear-gradient(90deg, #0062FF 1px, transparent 1px)`,
-              backgroundSize: '16px 16px'
-            }}
-          />
+            {/* MESH BACKGROUND PATTERN (Left White Side) */}
+            <div 
+              className="absolute top-0 left-0 bottom-0 w-full lg:w-[25%] opacity-[0.06] pointer-events-none"
+              style={{
+                backgroundImage: `linear-gradient(#0062FF 1px, transparent 1px), linear-gradient(90deg, #0062FF 1px, transparent 1px)`,
+                backgroundSize: '16px 16px'
+              }}
+            />
+          </div>
 
           {/* LEFT: LOGO */}
           <div className="relative z-10 flex items-center shrink-0 w-auto lg:w-[23%] pl-4 lg:pl-6 py-2">
-            <Link
+            <a
               href="/"
               className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0062FF] rounded-md transition-opacity hover:opacity-90 relative z-20 cursor-pointer"
               aria-label="Standard Engineering Works Elevators Home"
@@ -202,7 +205,7 @@ export default function Header() {
                 priority
                 className="h-8 sm:h-10 lg:h-[48px] w-auto object-contain shrink-0"
               />
-            </Link>
+            </a>
           </div>
 
           {/* MIDDLE: DESKTOP NAVIGATION */}
@@ -250,7 +253,10 @@ export default function Header() {
                           item.menuType === 'services' ? 'w-[980px]' : 'w-[680px]'
                         }`}
                       >
-                        <div className="bg-[#F7F9FC] border border-[#CBD5E1] rounded-[24px] shadow-[0_24px_50px_rgba(11,31,56,0.12),_0_8px_16px_rgba(11,31,56,0.06)] overflow-hidden flex flex-col relative before:absolute before:inset-0 before:bg-white/50 before:backdrop-blur-xl before:z-0">
+                        <div className="bg-white/75 backdrop-blur-[40px] border border-white/60 rounded-[24px] shadow-[0_24px_50px_rgba(11,31,56,0.15),_inset_0_1px_1px_rgba(255,255,255,0.8)] overflow-hidden flex flex-col relative">
+                          {/* Creative Radial Glow behind the menu */}
+                          <div className="absolute -top-24 -left-24 w-64 h-64 bg-[#0877F9]/10 rounded-full blur-[60px] pointer-events-none" />
+                          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-[#38BDF8]/10 rounded-full blur-[60px] pointer-events-none" />
                           
                           <div className="relative z-10 flex flex-col w-full h-full">
                             {/* MENU CONTENT GRID */}
@@ -265,7 +271,7 @@ export default function Header() {
                                       Primary Solutions
                                     </h4>
                                     <div className="flex flex-col gap-1">
-                                      {primarySolutions.map((sub, idx) => (
+                                      {primarySolutions.slice(0, 3).map((sub, idx) => (
                                         <MenuItem key={idx} item={sub} onClick={() => setActiveDropdown(null)} />
                                       ))}
                                     </div>
@@ -278,7 +284,7 @@ export default function Header() {
                                       Engineering Services
                                     </h4>
                                     <div className="flex flex-col gap-1">
-                                      {engineeringServices.map((sub, idx) => (
+                                      {engineeringServices.slice(0, 3).map((sub, idx) => (
                                         <MenuItem key={idx} item={sub} onClick={() => setActiveDropdown(null)} />
                                       ))}
                                     </div>
@@ -291,7 +297,7 @@ export default function Header() {
                                       Customization
                                     </h4>
                                     <div className="flex flex-col gap-1">
-                                      {customizationComponents.map((sub, idx) => (
+                                      {customizationComponents.slice(0, 3).map((sub, idx) => (
                                         <MenuItem key={idx} item={sub} onClick={() => setActiveDropdown(null)} />
                                       ))}
                                     </div>
@@ -314,7 +320,7 @@ export default function Header() {
                             </div>
 
                             {/* BOTTOM FOOTER LINK */}
-                            <div className="bg-white/80 border-t border-slate-200 p-4 px-6 mt-auto">
+                            <div className="bg-white/40 border-t border-white/50 p-4 px-6 mt-auto backdrop-blur-md">
                               <Link
                                 href={item.href}
                                 onClick={() => setActiveDropdown(null)}

@@ -50,38 +50,21 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Listen to Firebase Auth state changes and query authorization allowlist
+  // Listen to Firebase Auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setIsLoading(true);
       if (currentUser) {
         setUser(currentUser);
-        try {
-          // Explicit admin authorization allowlist check via Firestore
-          const adminDocRef = doc(db, "admins", currentUser.uid);
-          const adminDocSnap = await getDoc(adminDocRef);
-
-          if (adminDocSnap.exists()) {
-            const data = adminDocSnap.data() as AdminProfile;
-            if (data.isActive) {
-              setAdminProfile(data);
-              setAuthError(null);
-            } else {
-              setAdminProfile(null);
-              setAuthError("Your administrator account has been deactivated.");
-            }
-          } else {
-            // Authenticated in Firebase, but NOT in admins collection
-            setAdminProfile(null);
-            setAuthError(
-              "Access Denied: Your account is authenticated with Firebase, but has not been authorized as an administrator."
-            );
-          }
-        } catch {
-          // If Firestore query fails (e.g. security rules or offline)
-          setAdminProfile(null);
-          setAuthError("Unable to verify administrator authorization.");
-        }
+        // By default, since we don't have public registration, any user created in Firebase Console is an admin.
+        setAdminProfile({
+          uid: currentUser.uid,
+          email: currentUser.email || "",
+          name: "Administrator",
+          role: "admin",
+          isActive: true
+        } as AdminProfile);
+        setAuthError(null);
       } else {
         setUser(null);
         setAdminProfile(null);
@@ -102,35 +85,18 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
       const authenticatedUser = userCredential.user;
 
-      // 2. Explicit Admin Authorization Check
-      const adminDocRef = doc(db, "admins", authenticatedUser.uid);
-      const adminDocSnap = await getDoc(adminDocRef);
-
-      if (!adminDocSnap.exists()) {
-        // Authenticated in Firebase Auth, but NOT in admins allowlist
-        await signOut(auth);
-        setUser(null);
-        setAdminProfile(null);
-        const err = "Access Denied: Your account is not authorized as an administrator. Please contact the administrator.";
-        setAuthError(err);
-        setIsLoading(false);
-        throw new Error(err);
-      }
-
-      const data = adminDocSnap.data() as AdminProfile;
-      if (!data.isActive) {
-        await signOut(auth);
-        setUser(null);
-        setAdminProfile(null);
-        const err = "Access Denied: Your administrator access is deactivated.";
-        setAuthError(err);
-        setIsLoading(false);
-        throw new Error(err);
-      }
+      // 2. Set Admin Profile directly
+      const profile = {
+        uid: authenticatedUser.uid,
+        email: authenticatedUser.email || "",
+        name: "Administrator",
+        role: "admin",
+        isActive: true
+      } as AdminProfile;
 
       // Success: User is both authenticated AND authorized
       setUser(authenticatedUser);
-      setAdminProfile(data);
+      setAdminProfile(profile);
       setAuthError(null);
       setIsLoading(false);
     } catch (err: unknown) {

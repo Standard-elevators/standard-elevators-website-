@@ -2,6 +2,8 @@ import {
   collection,
   doc,
   getDocs,
+  getDoc,
+  setDoc,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -473,4 +475,93 @@ export async function submitInquiry(data: InquirySubmission): Promise<string> {
     createdAt: serverTimestamp(),
   });
   return docRef.id;
+}
+
+export interface EngineeringServiceSetting {
+  title: string;
+  image: string;
+  desc: string;
+}
+
+export interface CustomizationSetting {
+  title: string;
+  image: string;
+  description: string;
+  items: string[];
+}
+
+export interface OtherServiceSetting {
+  title: string;
+  image: string;
+  desc: string;
+}
+
+export interface ServicesPageSettings {
+  engineeringServices: EngineeringServiceSetting[];
+  customization: CustomizationSetting[];
+  otherServices: OtherServiceSetting[];
+}
+
+const DEFAULT_SERVICES_PAGE_SETTINGS: ServicesPageSettings = {
+  engineeringServices: [],
+  customization: [],
+  otherServices: [],
+};
+
+export async function getServicesPageSettings(): Promise<ServicesPageSettings> {
+  const docRef = doc(db, "settings", "services_page");
+  const snapshot = await getDoc(docRef);
+  if (snapshot.exists()) {
+    return snapshot.data() as ServicesPageSettings;
+  }
+  return DEFAULT_SERVICES_PAGE_SETTINGS;
+}
+
+export async function updateServicesPageSettings(data: Partial<ServicesPageSettings>): Promise<void> {
+  const docRef = doc(db, "settings", "services_page");
+  await setDoc(docRef, data, { merge: true });
+}
+
+export interface InquiryItem {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  buildingType: string;
+  serviceRequired: string;
+  projectLocation: string;
+  message: string;
+  status: "new" | "in-progress" | "resolved";
+  createdAt: any;
+}
+
+export async function getAllInquiries(): Promise<InquiryItem[]> {
+  const q = query(collection(db, "inquiries"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+  
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      name: data.name || "",
+      phone: data.phone || "",
+      email: data.email || "",
+      buildingType: data.buildingType || "",
+      serviceRequired: data.serviceRequired || "",
+      projectLocation: data.projectLocation || "",
+      message: data.message || "",
+      status: data.status || "new",
+      createdAt: data.createdAt,
+    } as InquiryItem;
+  });
+}
+
+export async function updateInquiryStatus(id: string, status: "new" | "in-progress" | "resolved"): Promise<void> {
+  const docRef = doc(db, "inquiries", id);
+  await updateDoc(docRef, { status });
+}
+
+export async function deleteInquiry(id: string): Promise<void> {
+  const docRef = doc(db, "inquiries", id);
+  await deleteDoc(docRef);
 }

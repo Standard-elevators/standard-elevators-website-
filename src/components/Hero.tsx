@@ -73,49 +73,46 @@ export default function Hero() {
           <source src="/videos/hero-background.mp4" type="video/mp4" />
         </video>
 
-        {/* Subtle localized dark navy vignette on text area for razor-sharp legibility without an opaque wash */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#071221]/80 via-[#071221]/50 to-transparent w-full md:w-[65%] lg:w-[50%] pointer-events-none z-[1]" />
+        {/* Subtle uniform overlay to keep text readable without blocking the video */}
+        <div className="absolute inset-0 bg-black/40 pointer-events-none z-[1]" />
         {/* Soft bottom gradient to ensure smooth transition to next section */}
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#071221]/60 to-transparent pointer-events-none z-[1]" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#071221] to-transparent pointer-events-none z-[1]" />
       </div>
       
-      {/* 2. Main Hero Content (Relative z-10) — vertically centered, padded for header */}
+      {/* 2. Main Hero Content (Relative z-10) */}
       <div className="relative z-10 w-full site-container px-4 sm:px-6 lg:px-8 pt-32 sm:pt-36 lg:pt-40 pb-16 my-auto flex flex-col justify-center">
-        <div className="w-full md:w-[65%] lg:w-[55%] max-w-3xl">
+        <div className="w-full lg:w-[75%] max-w-4xl">
           
           {/* Small uppercase credential tag */}
-          <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-            <span className="text-[11px] md:text-[12px] font-semibold tracking-[0.2em] text-slate-300 uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
-              ELEVATOR ENGINEERING
+          <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <span className="text-[11px] md:text-[13px] font-semibold tracking-[0.25em] text-slate-200 uppercase drop-shadow-md">
+              PREMIUM ELEVATOR ENGINEERING
             </span>
-            <div className="h-px w-10 sm:w-12 bg-white/20"></div>
+            <div className="h-px w-10 sm:w-16 bg-white/30 hidden sm:block"></div>
           </div>
           
-          {/* Main Headline: Controlled premium architectural hierarchy */}
-          <h1 className="text-[clamp(32px,8vw,44px)] lg:text-[clamp(40px,3.8vw,58px)] font-bold lg:font-extrabold tracking-tight leading-[1.06] text-white mb-4 sm:mb-5 break-words drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
-            Elevating<br />
-            <span className="text-[#38BDF8] drop-shadow-[0_2px_10px_rgba(0,102,255,0.4)]">People.</span><br />
-            <span className="text-[#38BDF8] drop-shadow-[0_2px_10px_rgba(0,102,255,0.4)]">Spaces.</span><br />
-            Possibilities.
+          {/* Main Headline */}
+          <h1 className="text-[clamp(36px,7vw,52px)] lg:text-[clamp(52px,5.5vw,76px)] font-bold tracking-tight leading-[1.05] text-white mb-6 drop-shadow-lg">
+            Elevating <span className="text-[#38BDF8]">People</span>, <span className="text-[#38BDF8]">Spaces</span>,<br className="hidden lg:block"/> and Possibilities.
           </h1>
           
           {/* Description */}
-          <p className="text-[15px] sm:text-[16px] lg:text-[16.5px] text-slate-100 mb-6 sm:mb-8 font-normal max-w-[460px] leading-[1.6] drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
-            Passenger, goods, hospital and hydraulic elevator solutions, supported by engineering, installation and maintenance services.
+          <p className="text-[15px] sm:text-[17px] lg:text-[19px] text-slate-100 mb-8 sm:mb-10 font-normal max-w-2xl leading-[1.6] drop-shadow-md">
+            Passenger, goods, hospital, and hydraulic elevator solutions seamlessly integrated into architectural masterpieces. Supported by world-class engineering, installation, and maintenance.
           </p>
           
           {/* Hero CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Link 
               href="/services" 
-              className="h-[44px] sm:h-[46px] px-6 sm:px-7 bg-gradient-to-r from-[#0062FF] to-[#0088FF] hover:from-[#0052DF] hover:to-[#007AE6] text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2 group shadow-[0_4px_18px_rgba(0,98,255,0.45)] text-[14px] sm:text-[15px] active:scale-[0.98] whitespace-nowrap"
+              className="h-[48px] sm:h-[52px] px-8 sm:px-10 bg-gradient-to-r from-[#0062FF] to-[#0088FF] hover:from-[#0052DF] hover:to-[#007AE6] text-white rounded-full font-bold transition-all flex items-center justify-center gap-2 group shadow-[0_8px_25px_rgba(0,98,255,0.4)] text-[15px] sm:text-[16px] active:scale-[0.98] whitespace-nowrap"
             >
               <span>Explore Our Elevators</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
             </Link>
             <Link 
               href="/contact" 
-              className="h-[44px] sm:h-[46px] px-6 sm:px-7 bg-white/10 hover:bg-white/20 border border-white/25 hover:border-white/40 text-white rounded-xl font-semibold transition-all flex items-center justify-center text-[14px] sm:text-[15px] active:scale-[0.98] backdrop-blur-md whitespace-nowrap"
+              className="h-[48px] sm:h-[52px] px-8 sm:px-10 bg-white/10 hover:bg-white/20 border border-white/30 hover:border-white/50 text-white rounded-full font-bold transition-all flex items-center justify-center text-[15px] sm:text-[16px] active:scale-[0.98] backdrop-blur-md shadow-[0_8px_25px_rgba(0,0,0,0.2)] whitespace-nowrap"
             >
               <span>Request a Consultation</span>
             </Link>

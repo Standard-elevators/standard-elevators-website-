@@ -7,7 +7,7 @@ import {
   ArrowRight, Building2, Box, Stethoscope, ArrowUpFromLine, Layers, 
   Hammer, Zap, PaintRoller, Frame, Maximize
 } from "lucide-react";
-import { getPublishedServices } from "@/lib/firestore-data";
+import { getPublishedServices, getServicesPageSettings } from "@/lib/firestore-data";
 import { constructMetadata, getBreadcrumbSchema } from "@/lib/seo";
 
 export const metadata: Metadata = constructMetadata({
@@ -39,7 +39,10 @@ const OTHER_SERVICES = [
 ];
 
 export default async function ServicesPage() {
-  const services = await getPublishedServices();
+  const [services, settings] = await Promise.all([
+    getPublishedServices(),
+    getServicesPageSettings(),
+  ]);
   const breadcrumbSchema = getBreadcrumbSchema([
     { name: "Home", url: "/" },
     { name: "Elevator Services", url: "/services" },
@@ -155,10 +158,10 @@ export default async function ServicesPage() {
       </section>
 
       {/* SECTION 3: ENGINEERING SERVICES */}
-      <EngineeringServicesCarousel />
+      <EngineeringServicesCarousel initialData={settings.engineeringServices} />
 
       {/* SECTION 4: ELEVATOR CUSTOMIZATION & COMPONENTS */}
-      <CustomizationCarousel />
+      <CustomizationCarousel initialData={settings.customization} />
 
       {/* SECTION 5: OTHER ENGINEERING SERVICES */}
       <section className="relative py-20 md:py-28 overflow-hidden border-t border-white/10">
@@ -194,12 +197,21 @@ export default async function ServicesPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {OTHER_SERVICES.map((srv, idx) => (
+            {(settings.otherServices?.length > 0 ? settings.otherServices : OTHER_SERVICES).map((srv, idx) => (
               <div key={idx} className="bg-white p-6 md:p-8 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] border border-transparent hover:border-[#0062FF]/30 hover:shadow-[0_20px_40px_-15px_rgba(0,98,255,0.4)] transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden">
                 {/* Card Top Highlight */}
                 <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-transparent via-[#0062FF] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
-                <div className="text-[#0062FF] mb-6 p-4 bg-slate-50 border border-slate-100 inline-block rounded-xl group-hover:scale-110 group-hover:bg-[#0062FF] group-hover:text-white transition-all duration-300">{srv.icon}</div>
+                {(srv as any).image ? (
+                  <div className="w-12 h-12 bg-slate-50 border border-slate-100 mb-6 rounded-xl relative overflow-hidden group-hover:scale-110 transition-all duration-300">
+                    <Image src={(srv as any).image} alt={srv.title} fill className="object-cover" />
+                  </div>
+                ) : (
+                  <div className="text-[#0062FF] mb-6 p-4 bg-slate-50 border border-slate-100 inline-block rounded-xl group-hover:scale-110 group-hover:bg-[#0062FF] group-hover:text-white transition-all duration-300">
+                    {(srv as any).icon || <Hammer className="w-5 h-5" />}
+                  </div>
+                )}
+                
                 <h3 className="text-lg font-bold text-slate-900 mb-3">{srv.title}</h3>
                 <p className="text-sm text-slate-600 leading-relaxed font-light">{srv.desc}</p>
               </div>

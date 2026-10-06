@@ -174,13 +174,13 @@ export default function ImageUpload({
           {previewUrl ? (
             /* Active Image Preview Card */
             <div className="relative rounded-2xl overflow-hidden border border-white/15 bg-[#071221] p-3 shadow-lg">
-              <div className="aspect-[16/9] relative rounded-xl overflow-hidden bg-black/40">
+              <div className="w-full h-48 sm:h-56 relative rounded-xl overflow-hidden bg-black/40">
                 <Image
                   src={previewUrl}
                   alt="Asset Preview"
                   fill
                   sizes="(max-width: 640px) 100vw, 400px"
-                  className="object-cover"
+                  className="object-contain"
                 />
 
                 {/* Uploading Overlay */}

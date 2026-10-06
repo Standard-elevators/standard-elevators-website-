@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export default function AboutView() {
-  const [ownerImgSrc, setOwnerImgSrc] = useState("/images/owner/owner-portrait.jpg");
+  const [ownerImgSrc, setOwnerImgSrc] = useState("/images/team/founder.jpg");
 
   return (
     <div className="flex flex-col w-full text-slate-800 antialiased overflow-hidden">
@@ -28,16 +28,15 @@ export default function AboutView() {
         {/* Cinematic Background Architectural Visual */}
         <div className="absolute inset-0 z-0 pointer-events-none select-none">
           <Image
-            src="/images/bg_engineering.jpg"
+            src="/images/bg_about_hero.jpg"
             alt="Standard Engineering Works Advanced Vertical Mobility Architecture"
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center opacity-30 mix-blend-luminosity"
+            className="object-cover object-center"
           />
-          {/* Depth gradients */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#071426] via-[#071426]/75 to-[#050C17]/90" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#071426] via-[#071426]/80 to-transparent w-full lg:w-[65%]" />
+          {/* Subtle text protection gradient only on the left where text is */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent w-full md:w-[60%]" />
           
           {/* Delicate architectural coordinate grid */}
           <div
@@ -98,29 +97,6 @@ export default function AboutView() {
           </motion.div>
         </div>
 
-        {/* Hero Bottom Docked Trust Metric Bar */}
-        <div className="relative z-10 w-full border-t border-white/10 bg-[#061120]/80 backdrop-blur-md mt-16">
-          <div className="site-container px-6 sm:px-8 lg:px-12 py-5">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs font-mono">
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold text-[#28B8FF] font-sans">2003</span>
-                <span className="text-slate-300">ESTABLISHED IN HYDERABAD</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold text-[#28B8FF] font-sans">100+</span>
-                <span className="text-slate-300">VERIFIED INSTALLATIONS</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold text-[#28B8FF] font-sans">TS & AP</span>
-                <span className="text-slate-300">STATEWIDE COVERAGE</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold text-[#28B8FF] font-sans">BIS</span>
-                <span className="text-slate-300">SAFETY COMPLIANT</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* ========================================================================= */}
@@ -276,39 +252,45 @@ export default function AboutView() {
               transition={{ duration: 0.65, ease: "easeOut" }}
               className="lg:col-span-5 flex justify-center"
             >
-              <div className="relative w-full max-w-[420px] aspect-[4/5] rounded-2xl p-2 bg-[#0D213A] border border-[#26384D] shadow-[0_24px_60px_rgba(0,0,0,0.6)] group">
-                {/* Offset steel frame accent */}
-                <div className="absolute -inset-2 rounded-2xl border border-[#28B8FF]/30 pointer-events-none -z-10 group-hover:border-[#28B8FF]/60 transition-colors" />
+              <div className="relative w-full max-w-[400px] p-[2px] rounded-[28px] overflow-hidden group transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_40px_80px_rgba(8,119,249,0.25)]">
+                {/* Animated Glowing Border */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#1E2D40] to-[#0A162B] transition-opacity duration-700 group-hover:opacity-0" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0%,transparent_60%,#0062FF_80%,#38BDF8_100%)] opacity-0 group-hover:opacity-100 group-hover:animate-[spin_4s_linear_infinite] transition-opacity duration-700" />
+                
+                <div className="relative w-full h-full bg-[#050D1A]/95 backdrop-blur-3xl rounded-[26px] overflow-hidden flex flex-col items-center">
+                  {/* Photo Area */}
+                  <div className="relative w-full aspect-[4/4.2] overflow-hidden bg-[#0A162B]">
+                    <Image
+                      src={ownerImgSrc}
+                      alt="Founder of Standard Elevators"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      className="object-cover object-[center_40%] transition-transform duration-1000 group-hover:scale-110"
+                      onError={() => {
+                        setOwnerImgSrc("/images/owner/owner-placeholder.svg");
+                      }}
+                    />
+                    {/* Cinematic Lighting overlays */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050D1A] via-transparent to-transparent opacity-90 pointer-events-none" />
+                    <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-t-[26px] pointer-events-none" />
+                  </div>
 
-                {/* Inner Portrait Container */}
-                <div className="relative w-full h-full rounded-xl overflow-hidden bg-[#071426]">
-                  <Image
-                    src={ownerImgSrc}
-                    alt="Founder & Managing Director of Standard Engineering Works Elevators"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 420px"
-                    className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                    onError={() => {
-                      // Fallback seamlessly to the architectural SVG placeholder if real photo is not yet uploaded
-                      setOwnerImgSrc("/images/owner/owner-placeholder.svg");
-                    }}
-                  />
-
-                  {/* Subtle rim vignette */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#071426]/95 via-transparent to-transparent pointer-events-none" />
-
-                  {/* Corner Precision Markers */}
-                  <div className="absolute top-3 left-3 font-mono text-xs text-[#28B8FF]/60 select-none">+</div>
-                  <div className="absolute top-3 right-3 font-mono text-xs text-[#28B8FF]/60 select-none">+</div>
-
-                  {/* Bottom Portrait Badge */}
-                  <div className="absolute bottom-4 inset-x-4 p-3.5 rounded-lg bg-[#071426]/90 backdrop-blur-md border border-[#26384D]">
-                    <span className="text-[10px] font-mono tracking-widest text-[#28B8FF] uppercase block mb-0.5">
-                      FOUNDER &amp; MANAGING DIRECTOR
-                    </span>
-                    <h4 className="text-base sm:text-lg font-bold text-white leading-tight">
-                      Standard Engineering Works Elevators
+                  {/* Details Section Below Image */}
+                  <div className="relative w-full px-6 py-8 flex flex-col items-center text-center -mt-8 z-10">
+                    <div className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[#28B8FF]/30 to-transparent" />
+                    
+                    <h4 className="text-2xl sm:text-[26px] font-extrabold text-white tracking-tight mb-2 drop-shadow-sm group-hover:text-[#38BDF8] transition-colors duration-500">
+                      Founder
                     </h4>
+                    <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.25em] text-[#38BDF8] uppercase mb-4">
+                      Standard Engineering Works
+                    </span>
+                    
+                    <div className="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#28B8FF]/50 to-transparent rounded-full mb-4" />
+                    
+                    <p className="text-[13px] text-slate-400 font-light leading-relaxed tracking-wide">
+                      Leading with precision & vision
+                    </p>
                   </div>
                 </div>
               </div>
@@ -614,39 +596,7 @@ export default function AboutView() {
             </div>
           </div>
 
-          {/* 5-Stage Complete Lifecycle Horizontal Journey */}
-          <div className="p-8 rounded-2xl bg-[#EEF3F8] border border-[#CBD5E1]">
-            <span className="text-[11px] font-bold tracking-[0.2em] text-[#0A78F5] uppercase block mb-6 text-center">
-              END-TO-END VERTICAL MOBILITY LIFECYCLE
-            </span>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 text-center">
-              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
-                <span className="text-xs font-mono font-bold text-[#0A78F5] block mb-1">01</span>
-                <span className="text-sm font-bold text-[#0B1F3A] block">DESIGN</span>
-                <span className="text-[11px] text-slate-500">Site study &amp; CAD shaft</span>
-              </div>
-              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
-                <span className="text-xs font-mono font-bold text-[#0A78F5] block mb-1">02</span>
-                <span className="text-sm font-bold text-[#0B1F3A] block">ENGINEERING</span>
-                <span className="text-[11px] text-slate-500">Load &amp; speed analysis</span>
-              </div>
-              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
-                <span className="text-xs font-mono font-bold text-[#0A78F5] block mb-1">03</span>
-                <span className="text-sm font-bold text-[#0B1F3A] block">MANUFACTURING</span>
-                <span className="text-[11px] text-slate-500">In-house Hyderabad unit</span>
-              </div>
-              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
-                <span className="text-xs font-mono font-bold text-[#0A78F5] block mb-1">04</span>
-                <span className="text-sm font-bold text-[#0B1F3A] block">INSTALLATION</span>
-                <span className="text-[11px] text-slate-500">Precision shaft erection</span>
-              </div>
-              <div className="col-span-2 sm:col-span-1 p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
-                <span className="text-xs font-mono font-bold text-[#0A78F5] block mb-1">05</span>
-                <span className="text-sm font-bold text-[#0B1F3A] block">MAINTENANCE</span>
-                <span className="text-[11px] text-slate-500">24/7 lifecycle care</span>
-              </div>
-            </div>
-          </div>
+
 
         </div>
       </section>
