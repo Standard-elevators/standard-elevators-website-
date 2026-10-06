@@ -139,30 +139,23 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
       className="relative w-full py-24 md:py-32 bg-[#F8FAFC] overflow-hidden group/section"
       aria-labelledby="customization-heading"
     >
-      {/* Premium Light Background Elements */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      {/* Premium Navy Mesh Background */}
+      <div className="absolute inset-0 z-0 bg-[#071221] pointer-events-none overflow-hidden">
         
         {/* Soft Ambient Light Orbs */}
-        <div className="absolute top-0 left-1/4 w-[800px] h-[600px] bg-[#0062FF]/[0.03] rounded-full blur-[150px] animate-[pulse_10s_ease-in-out_infinite_alternate]"></div>
-        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-[#38BDF8]/[0.04] rounded-full blur-[150px] animate-[pulse_12s_ease-in-out_infinite_alternate-reverse]"></div>
+        <div className="absolute top-0 left-1/4 w-[800px] h-[600px] bg-[#0062FF]/10 rounded-full blur-[150px] animate-[pulse_10s_ease-in-out_infinite_alternate]"></div>
+        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-[#38BDF8]/10 rounded-full blur-[150px] animate-[pulse_12s_ease-in-out_infinite_alternate-reverse]"></div>
 
-        {/* Clean Engineering Grid */}
-        <div className="absolute inset-0 opacity-[0.02]" 
+        {/* Navy Mesh Grid */}
+        <div className="absolute inset-0 opacity-10" 
              style={{ 
-               backgroundImage: `linear-gradient(#0062FF 1px, transparent 1px), linear-gradient(90deg, #0062FF 1px, transparent 1px)`, 
-               backgroundSize: "60px 60px" 
+               backgroundImage: `linear-gradient(#38BDF8 1px, transparent 1px), linear-gradient(90deg, #38BDF8 1px, transparent 1px)`, 
+               backgroundSize: "40px 40px" 
              }}>
         </div>
 
-        {/* Subtle Vertical Accents */}
-        <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[300px] md:w-[400px] bg-gradient-to-b from-transparent via-[#0062FF]/[0.01] to-transparent"></div>
-        <div className="absolute top-0 bottom-0 left-[calc(50%-150px)] md:left-[calc(50%-200px)] w-px bg-gradient-to-b from-transparent via-[#0062FF]/10 to-transparent"></div>
-        <div className="absolute top-0 bottom-0 left-[calc(50%+150px)] md:left-[calc(50%+200px)] w-px bg-gradient-to-b from-transparent via-[#0062FF]/10 to-transparent"></div>
-
         {/* Light Stage Reflection */}
-        <div className="absolute bottom-0 left-0 w-full h-[250px] bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/80 to-transparent z-0"></div>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[100vw] h-[200px] bg-gradient-to-t from-[#0062FF]/5 to-transparent blur-[40px] rounded-t-[100%] scale-y-50 origin-bottom"></div>
-        {/* Removed bottom border gradient line as requested */}
+        <div className="absolute bottom-0 left-0 w-full h-[250px] bg-gradient-to-t from-[#071221] via-[#071221]/80 to-transparent z-0"></div>
       </div>
 
       <div className="site-container px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center">
@@ -171,10 +164,10 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
           <span className="inline-block px-5 py-2 rounded-full border border-[#0062FF]/20 bg-[#0062FF]/5 text-[#0062FF] text-[11px] font-bold uppercase tracking-[0.25em] mb-6 shadow-sm">
             Engineering Excellence
           </span>
-          <h2 id="customization-heading" className="text-4xl md:text-5xl lg:text-[56px] font-extrabold text-[#0B1F38] mb-6 tracking-tight">
+          <h2 id="customization-heading" className="text-4xl md:text-5xl lg:text-[56px] font-extrabold text-white mb-6 tracking-tight">
             Elevator Customization <br className="hidden md:block"/>& Components
           </h2>
-          <p className="text-slate-600 text-base md:text-lg font-light leading-relaxed max-w-2xl mx-auto">
+          <p className="text-slate-300 text-base md:text-lg font-light leading-relaxed max-w-2xl mx-auto">
             Tailor every aspect of your elevator system. From advanced microprocessor controls to premium cabin interiors, we offer extensive customization to match your architectural vision.
           </p>
         </div>
@@ -235,10 +228,10 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
                 <div className={`relative w-full h-full rounded-[24px] overflow-hidden bg-white/95 backdrop-blur-xl border ${isActive ? 'border-[#0062FF]/30 shadow-[0_30px_70px_-15px_rgba(0,98,255,0.2)]' : 'border-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)]'} flex flex-col group transition-all duration-500`}>
                   
                   {/* Natural Depth Dimming Overlay for Background Side Cards */}
-                  <div className={`absolute inset-0 bg-[#F1F5F9] transition-opacity duration-500 pointer-events-none z-20 ${isActive ? 'opacity-0' : Math.abs(diff) === 1 ? 'opacity-[0.15]' : 'opacity-40'}`} />
+                  <div className={`absolute inset-0 bg-[#050C17] transition-opacity duration-500 pointer-events-none z-20 ${isActive ? 'opacity-0' : Math.abs(diff) === 1 ? 'opacity-[0.3]' : 'opacity-70'}`} />
 
                   {/* Image Area - Expands to full height on background cards, compact on active card */}
-                  <div className={`relative w-full overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isActive ? 'h-[45%]' : 'h-full'}`}>
+                  <div className={`relative w-full overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isActive ? 'h-[50%] border-b border-slate-100' : 'h-full'}`}>
                     <Image
                       src={card.image}
                       alt={card.title}
@@ -247,7 +240,7 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
                       className={`object-cover transition-transform duration-700 ease-out ${isActive ? 'scale-100 group-hover/card:scale-110' : 'scale-105'}`}
                       draggable={false}
                     />
-                    <div className={`absolute inset-0 transition-opacity duration-500 ${isActive ? 'bg-gradient-to-t from-white via-white/50 to-transparent' : 'bg-gradient-to-t from-white/90 via-white/20 to-transparent'}`}></div>
+                    {/* Removed the white gradient overlay to ensure complete image clarity */}
                     {/* Subtle border glow on image */}
                     {isActive && <div className="absolute inset-0 ring-1 ring-inset ring-[#0062FF]/10 rounded-t-[24px] pointer-events-none"></div>}
                   </div>
