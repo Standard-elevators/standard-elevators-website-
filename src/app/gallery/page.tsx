@@ -21,6 +21,7 @@ const INITIAL_GALLERY_ITEMS: GalleryItem[] = DEFAULT_GALLERY.map((g, idx) => ({
 export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState<GalleryCategoryFilter>("All");
   const [items, setItems] = useState<GalleryItem[]>(INITIAL_GALLERY_ITEMS);
+  const isLoading = false;
 
   // Lightbox state
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
