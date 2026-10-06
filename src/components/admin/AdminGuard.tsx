@@ -27,28 +27,53 @@ export default function AdminGuard({ children }: AdminGuardProps) {
   // 1. Initial Loading Screen — Prevents any flash of protected UI
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#071221] flex flex-col items-center justify-center p-6 text-white">
-        <div className="flex flex-col items-center max-w-sm text-center">
-          <div className="mb-8">
+      <div className="min-h-screen bg-[#050C17] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+        {/* Animated Background Gradients */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#0062FF]/10 blur-[120px] rounded-full pointer-events-none animate-pulse"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#38BDF8]/10 blur-[80px] rounded-full pointer-events-none"></div>
+
+        <div className="relative z-10 flex flex-col items-center max-w-sm text-center w-full">
+          <div className="mb-10 relative">
+            <div className="absolute inset-0 bg-[#0062FF]/20 blur-2xl rounded-full scale-150 animate-pulse"></div>
             <Image
               src="/logo-header.png"
               alt="Standard Engineering Works Elevators"
               width={220}
               height={43}
               priority
-              className="h-10 w-auto object-contain"
+              className="h-10 w-auto object-contain relative z-10 drop-shadow-xl"
             />
           </div>
-          <div className="flex items-center gap-3 text-slate-300 mb-2">
-            <Loader2 className="w-5 h-5 text-[#0070F3] animate-spin" />
-            <span className="text-sm font-medium tracking-wide">
-              Verifying Administrator Access...
-            </span>
+          
+          <div className="bg-[#0A1628]/80 border border-white/10 backdrop-blur-xl rounded-2xl p-8 w-full shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden">
+            {/* Animated Scanning Line */}
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#38BDF8] to-transparent animate-[scan_2s_linear_infinite]"></div>
+            
+            <div className="flex flex-col items-center">
+              <div className="relative w-16 h-16 mb-6 flex items-center justify-center">
+                <div className="absolute inset-0 border-2 border-[#0062FF]/20 rounded-full"></div>
+                <div className="absolute inset-0 border-2 border-[#38BDF8] rounded-full border-t-transparent animate-spin" style={{ animationDuration: '1.5s' }}></div>
+                <ShieldAlert className="w-6 h-6 text-[#38BDF8]" />
+              </div>
+              
+              <h3 className="text-white font-bold text-sm tracking-widest uppercase mb-2">
+                Authenticating Session
+              </h3>
+              <p className="text-xs text-slate-400 font-medium max-w-[200px] mx-auto leading-relaxed">
+                Verifying secure credentials and establishing encrypted connection...
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-slate-500">
-            Checking Firebase Authentication and Firestore Security Credentials
-          </p>
         </div>
+        
+        {/* Add the custom keyframe animation for the scanner line */}
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes scan {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(800%); opacity: 0; }
+          }
+        `}} />
       </div>
     );
   }
