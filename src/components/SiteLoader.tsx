@@ -67,8 +67,8 @@ export default function SiteLoader() {
     }
   }, [isInitialLoad, isHomePage, dismissLoader]);
 
-  // Don't render anything if not on home page or already loaded
-  if (!isHomePage || !isInitialLoad) {
+  // Don't render anything if not on home page
+  if (!isHomePage) {
     return null;
   }
 
@@ -81,10 +81,9 @@ export default function SiteLoader() {
           animate={{ opacity: 1 }}
           exit={{
             y: "-100%",
-            opacity: 0,
             transition: {
-              duration: 0.7,
-              ease: [0.76, 0, 0.24, 1], // cinematic smooth easing
+              duration: 0.8,
+              ease: [0.76, 0, 0.24, 1], // Cinematic smooth easing
             },
           }}
           onClick={handleDismiss}
