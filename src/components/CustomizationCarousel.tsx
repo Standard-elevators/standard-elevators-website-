@@ -269,7 +269,7 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
                     <div className="mt-auto">
                       <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent mb-3"></div>
                       <ul className="grid grid-cols-1 gap-y-2">
-                        {card.items.map((item, i) => (
+                        {card.items.map((item: string, i: number) => (
                           <li key={i} className="flex items-center gap-2">
                             <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 bg-[#0062FF]/10 text-[#0062FF]">
                               <Check className="w-2.5 h-2.5 stroke-[3]" />
