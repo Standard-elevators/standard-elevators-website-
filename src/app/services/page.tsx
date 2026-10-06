@@ -164,7 +164,7 @@ export default async function ServicesPage() {
       <CustomizationCarousel initialData={settings.customization} />
 
       {/* SECTION 5: OTHER ENGINEERING SERVICES */}
-      <section className="relative py-20 md:py-28 overflow-hidden border-t border-white/10">
+      <section className="relative py-20 md:py-28 overflow-hidden">
         
         {/* Realistic Architectural Background Image */}
         <div className="absolute inset-0 z-0">
