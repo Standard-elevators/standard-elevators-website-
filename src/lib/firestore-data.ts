@@ -251,7 +251,11 @@ export async function updateService(
     (key) => updatePayload[key] === undefined && delete updatePayload[key]
   );
 
-  await updateDoc(docRef, updatePayload);
+  // We use setDoc with { merge: true } instead of updateDoc
+  // This allows us to "upsert" fallback data that might have a fake slug-based ID
+  // and hasn't actually been seeded into the database yet.
+  const { setDoc } = await import("firebase/firestore");
+  await setDoc(docRef, updatePayload, { merge: true });
 }
 
 /**
