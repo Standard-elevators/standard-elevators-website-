@@ -30,7 +30,7 @@ export function TransitionProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [isInitialLoad, setIsInitialLoad] = useState<boolean>(false);
+  const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
   const mountedRef = useRef(false);
 
   useEffect(() => {

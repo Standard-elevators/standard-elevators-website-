@@ -119,7 +119,7 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
       servicesRef,
       where("status", "==", "published")
     );
-    const snapshot = await withTimeout(getDocs(q), 1500);
+    const snapshot = await withTimeout(getDocs(q), 5000);
 
     if (snapshot.empty) {
       const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
@@ -332,7 +332,7 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
       galleryRef,
       where("status", "==", "published")
     );
-    const snapshot = await withTimeout(getDocs(q), 1500);
+    const snapshot = await withTimeout(getDocs(q), 5000);
 
     if (snapshot.empty) {
       const fallback = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));

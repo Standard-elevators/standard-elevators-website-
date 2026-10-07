@@ -85,19 +85,19 @@ export default function Hero() {
           
           {/* Small uppercase credential tag */}
           <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-6">
-            <span className="text-[9px] font-medium md:font-semibold md:text-[13px] tracking-[0.25em] text-white/90 md:text-slate-200 uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)] md:drop-shadow-md">
+            <span className="text-[11px] font-medium md:font-semibold md:text-[13px] tracking-[0.25em] text-white/90 md:text-slate-200 uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)] md:drop-shadow-md">
               PREMIUM ELEVATOR ENGINEERING
             </span>
             <div className="h-px w-10 sm:w-16 bg-white/30 hidden sm:block"></div>
           </div>
           
           {/* Main Headline */}
-          <h1 className="text-3xl font-light md:font-bold tracking-tight md:text-[clamp(52px,5.5vw,76px)] leading-[1.15] md:leading-[1.05] text-white mb-4 md:mb-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] md:drop-shadow-lg">
-            Elevating <span className="font-medium md:font-bold md:text-[#38BDF8]">People</span>, <span className="font-medium md:font-bold md:text-[#38BDF8]">Spaces</span>,<br className="hidden lg:block"/> and Possibilities.
+          <h1 className="text-[34px] sm:text-5xl font-normal md:font-bold tracking-tight md:text-[clamp(52px,5.5vw,76px)] leading-[1.15] md:leading-[1.05] text-white mb-4 md:mb-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] md:drop-shadow-lg">
+            Elevating <span className="font-semibold md:font-bold md:text-[#38BDF8]">People</span>, <span className="font-semibold md:font-bold md:text-[#38BDF8]">Spaces</span>,<br className="hidden lg:block"/> and Possibilities.
           </h1>
           
           {/* Description */}
-          <p className="text-[13px] font-light leading-[1.6] md:text-[17px] lg:text-[19px] md:font-normal text-white/95 md:text-slate-100 mb-6 sm:mb-10 max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] md:drop-shadow-md">
+          <p className="text-[15px] font-light leading-[1.6] md:text-[17px] lg:text-[19px] md:font-normal text-white/95 md:text-slate-100 mb-6 sm:mb-10 max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] md:drop-shadow-md">
             Passenger, goods, hospital, and hydraulic elevator solutions seamlessly integrated into architectural masterpieces. Supported by world-class engineering, installation, and maintenance.
           </p>
           

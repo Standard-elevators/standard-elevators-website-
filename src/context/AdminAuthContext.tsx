@@ -58,7 +58,13 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       const isMockAdmin = typeof window !== 'undefined' && localStorage.getItem('mock_admin_auth') === 'true';
       
       if (isMockAdmin) {
-        setUser({ uid: 'admin-hardcoded', email: 'standardengineeringworks12@gmail.com' } as User);
+        const mockUser = {
+          uid: 'admin-hardcoded',
+          email: 'standardengineeringworks12@gmail.com',
+          getIdToken: async () => "mock-admin-token"
+        } as unknown as User;
+        
+        setUser(mockUser);
         setAdminProfile({
           uid: 'admin-hardcoded',
           email: 'standardengineeringworks12@gmail.com',
@@ -104,7 +110,13 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
           localStorage.setItem('mock_admin_auth', 'true');
         }
         
-        setUser({ uid: 'admin-hardcoded', email: trimmedEmail } as User);
+        const mockUser = { 
+          uid: 'admin-hardcoded', 
+          email: trimmedEmail,
+          getIdToken: async () => "mock-admin-token"
+        } as unknown as User;
+        
+        setUser(mockUser);
         setAdminProfile({
           uid: "admin-hardcoded",
           email: trimmedEmail,
