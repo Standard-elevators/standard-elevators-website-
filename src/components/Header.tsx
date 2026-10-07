@@ -24,15 +24,31 @@ export default function Header() {
     setActiveMobileDropdown(null);
   }, [pathname]);
 
-  // Body scroll lock for mobile menu
+  // Body scroll lock and Lenis stop for mobile menu
   useEffect(() => {
+    const lenis = (window as unknown as { __lenis?: { stop: () => void; start: () => void } }).__lenis;
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+      if (lenis && typeof lenis.stop === "function") {
+        lenis.stop();
+      }
     } else {
       document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
+      document.body.style.touchAction = "auto";
+      if (lenis && typeof lenis.start === "function") {
+        lenis.start();
+      }
     }
     return () => {
       document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
+      document.body.style.touchAction = "auto";
+      if (lenis && typeof lenis.start === "function") {
+        lenis.start();
+      }
     };
   }, [isMobileMenuOpen]);
 
@@ -381,7 +397,7 @@ export default function Header() {
             
             {/* Get a Quote Button */}
             <Link
-              href="/contact"
+              href="/contact#quotation-form"
               className="group h-[38px] xl:h-[42px] px-4 xl:px-5 bg-[#0062FF] hover:bg-[#0052DF] text-white text-[13.5px] xl:text-[14.5px] font-bold rounded-full shadow-[0_4px_12px_rgba(0,98,255,0.3)] hover:shadow-[0_6px_16px_rgba(0,98,255,0.4)] transition-all flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0070F3] active:scale-[0.98] whitespace-nowrap"
             >
               <span>Get a Quote</span>
@@ -415,175 +431,184 @@ export default function Header() {
           </div>
         </div>
 
-        {/* MOBILE NAVIGATION OVERLAY (Accessible Accordion Style) */}
-        {isMobileMenuOpen && (
-          <div
-            className="pointer-events-auto lg:hidden fixed inset-0 z-50 w-screen w-full h-[100dvh] bg-[#040D1A] overflow-hidden flex flex-col justify-between animate-in fade-in duration-200"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile Navigation Menu"
-            style={{
-              paddingTop: "max(1.25rem, env(safe-area-inset-top))",
-              paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
-              paddingLeft: "max(1.25rem, env(safe-area-inset-left))",
-              paddingRight: "max(1.25rem, env(safe-area-inset-right))",
-            }}
+        {/* MOBILE NAVIGATION OVERLAY (Smooth Slide-In Drawer Animation) */}
+        <div
+          data-lenis-prevent="true"
+          className={`pointer-events-auto lg:hidden fixed inset-0 z-50 w-full h-[100dvh] bg-[#040D1A] overflow-hidden flex flex-col justify-between transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            isMobileMenuOpen
+              ? "opacity-100 translate-x-0 pointer-events-auto visible"
+              : "opacity-0 translate-x-full pointer-events-none invisible"
+          }`}
+          role="dialog"
+          aria-modal={isMobileMenuOpen}
+          aria-label="Mobile Navigation Menu"
+          style={{
+            overscrollBehavior: "contain",
+            touchAction: "pan-y",
+            paddingTop: "max(1.25rem, env(safe-area-inset-top))",
+            paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
+            paddingLeft: "max(1.25rem, env(safe-area-inset-left))",
+            paddingRight: "max(1.25rem, env(safe-area-inset-right))",
+          }}
+        >
+          <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
+            <Image
+              src="/images/futuristic-glass-elevator-blue.png"
+              alt="Futuristic Glass Elevator in Blue Light"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-right pointer-events-none opacity-90"
+            />
+            <div className="absolute inset-y-0 left-0 w-[80%] sm:w-[65%] md:w-[50%] bg-gradient-to-r from-[#040D1A] via-[#040D1A]/95 to-transparent pointer-events-none" />
+          </div>
+
+          <div 
+            data-lenis-prevent="true"
+            className="relative z-10 flex flex-col justify-between h-full w-full overflow-y-auto overflow-x-hidden min-h-0 px-4 sm:px-5 pt-2 pb-6"
+            style={{ overscrollBehavior: "contain" }}
           >
-            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
-              <Image
-                src="/images/futuristic-glass-elevator-blue.png"
-                alt="Futuristic Glass Elevator in Blue Light"
-                fill
-                priority
-                sizes="100vw"
-                className="object-cover object-right pointer-events-none opacity-90"
-              />
-              <div className="absolute inset-y-0 left-0 w-[80%] sm:w-[65%] md:w-[50%] bg-gradient-to-r from-[#040D1A] via-[#040D1A]/95 to-transparent pointer-events-none" />
+            <div className="flex items-center justify-between shrink-0 pb-4">
+              <Link
+                href="/"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] rounded-xl transition-opacity hover:opacity-90 cursor-pointer"
+                aria-label="Standard Engineering Works Elevators Home"
+              >
+                <Image
+                  src="/logo-header-transparent.png"
+                  alt="Standard Engineering Works Elevators"
+                  width={220}
+                  height={70}
+                  priority
+                  className="h-12 w-auto object-contain"
+                />
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-11 h-11 rounded-full flex items-center justify-center text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] shrink-0"
+                aria-label="Close menu"
+              >
+                <X className="w-6 h-6 stroke-[2.2]" />
+              </button>
             </div>
 
-            <div className="relative z-10 flex flex-col justify-between h-full w-full overflow-y-auto overflow-x-hidden min-h-0 px-4 sm:px-5 pt-2 pb-6">
-              <div className="flex items-center justify-between shrink-0 pb-4">
-                <Link
-                  href="/"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] rounded-xl transition-opacity hover:opacity-90 cursor-pointer"
-                  aria-label="Standard Engineering Works Elevators Home"
-                >
-                  <Image
-                    src="/logo-header-transparent.png"
-                    alt="Standard Engineering Works Elevators"
-                    width={220}
-                    height={70}
-                    priority
-                    className="h-12 w-auto object-contain"
-                  />
-                </Link>
+            <nav className="flex flex-col gap-2 my-auto py-2 w-full max-w-[360px]" aria-label="Mobile Navigation">
+              {navLinks.map((item) => {
+                const active = isCurrentActive(item.href);
+                const IconComponent = item.icon;
+                const isOpen = activeMobileDropdown === item.name;
 
-                <button
-                  type="button"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-11 h-11 rounded-full flex items-center justify-center text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] shrink-0"
-                  aria-label="Close menu"
-                >
-                  <X className="w-6 h-6 stroke-[2.2]" />
-                </button>
-              </div>
-
-              <nav className="flex flex-col gap-2 my-auto py-2 w-full max-w-[360px]" aria-label="Mobile Navigation">
-                {navLinks.map((item) => {
-                  const active = isCurrentActive(item.href);
-                  const IconComponent = item.icon;
-                  const isOpen = activeMobileDropdown === item.name;
-
-                  if (item.hasMegaMenu) {
-                    return (
-                      <div key={item.name} className="flex flex-col overflow-hidden">
-                        <button
-                          type="button"
-                          onClick={() => setActiveMobileDropdown(isOpen ? null : item.name)}
-                          className={`w-full flex items-center gap-3.5 px-4 py-3.5 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] active:bg-white/10 relative ${
-                            active ? "font-bold text-white" : "font-medium text-white/90"
-                          }`}
-                          aria-expanded={isOpen}
-                        >
-                          {IconComponent && <IconComponent className="w-5 h-5 stroke-[2] shrink-0 text-white" />}
-                          <span className="text-[17px] sm:text-[18px] text-white tracking-wide">{item.name}</span>
-                          <ChevronDown
-                            className={`w-5 h-5 transition-transform duration-200 ${
-                              isOpen ? "rotate-180 text-[#00E5FF]" : "text-white/70"
-                            }`}
-                          />
-                        </button>
-
-                        {/* MOBILE ACCORDION CONTENT */}
-                        {isOpen && (
-                          <div className="px-2 pb-2 animate-in slide-in-from-top-2 duration-200">
-                            <div className="bg-[#EAF3FA] rounded-2xl p-2 flex flex-col gap-2">
-                              {item.menuType === 'services' ? (
-                                <>
-                                  <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className="bg-[#D1E6F7] text-[#0A64BC] font-bold py-3.5 px-4 rounded-xl flex items-center justify-between shadow-sm">
-                                    <span>All services</span>
-                                    <ArrowRight className="w-4 h-4 -rotate-45" />
-                                  </Link>
-                                  {primarySolutions.slice(0, 5).map((service, idx) => (
-                                    <Link key={idx} href={service.href} onClick={() => setIsMobileMenuOpen(false)} className="bg-white p-3 rounded-xl flex items-center gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
-                                      <div className="w-12 h-12 relative rounded-lg overflow-hidden shrink-0 border border-slate-100">
-                                        <Image src={service.image} alt={service.name} fill className="object-cover" />
-                                      </div>
-                                      <div className="flex flex-col flex-1 min-w-0 justify-center">
-                                        <span className="text-[#102A43] font-bold text-[14px] leading-tight mb-0.5">{service.name}</span>
-                                        <span className="text-[#64748B] text-[12px] truncate">{service.desc}</span>
-                                      </div>
-                                      <ChevronRight className="w-4 h-4 text-[#102A43] shrink-0" />
-                                    </Link>
-                                  ))}
-                                </>
-                              ) : (
-                                <>
-                                  <Link href="/gallery" onClick={() => setIsMobileMenuOpen(false)} className="bg-[#D1E6F7] text-[#0A64BC] font-bold py-3.5 px-4 rounded-xl flex items-center justify-between shadow-sm">
-                                    <span>All gallery</span>
-                                    <ArrowRight className="w-4 h-4 -rotate-45" />
-                                  </Link>
-                                  {GALLERY_CATEGORIES_MENU.map((sub, idx) => (
-                                    <Link key={idx} href={sub.href} onClick={() => setIsMobileMenuOpen(false)} className="bg-white p-3 rounded-xl flex items-center gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
-                                      <div className="w-12 h-12 relative rounded-lg overflow-hidden shrink-0 border border-slate-100">
-                                        <Image src={sub.image!} alt={sub.name} fill className="object-cover" />
-                                      </div>
-                                      <div className="flex flex-col flex-1 min-w-0 justify-center">
-                                        <span className="text-[#102A43] font-bold text-[14px] leading-tight mb-0.5">{sub.name}</span>
-                                        <span className="text-[#64748B] text-[12px] truncate">Explore {sub.name.toLowerCase()} projects</span>
-                                      </div>
-                                      <ChevronRight className="w-4 h-4 text-[#102A43] shrink-0" />
-                                    </Link>
-                                  ))}
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }
-
+                if (item.hasMegaMenu) {
                   return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] bg-transparent relative ${
-                        active ? "font-bold text-[#00E5FF]" : "font-medium text-white/90"
-                      }`}
-                    >
-                      {IconComponent && <IconComponent className="w-5 h-5 stroke-[2] shrink-0 text-white" />}
-                      <span className="text-[17px] sm:text-[18px] text-white tracking-wide">{item.name}</span>
-                    </Link>
+                    <div key={item.name} className="flex flex-col overflow-hidden">
+                      <button
+                        type="button"
+                        onClick={() => setActiveMobileDropdown(isOpen ? null : item.name)}
+                        className={`w-full flex items-center gap-3.5 px-4 py-3.5 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] active:bg-white/10 relative ${
+                          active ? "font-bold text-white" : "font-medium text-white/90"
+                        }`}
+                        aria-expanded={isOpen}
+                      >
+                        {IconComponent && <IconComponent className="w-5 h-5 stroke-[2] shrink-0 text-white" />}
+                        <span className="text-[17px] sm:text-[18px] text-white tracking-wide">{item.name}</span>
+                        <ChevronDown
+                          className={`w-5 h-5 transition-transform duration-200 ${
+                            isOpen ? "rotate-180 text-[#00E5FF]" : "text-white/70"
+                          }`}
+                        />
+                      </button>
+
+                      {/* MOBILE ACCORDION CONTENT */}
+                      {isOpen && (
+                        <div className="px-2 pb-2 animate-in slide-in-from-top-2 duration-200">
+                          <div className="bg-[#EAF3FA] rounded-2xl p-2 flex flex-col gap-2">
+                            {item.menuType === 'services' ? (
+                              <>
+                                <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className="bg-[#D1E6F7] text-[#0A64BC] font-bold py-3.5 px-4 rounded-xl flex items-center justify-between shadow-sm">
+                                  <span>All services</span>
+                                  <ArrowRight className="w-4 h-4 -rotate-45" />
+                                </Link>
+                                {primarySolutions.slice(0, 5).map((service, idx) => (
+                                  <Link key={idx} href={service.href} onClick={() => setIsMobileMenuOpen(false)} className="bg-white p-3 rounded-xl flex items-center gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
+                                    <div className="w-12 h-12 relative rounded-lg overflow-hidden shrink-0 border border-slate-100">
+                                      <Image src={service.image} alt={service.name} fill className="object-cover" />
+                                    </div>
+                                    <div className="flex flex-col flex-1 min-w-0 justify-center">
+                                      <span className="text-[#102A43] font-bold text-[14px] leading-tight mb-0.5">{service.name}</span>
+                                      <span className="text-[#64748B] text-[12px] truncate">{service.desc}</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-[#102A43] shrink-0" />
+                                  </Link>
+                                ))}
+                              </>
+                            ) : (
+                              <>
+                                <Link href="/gallery" onClick={() => setIsMobileMenuOpen(false)} className="bg-[#D1E6F7] text-[#0A64BC] font-bold py-3.5 px-4 rounded-xl flex items-center justify-between shadow-sm">
+                                  <span>All gallery</span>
+                                  <ArrowRight className="w-4 h-4 -rotate-45" />
+                                </Link>
+                                {GALLERY_CATEGORIES_MENU.map((sub, idx) => (
+                                  <Link key={idx} href={sub.href} onClick={() => setIsMobileMenuOpen(false)} className="bg-white p-3 rounded-xl flex items-center gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
+                                    <div className="w-12 h-12 relative rounded-lg overflow-hidden shrink-0 border border-slate-100">
+                                      <Image src={sub.image!} alt={sub.name} fill className="object-cover" />
+                                    </div>
+                                    <div className="flex flex-col flex-1 min-w-0 justify-center">
+                                      <span className="text-[#102A43] font-bold text-[14px] leading-tight mb-0.5">{sub.name}</span>
+                                      <span className="text-[#64748B] text-[12px] truncate">Explore {sub.name.toLowerCase()} projects</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-[#102A43] shrink-0" />
+                                  </Link>
+                                ))}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   );
-                })}
-              </nav>
+                }
 
-              <div className="flex flex-col gap-3 pt-4 shrink-0">
-                <a
-                  href="tel:9515231555"
-                  className="flex items-center gap-3 py-2 px-2 text-white hover:text-white transition-colors max-w-[280px] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] rounded-lg group"
-                >
-                  <Phone className="w-5 h-5 text-[#00E5FF] shrink-0 group-hover:scale-110 transition-transform" />
-                  <span className="text-[16px] font-bold tracking-wide text-white">
-                    Call +91 9515231555
-                  </span>
-                </a>
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] bg-transparent relative ${
+                      active ? "font-bold text-[#00E5FF]" : "font-medium text-white/90"
+                    }`}
+                  >
+                    {IconComponent && <IconComponent className="w-5 h-5 stroke-[2] shrink-0 text-white" />}
+                    <span className="text-[17px] sm:text-[18px] text-white tracking-wide">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </nav>
 
-                <Link
-                  href="/contact"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full h-14 bg-gradient-to-r from-[#0062FF] to-[#0088FF] text-white text-[17px] font-bold rounded-[20px] shadow-[0_4px_25px_rgba(0,98,255,0.4)] flex items-center justify-center gap-2 active:scale-95 focus:outline-none"
-                >
-                  <span>Get a Quote</span>
-                  <ArrowRight className="w-5 h-5 stroke-[2.2]" />
-                </Link>
-              </div>
+            <div className="flex flex-col gap-3 pt-4 shrink-0">
+              <a
+                href="tel:9515231555"
+                className="flex items-center gap-3 py-2 px-2 text-white hover:text-white transition-colors max-w-[280px] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] rounded-lg group"
+              >
+                <Phone className="w-5 h-5 text-[#00E5FF] shrink-0 group-hover:scale-110 transition-transform" />
+                <span className="text-[16px] font-bold tracking-wide text-white">
+                  Call +91 9515231555
+                </span>
+              </a>
+
+              <Link
+                href="/contact#quotation-form"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full h-14 bg-gradient-to-r from-[#0062FF] to-[#0088FF] text-white text-[17px] font-bold rounded-[20px] shadow-[0_4px_25px_rgba(0,98,255,0.4)] flex items-center justify-center gap-2 active:scale-95 focus:outline-none"
+              >
+                <span>Get a Quote</span>
+                <ArrowRight className="w-5 h-5 stroke-[2.2]" />
+              </Link>
             </div>
           </div>
-        )}
+        </div>
       </header>
     </>
   );

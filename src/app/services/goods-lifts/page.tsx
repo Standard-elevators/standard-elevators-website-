@@ -80,7 +80,7 @@ export default function GoodsLiftsPage() {
               <h2 className="text-2xl sm:text-3xl font-bold text-midnight mb-4">
                 Heavy Structural Engineering & Payload Integrity
               </h2>
-              <p className="text-slate-muted leading-relaxed font-light mb-6 text-sm sm:text-base">
+              <p className="text-black font-normal mb-6 text-[15px] sm:text-[17px] leading-relaxed">
                 Our freight elevators are built specifically to withstand rigorous forklift loading, pallet trucks, and repetitive heavy duty duty-cycles. Equipped with reinforced floor platforms, heavy gauge steel side panels, and rugged guide rails, they safeguard both personnel and materials.
               </p>
               
@@ -110,7 +110,7 @@ export default function GoodsLiftsPage() {
               </div>
 
               <Link
-                href="/contact?service=Goods+Lifts"
+                href="/contact?service=Goods+Lifts#quotation-form"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#0877F9] hover:bg-[#0666D8] text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95"
               >
                 <span>Request Industrial Goods Lift Quotation</span>
@@ -130,19 +130,19 @@ export default function GoodsLiftsPage() {
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
             <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
               <h3 className="text-base sm:text-lg font-bold text-midnight mb-2">Reinforced Flooring</h3>
-              <p className="text-slate-muted text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-black text-[13px] sm:text-[15px] font-normal leading-relaxed">
                 Heavy chequered steel plate flooring engineered to resist deformation under heavy concentrated wheel loads of forklifts and industrial hand trucks.
               </p>
             </div>
             <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
               <h3 className="text-base sm:text-lg font-bold text-midnight mb-2">Overload Protection</h3>
-              <p className="text-slate-muted text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-black text-[13px] sm:text-[15px] font-normal leading-relaxed">
                 Electronic load cell weighing sensors prevent operation when rated capacity is exceeded, ensuring full compliance with factory safety standards.
               </p>
             </div>
             <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
               <h3 className="text-base sm:text-lg font-bold text-midnight mb-2">Precision Leveling</h3>
-              <p className="text-slate-muted text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-black text-[13px] sm:text-[15px] font-normal leading-relaxed">
                 Accurate floor stopping eliminates tripping hazards and uneven threshold bumps, allowing pallet trucks to roll on and off smoothly.
               </p>
             </div>

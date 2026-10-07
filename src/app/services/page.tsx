@@ -94,7 +94,7 @@ export default async function ServicesPage() {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0A2342] mb-6">
               Primary Elevator Solutions
             </h2>
-            <p className="text-[#475569] text-base md:text-lg leading-relaxed">
+            <p className="text-black font-medium text-[17px] md:text-[19px] leading-relaxed">
               Discover our complete range of premium vertical mobility products, manufactured and installed to exact architectural standards.
             </p>
           </div>
@@ -138,7 +138,7 @@ export default async function ServicesPage() {
               Structural & Fabrication
             </span>
             <h2 className="text-3xl md:text-5xl font-bold text-[#0B1F38] mb-6 tracking-tight">Other Engineering Services</h2>
-            <p className="text-slate-600 text-base md:text-lg font-light leading-relaxed">
+            <p className="text-black font-medium text-[17px] md:text-[19px] leading-relaxed">
               Our engineering expertise extends beyond elevators. We provide a range of structural and architectural services including heavy-duty fabrication, civil works, and premium exterior cladding.
             </p>
           </div>

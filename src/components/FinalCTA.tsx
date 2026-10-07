@@ -69,14 +69,14 @@ export default function FinalCTA() {
             </h2>
             
             {/* Supporting description */}
-            <p className="text-[14px] sm:text-[15px] lg:text-[16px] text-slate-600 leading-relaxed max-w-[440px] mb-6 mt-4 font-medium mx-auto lg:mx-0">
+            <p className="text-[15px] sm:text-[16px] lg:text-[17px] text-black leading-relaxed max-w-[440px] mb-6 mt-4 font-medium mx-auto lg:mx-0">
               Discuss your structural requirements, elevator specifications, and timeline with our engineering team today.
             </p>
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4 w-full">
               <Link 
-                href="/contact" 
+                href="/contact#quotation-form" 
                 className="group flex items-center justify-center gap-2 h-12 lg:h-[52px] px-6 lg:px-8 bg-[#0062FF] hover:bg-[#0052DF] text-white text-[15px] lg:text-[15.5px] font-bold rounded-xl shadow-[0_6px_16px_rgba(0,98,255,0.25)] hover:shadow-[0_8px_20px_rgba(0,98,255,0.35)] transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 <span>Request a Quotation</span>

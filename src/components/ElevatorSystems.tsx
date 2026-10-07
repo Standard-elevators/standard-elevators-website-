@@ -140,7 +140,7 @@ export default function ElevatorSystems() {
               <h2 className="text-4xl xl:text-5xl font-extrabold text-[#0B1F3A] tracking-tight leading-none">
                 Engineered <span className="text-[#0A78F5]">Solutions.</span>
               </h2>
-              <p className="mt-3 text-slate-600 text-sm xl:text-[15px] font-normal leading-relaxed max-w-xl">
+              <p className="mt-3 text-black font-medium text-[15px] xl:text-[17px] leading-relaxed max-w-xl">
                 Select your building category to discover tailored shaft dimensions, motor specifications, and turnkey quotation workflows.
               </p>
             </div>
@@ -335,7 +335,7 @@ export default function ElevatorSystems() {
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0B1F3A] tracking-tight leading-tight">
             Engineered <span className="text-[#0A78F5]">Solutions.</span>
           </h2>
-          <p className="mt-2.5 text-slate-600 text-sm leading-relaxed">
+          <p className="mt-2.5 text-black font-medium text-[15px] sm:text-base leading-relaxed">
             Select your building category to discover tailored shaft dimensions, motor specifications, and turnkey quotation workflows.
           </p>
         </div>

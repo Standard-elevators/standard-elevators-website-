@@ -39,7 +39,7 @@ function ContactFormContent() {
     serviceRequired: preselectedService || "",
     projectLocation: "",
     message: "",
-    consent: false,
+    consent: true,
     honeypot: "",
   }));
 
@@ -83,30 +83,63 @@ function ContactFormContent() {
 
     // 1. Anti-spam check (honeypot)
     if (formData.honeypot) {
-      // Silently treat as processed to fool automated scrapers
       setSubmitted(true);
       return;
     }
 
-    // 2. Validate phone number (minimum 10 digits)
+    // 2. Clear validation checks
+    if (!formData.fullName.trim()) {
+      setErrorMessage("Please enter your full name.");
+      return;
+    }
+
     const cleanPhone = formData.phone.replace(/[^0-9]/g, "");
     if (cleanPhone.length < 10) {
       setErrorMessage("Please enter a valid 10-digit telephone number.");
       return;
     }
 
+    if (!formData.buildingType) {
+      setErrorMessage("Please select your building type.");
+      return;
+    }
+
+    if (!formData.serviceRequired) {
+      setErrorMessage("Please select the elevator solution required.");
+      return;
+    }
+
+    if (!formData.consent) {
+      setErrorMessage("Please accept the quotation consent checkbox.");
+      return;
+    }
+
     setIsSubmitting(true);
 
+    // 3. Prepare WhatsApp message template with all details filled by the client
+    const waMessage = 
+      `*New Technical Quotation Request*\n` +
+      `*Full Name:* ${formData.fullName.trim()}\n` +
+      `*Phone:* ${formData.phone.trim()}\n` +
+      (formData.email.trim() ? `*Email:* ${formData.email.trim()}\n` : "") +
+      (formData.projectLocation.trim() ? `*Location:* ${formData.projectLocation.trim()}\n` : "") +
+      `*Building Type:* ${formData.buildingType}\n` +
+      `*System Required:* ${formData.serviceRequired}\n` +
+      (formData.message.trim() ? `*Notes/Dimensions:* ${formData.message.trim()}\n` : "") +
+      `\nPlease review and share the layout drawings and cost estimate.`;
+
+    const waUrl = `https://wa.me/919515231555?text=${encodeURIComponent(waMessage)}`;
+
     try {
-      // 3. Attempt Firestore persistence
+      // 4. Save directly into Firestore database for Admin Dashboard
       const docId = await submitInquiry({
-        name: formData.fullName,
-        phone: formData.phone,
-        email: formData.email,
+        name: formData.fullName.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email.trim(),
         buildingType: formData.buildingType,
         serviceRequired: formData.serviceRequired,
-        projectLocation: formData.projectLocation,
-        message: formData.message,
+        projectLocation: formData.projectLocation.trim(),
+        message: formData.message.trim(),
       });
 
       setSubmissionId(docId);
@@ -116,13 +149,21 @@ function ContactFormContent() {
         service: formData.serviceRequired,
         label: formData.buildingType,
       });
-    } catch {
-      // If Firestore backend is currently in offline/fallback mode, acknowledge gracefully
+
+      // 5. Open / Redirect to WhatsApp immediately with prefilled message
+      if (typeof window !== "undefined") {
+        const opened = window.open(waUrl, "_blank");
+        if (!opened) {
+          window.location.href = waUrl;
+        }
+      }
+    } catch (err) {
+      console.warn("Direct submission notice:", err);
       setSubmitted(true);
-      trackEvent("form_submit", {
-        category: "lead_generation_fallback",
-        service: formData.serviceRequired,
-      });
+      // Still redirect to WhatsApp on fallback so client message is never lost
+      if (typeof window !== "undefined") {
+        window.location.href = waUrl;
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -171,7 +212,7 @@ function ContactFormContent() {
             {/* ========================================================================= */}
             {/* LEFT: INFORMATION AREA */}
             {/* ========================================================================= */}
-            <div className="lg:col-span-5 sticky top-28 space-y-6">
+            <div className="lg:col-span-5 lg:sticky lg:top-28 relative space-y-6">
               <div className="mb-8">
                 <h2 className="text-2xl lg:text-3xl font-black text-[#102A43] mb-3 tracking-tight">Verified Company Information</h2>
                 <p className="text-[#64748B] leading-relaxed font-light text-[15px]">
@@ -276,23 +317,27 @@ function ContactFormContent() {
                       </div>
                     )}
                     <div className="pt-6 border-t border-[#E2E8F0] flex flex-col sm:flex-row gap-4 justify-center">
+                      <a
+                        href={`https://wa.me/919515231555?text=${encodeURIComponent(
+                          `*New Technical Quotation Request*\n*Name:* ${formData.fullName}\n*Phone:* ${formData.phone}\n*Building:* ${formData.buildingType}\n*System:* ${formData.serviceRequired}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-8 py-3.5 bg-[#25D366] hover:bg-[#128C7E] text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-[#25D366]/20 flex items-center justify-center gap-2"
+                      >
+                        <span>Chat on WhatsApp</span>
+                      </a>
                       <button
                         onClick={() => {
                           setSubmitted(false);
                           setFormData({
-                            fullName: "", phone: "", email: "", buildingType: "", serviceRequired: "", projectLocation: "", message: "", consent: false, honeypot: "",
+                            fullName: "", phone: "", email: "", buildingType: "", serviceRequired: "", projectLocation: "", message: "", consent: true, honeypot: "",
                           });
                         }}
                         className="px-8 py-3.5 bg-[#0062FF] hover:bg-[#0052D6] text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-[#0062FF]/20"
                       >
                         Submit Another Inquiry
                       </button>
-                      <a
-                        href="tel:9515231555"
-                        className="px-8 py-3.5 bg-white border border-[#E2E8F0] text-[#102A43] text-sm font-bold rounded-xl hover:border-[#0062FF] hover:text-[#0062FF] transition-all flex items-center justify-center gap-2"
-                      >
-                        <Phone className="w-4 h-4" /> Call Desk Now
-                      </a>
                     </div>
                   </div>
                 ) : (
@@ -453,8 +498,8 @@ function ContactFormContent() {
 
                     <button
                       type="submit"
-                      disabled={isSubmitting || !formData.fullName || !formData.phone || !formData.buildingType || !formData.serviceRequired || !formData.consent}
-                      className="w-full py-4.5 bg-[#102A43] hover:bg-[#061426] text-white font-bold text-[15px] tracking-wide rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0062FF]/20 shadow-[0_4px_15px_rgba(16,42,67,0.2)] mt-8"
+                      disabled={isSubmitting}
+                      className="w-full py-4.5 bg-[#102A43] hover:bg-[#061426] text-white font-bold text-[15px] tracking-wide rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0062FF]/20 shadow-[0_4px_15px_rgba(16,42,67,0.2)] mt-8 cursor-pointer active:scale-[0.99]"
                     >
                       {isSubmitting ? (
                         <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>

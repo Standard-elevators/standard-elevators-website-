@@ -14,7 +14,7 @@ export default function SmoothScrolling({ children }: { children: React.ReactNod
     const lenis = new Lenis({
       lerp: 0.085, // Smooth linear interpolation for consistent momentum without fast jumps
       wheelMultiplier: 0.95, // Controlled wheel travel per scroll notch
-      touchMultiplier: 1.0,
+      touchMultiplier: 0.85, // Controlled mobile touch sensitivity
       smoothWheel: true,
       syncTouch: false, // Keep native 120Hz smooth touch physics on mobile/touch screens
       autoResize: true, // Use Lenis internal optimized ResizeObserver

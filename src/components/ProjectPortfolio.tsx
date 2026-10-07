@@ -151,7 +151,7 @@ export default function ProjectPortfolio() {
             <h2 className="text-3xl md:text-4xl font-bold text-midnight tracking-tight mb-3">
               Project Portfolio
             </h2>
-            <p className="text-slate-muted font-normal text-sm md:text-base leading-relaxed">
+            <p className="text-black font-semibold text-[15px] md:text-[17px] leading-relaxed">
               Illustrative examples of premium elevator design and integration.
             </p>
           </div>

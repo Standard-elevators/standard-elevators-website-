@@ -34,7 +34,7 @@ export default function MobileStickyBar() {
 
         {/* Quote Request */}
         <Link
-          href="/contact"
+          href="/contact#quotation-form"
           onClick={() => trackEvent("cta_click", { label: "mobile_sticky_quote" })}
           className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#0070F3] hover:bg-[#0060df] text-white text-xs font-semibold tracking-wide shadow-md shadow-[#0070F3]/30 active:scale-[0.98] transition-all"
         >

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 
@@ -62,8 +62,8 @@ const DEFAULT_CAROUSEL_DATA = [
 export default function CustomizationCarousel({ initialData }: { initialData?: any[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [interactionState, setInteractionState] = useState(0);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const touchStartRef = useRef<number | null>(null);
+  const touchEndRef = useRef<number | null>(null);
   const [isHoverPaused, setIsHoverPaused] = useState(false);
   
   const interact = () => setInteractionState(c => c + 1);
@@ -90,41 +90,42 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
     return () => clearInterval(timer);
   }, [nextSlide, interactionState, isHoverPaused]);
 
-  // Touch handlers
-  const minSwipeDistance = 50;
+  // Touch handlers (optimized with refs so touchmove does not trigger continuous re-renders)
+  const minSwipeDistance = 45;
   
   const onTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
     interact();
-    setTouchEnd(null);
+    touchEndRef.current = null;
     if ("touches" in e) {
-      setTouchStart(e.targetTouches[0].clientX);
+      touchStartRef.current = e.targetTouches[0].clientX;
     } else {
-      setTouchStart(e.clientX);
+      touchStartRef.current = e.clientX;
     }
   };
 
   const onTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
-    if (!touchStart) return;
+    if (touchStartRef.current === null) return;
     if ("touches" in e) {
-      setTouchEnd(e.targetTouches[0].clientX);
+      touchEndRef.current = e.targetTouches[0].clientX;
     } else {
-      setTouchEnd(e.clientX);
+      touchEndRef.current = e.clientX;
     }
   };
 
   const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
+    if (touchStartRef.current === null || touchEndRef.current === null) return;
+    const distance = touchStartRef.current - touchEndRef.current;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
     if (isLeftSwipe) {
       nextSlide();
       interact();
-    }
-    if (isRightSwipe) {
+    } else if (isRightSwipe) {
       prevSlide();
       interact();
     }
+    touchStartRef.current = null;
+    touchEndRef.current = null;
   };
 
   // Keyboard navigation
@@ -216,19 +217,20 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
               <div
                 key={card.id || `custom-${index}`}
                 onClick={() => { setActiveIndex(index); interact(); }}
-                className={`absolute top-1/2 left-1/2 w-full max-w-[280px] sm:max-w-[300px] md:max-w-[340px] lg:max-w-[360px] h-[450px] sm:h-[400px] md:h-[420px] lg:h-[440px] rounded-[24px] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] cursor-pointer select-none group/card`}
+                className={`absolute top-1/2 left-1/2 w-full max-w-[280px] sm:max-w-[300px] md:max-w-[340px] lg:max-w-[360px] h-[450px] sm:h-[400px] md:h-[420px] lg:h-[440px] rounded-[24px] transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] cursor-pointer select-none group/card will-change-transform`}
                 style={{
-                  transform: `translate(-50%, -50%) translateX(${translateX}%) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+                  transform: `translate3d(calc(-50% + ${translateX}%), -50%, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
                   zIndex: zIndex,
                   pointerEvents: "auto",
+                  willChange: "transform, opacity",
                 }}
                 aria-hidden={!isActive}
               >
                 {/* Card Surface */}
-                <div className={`relative w-full h-full rounded-[24px] overflow-hidden bg-[#0A1628]/70 backdrop-blur-2xl border ${isActive ? 'border-[#38BDF8]/40 shadow-[0_30px_70px_-15px_rgba(56,189,248,0.25)]' : 'border-white/10 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]'} flex flex-col group transition-all duration-500`}>
+                <div className={`relative w-full h-full rounded-[24px] overflow-hidden bg-[#0A1628]/90 md:bg-[#0A1628]/70 backdrop-blur-md md:backdrop-blur-2xl border ${isActive ? 'border-[#38BDF8]/40 shadow-[0_20px_50px_-10px_rgba(56,189,248,0.3)]' : 'border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]'} flex flex-col group transition-all duration-300`}>
                   
                   {/* Natural Depth Dimming Overlay for Background Side Cards */}
-                  <div className={`absolute inset-0 bg-[#050C17] transition-opacity duration-500 pointer-events-none z-20 ${isActive ? 'opacity-0' : Math.abs(diff) === 1 ? 'opacity-[0.4]' : 'opacity-80'}`} />
+                  <div className={`absolute inset-0 bg-[#050C17] transition-opacity duration-300 pointer-events-none z-20 ${isActive ? 'opacity-0' : Math.abs(diff) === 1 ? 'opacity-[0.4]' : 'opacity-80'}`} />
 
                   {/* Image Area - Expands to full height on background cards, compact on active card */}
                   <div className={`relative w-full overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isActive ? 'h-[50%] border-b border-white/10' : 'h-full'}`}>

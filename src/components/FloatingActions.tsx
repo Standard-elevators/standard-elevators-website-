@@ -95,22 +95,23 @@ export default function FloatingActions() {
       className="fixed bottom-5 right-5 md:bottom-8 md:right-8 z-40 flex flex-col items-center w-12 md:w-14"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className={`transition-transform duration-300 transform z-10 ${isVisible ? "translate-y-[-60px] md:translate-y-[-68px]" : "translate-y-0"}`}>
-        <Suspense fallback={null}>
-          <FloatingWhatsApp />
-        </Suspense>
-      </div>
-
-      {/* Scroll to Top Button */}
+      {/* Scroll to Top (Drop Up) Button - Positioned in the TOP slot */}
       <button
         onClick={scrollToTop}
-        className={`absolute bottom-0 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white hover:bg-gray-50 text-[#087CF5] flex items-center justify-center shadow-[0_4px_15px_rgba(8,124,245,0.25)] transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#087CF5] ${
-          isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-90 pointer-events-none"
+        className={`w-12 h-12 md:w-14 md:h-14 mb-3 rounded-full bg-white hover:bg-gray-50 text-[#087CF5] flex items-center justify-center shadow-[0_4px_15px_rgba(8,124,245,0.25)] transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#087CF5] ${
+          isVisible ? "opacity-100 translate-y-0 scale-100 pointer-events-auto" : "opacity-0 translate-y-4 scale-90 pointer-events-none h-0 mb-0 overflow-hidden"
         }`}
         aria-label="Scroll to top"
       >
         <ArrowUp className="w-6 h-6 md:w-7 md:h-7" />
       </button>
+
+      {/* WhatsApp Button - Positioned in the BOTTOM slot */}
+      <div className="z-10 shrink-0">
+        <Suspense fallback={null}>
+          <FloatingWhatsApp />
+        </Suspense>
+      </div>
     </div>
   );
 }

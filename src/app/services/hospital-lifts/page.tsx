@@ -80,7 +80,7 @@ export default function HospitalLiftsPage() {
               <h2 className="text-2xl sm:text-3xl font-bold text-midnight mb-4">
                 Jerk-Free Transit for Critical Healthcare
               </h2>
-              <p className="text-slate-muted leading-relaxed font-light mb-6 text-sm sm:text-base">
+              <p className="text-black font-normal mb-6 text-[15px] sm:text-[17px] leading-relaxed">
                 In clinical environments, elevator performance directly affects patient comfort and emergency response. Our HOSPITRY series provides deep, elongated cabin dimensions with stainless-steel bumper rails, easy-clean antibacterial surfaces, and micro-levelling to roll stretchers smoothly over thresholds.
               </p>
               
@@ -110,7 +110,7 @@ export default function HospitalLiftsPage() {
               </div>
 
               <Link
-                href="/contact?service=Hospital+Lifts"
+                href="/contact?service=Hospital+Lifts#quotation-form"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#0877F9] hover:bg-[#0666D8] text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95"
               >
                 <span>Request Healthcare Lift Quotation</span>
@@ -130,19 +130,19 @@ export default function HospitalLiftsPage() {
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
             <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
               <h3 className="text-base sm:text-lg font-bold text-midnight mb-2">Millimeter Levelling</h3>
-              <p className="text-slate-muted text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-black text-[13px] sm:text-[15px] font-normal leading-relaxed">
                 Advanced floor sensors ensure zero vertical step gap when stopping, protecting sensitive post-operative patients and wheels from sudden bumps.
               </p>
             </div>
             <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
               <h3 className="text-base sm:text-lg font-bold text-midnight mb-2">Emergency Power Backup</h3>
-              <p className="text-slate-muted text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-black text-[13px] sm:text-[15px] font-normal leading-relaxed">
                 Integrated automatic rescue device connects with hospital generator supply to ensure critical transit is never stranded between floors.
               </p>
             </div>
             <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
               <h3 className="text-base sm:text-lg font-bold text-midnight mb-2">Protective Bumpers</h3>
-              <p className="text-slate-muted text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-black text-[13px] sm:text-[15px] font-normal leading-relaxed">
                 Dual-height stainless steel wall bumper rails protect cabin finishes and prevent equipment jolts during stretcher boarding.
               </p>
             </div>

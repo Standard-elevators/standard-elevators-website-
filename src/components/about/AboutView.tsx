@@ -27,7 +27,9 @@ export default function AboutView() {
 
     let animationFrameId: number;
     let isPaused = false;
+    let isInView = false;
     let resumeTimeoutId: NodeJS.Timeout;
+    let startDelayTimeoutId: NodeJS.Timeout;
     
     const isMobile = () => window.innerWidth < 768;
 
@@ -47,8 +49,29 @@ export default function AboutView() {
     container.addEventListener('mousedown', handleInteractionStart);
     container.addEventListener('mouseup', handleInteractionEnd);
 
+    // Only start scrolling once the section is in view, ensuring Card 1 is fully visible first
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            container.scrollLeft = 0; // First card is completely visible
+            clearTimeout(startDelayTimeoutId);
+            startDelayTimeoutId = setTimeout(() => {
+              isInView = true;
+            }, 2500); // 2.5s pause to observe first card
+          } else {
+            isInView = false;
+            clearTimeout(startDelayTimeoutId);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(container);
+
     const scrollContinuously = () => {
-      if (!isPaused && isMobile()) {
+      if (isInView && !isPaused && isMobile()) {
         const maxScroll = container.scrollWidth - container.clientWidth;
         if (maxScroll > 0) {
           if (container.scrollLeft >= maxScroll - 1) {
@@ -64,8 +87,10 @@ export default function AboutView() {
     animationFrameId = requestAnimationFrame(scrollContinuously);
 
     return () => {
+      observer.disconnect();
       cancelAnimationFrame(animationFrameId);
       clearTimeout(resumeTimeoutId);
+      clearTimeout(startDelayTimeoutId);
       container.removeEventListener('touchstart', handleInteractionStart);
       container.removeEventListener('touchend', handleInteractionEnd);
       container.removeEventListener('mousedown', handleInteractionStart);
@@ -145,7 +170,7 @@ export default function AboutView() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/contact"
+                href="/contact#quotation-form"
                 className="h-[46px] px-7 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl font-semibold transition-all flex items-center justify-center text-sm backdrop-blur-md active:scale-95"
               >
                 <span>Get a Quotation</span>
@@ -272,7 +297,7 @@ export default function AboutView() {
             <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-[#0B1F3A] tracking-tight leading-tight">
               Comprehensive Vertical Mobility Solutions
             </h2>
-            <p className="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
+            <p className="mt-3 text-black font-medium text-[15px] sm:text-[17px] leading-relaxed">
               From bespoke residential villas to high-traffic commercial complexes and industrial freight elevators.
             </p>
           </div>
@@ -403,7 +428,7 @@ export default function AboutView() {
             <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#0B1F3A] tracking-tight leading-tight mb-4">
               Smooth • Smart • Spacious
             </h2>
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+            <p className="text-black font-medium text-[15px] sm:text-[17px] leading-relaxed">
               Our engineering philosophy guarantees exceptional vertical mobility from initial architectural blueprint to decades of reliable daily service.
             </p>
           </div>
@@ -418,7 +443,7 @@ export default function AboutView() {
                 <div className="absolute inset-0 bg-[#071426]/75 group-hover:bg-[#071426]/65 transition-colors"></div>
               </div>
               <div className="relative z-10 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-[#28B8FF] flex items-center justify-center mb-4">
-                <Sparkles className="w-5 h-5 md:w-6 md:h-6" />
+                <Activity className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <h3 className="relative z-10 text-[18px] md:text-xl font-bold text-white mb-2">Smooth Rides</h3>
               <p className="relative z-10 text-slate-200 text-[13px] md:text-sm leading-relaxed">
@@ -487,7 +512,7 @@ export default function AboutView() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/contact"
+              href="/contact#quotation-form"
               className="h-[50px] px-8 bg-gradient-to-r from-[#0062FF] to-[#0088FF] hover:from-[#0052DF] hover:to-[#007AE6] text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2.5 text-base shadow-[0_4px_20px_rgba(0,98,255,0.45)] active:scale-95 w-full sm:w-auto"
             >
               <span>Get a Quotation</span>

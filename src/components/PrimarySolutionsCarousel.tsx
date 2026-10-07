@@ -45,14 +45,16 @@ export default function PrimarySolutionsCarousel({ services }: { services: any[]
     scrollToIndex(prevIndex);
   }, [activeIndex, services.length, scrollToIndex]);
 
-  // Autoplay (Continuous slow scroll on mobile)
+  // Autoplay (Continuous slow scroll on mobile only when in viewport)
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     let animationFrameId: number;
     let isPaused = false;
+    let isInView = false;
     let resumeTimeoutId: NodeJS.Timeout;
+    let startDelayTimeoutId: NodeJS.Timeout;
     
     const isMobile = () => window.innerWidth < 768;
 
@@ -72,8 +74,29 @@ export default function PrimarySolutionsCarousel({ services }: { services: any[]
     container.addEventListener('mousedown', handleInteractionStart);
     container.addEventListener('mouseup', handleInteractionEnd);
 
+    // Only start scrolling once the section is in view, ensuring Card 1 is fully visible first
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            container.scrollLeft = 0; // First card is completely visible
+            clearTimeout(startDelayTimeoutId);
+            startDelayTimeoutId = setTimeout(() => {
+              isInView = true;
+            }, 2500); // 2.5s pause to read/observe first card
+          } else {
+            isInView = false;
+            clearTimeout(startDelayTimeoutId);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(container);
+
     const scrollContinuously = () => {
-      if (!isPaused && isMobile()) {
+      if (isInView && !isPaused && isMobile()) {
         const maxScroll = container.scrollWidth - container.clientWidth;
         if (maxScroll > 0) {
           if (container.scrollLeft >= maxScroll - 1) {
@@ -89,8 +112,10 @@ export default function PrimarySolutionsCarousel({ services }: { services: any[]
     animationFrameId = requestAnimationFrame(scrollContinuously);
 
     return () => {
+      observer.disconnect();
       cancelAnimationFrame(animationFrameId);
       clearTimeout(resumeTimeoutId);
+      clearTimeout(startDelayTimeoutId);
       container.removeEventListener('touchstart', handleInteractionStart);
       container.removeEventListener('touchend', handleInteractionEnd);
       container.removeEventListener('mousedown', handleInteractionStart);
@@ -119,7 +144,7 @@ export default function PrimarySolutionsCarousel({ services }: { services: any[]
           return (
             <div
               key={service.id || service.slug}
-              className="w-[290px] sm:w-[320px] md:w-auto shrink-0 group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-[0_4px_20px_rgba(10,35,66,0.06)] hover:shadow-[0_20px_40px_rgba(8,119,249,0.12)] hover:border-[#0877F9]/30 transition-all duration-500"
+              className="w-[300px] sm:w-[330px] md:w-auto shrink-0 group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-[0_4px_20px_rgba(10,35,66,0.06)] hover:shadow-[0_20px_40px_rgba(8,119,249,0.12)] hover:border-[#0877F9]/30 transition-all duration-500"
             >
               <div className="relative w-full aspect-[16/10] bg-[#06172B] overflow-hidden">
                 <Image
@@ -131,11 +156,16 @@ export default function PrimarySolutionsCarousel({ services }: { services: any[]
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A2342]/90 via-[#0A2342]/20 to-transparent" />
                 
-                <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
-                  <span className="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest rounded-md border border-white/20">
+                {/* Category Pill Badge - Top Left with clean padding and no collision */}
+                <div className="absolute top-3 left-3.5 z-10 max-w-[calc(100%-2rem)]">
+                  <span className="inline-block px-3 py-1 bg-[#0A2342]/85 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider rounded-lg border border-white/20 shadow-md truncate max-w-full">
                     0{index + 1} &mdash; {service.category || "Lift"}
                   </span>
-                  <div className="w-10 h-10 bg-[#0877F9] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#0877F9]/30 group-hover:scale-110 transition-transform duration-500">
+                </div>
+
+                {/* Service Type Icon - Bottom Right with premium glow */}
+                <div className="absolute bottom-3.5 right-3.5 z-10">
+                  <div className="w-10 h-10 bg-[#0877F9] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#0877F9]/40 group-hover:scale-110 transition-transform duration-500">
                     {icon}
                   </div>
                 </div>
@@ -157,7 +187,7 @@ export default function PrimarySolutionsCarousel({ services }: { services: any[]
                     View Details
                   </Link>
                   <Link
-                    href={`/contact?service=${encodeURIComponent(service.title)}`}
+                    href={`/contact?service=${encodeURIComponent(service.title)}#quotation-form`}
                     className="inline-flex items-center justify-center px-4 py-2.5 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#0A2342] text-sm font-semibold rounded-lg transition-colors"
                   >
                     Quote

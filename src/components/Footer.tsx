@@ -190,10 +190,11 @@ export default function Footer() {
                 </div>
                 <div className="min-w-0 break-words">
                   <a 
-                    href="mailto:info@standardelevators.com" 
+                    href="mailto:standardelevators.engworks12@gmail.com?subject=Elevator%20Inquiry%20-%20Standard%20Engineering%20Works&body=Hello%20Standard%20Engineering%20Works%20Team%2C%0A%0AI%20am%20interested%20in%20your%20elevator%20solutions%20and%20would%20like%20to%20request%20information%20and%20a%20quotation.%0A%0AMy%20Project%20Details%3A%0A-%20Name%3A%20%0A-%20Phone%3A%20%0A-%20Location%20%2F%20City%3A%20%0A-%20Building%20Type%20(Residential%20%2F%20Commercial%20%2F%20Industrial)%3A%20%0A-%20Elevator%20System%20(Passenger%20%2F%20MRL%20%2F%20Goods%20%2F%20Hospital%20%2F%20Modernization)%3A%20%0A-%20Number%20of%20Floors%20%2F%20Stops%3A%20%0A%0APlease%20get%20in%20touch%20with%20technical%20specifications%20and%20preliminary%20estimates.%0A%0AThank%20you!" 
                     className="text-[14px] lg:text-[15px] font-medium text-[#B8C8D7] hover:text-[#0877F9] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9] rounded-sm"
+                    aria-label="Email Standard Engineering Works"
                   >
-                    info@standardelevators.com
+                    standardelevators.engworks12@gmail.com
                   </a>
                 </div>
               </li>

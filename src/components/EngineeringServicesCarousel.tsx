@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
@@ -48,8 +48,8 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
   const [activeIndex, setActiveIndex] = useState(0);
   const [interactionState, setInteractionState] = useState(0);
   
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const touchStartRef = useRef<number | null>(null);
+  const touchEndRef = useRef<number | null>(null);
   const [isHoverPaused, setIsHoverPaused] = useState(false);
 
   const interact = () => setInteractionState((c) => c + 1);
@@ -75,40 +75,41 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
   }, [nextSlide, interactionState, isHoverPaused]);
 
   // Touch Handlers
-  const minSwipeDistance = 50;
+  const minSwipeDistance = 45;
   
   const onTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
     interact();
-    setTouchEnd(null);
+    touchEndRef.current = null;
     if ("touches" in e) {
-      setTouchStart(e.targetTouches[0].clientX);
+      touchStartRef.current = e.targetTouches[0].clientX;
     } else {
-      setTouchStart(e.clientX);
+      touchStartRef.current = e.clientX;
     }
   };
 
   const onTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
-    if (!touchStart) return;
+    if (touchStartRef.current === null) return;
     if ("touches" in e) {
-      setTouchEnd(e.targetTouches[0].clientX);
+      touchEndRef.current = e.targetTouches[0].clientX;
     } else {
-      setTouchEnd(e.clientX);
+      touchEndRef.current = e.clientX;
     }
   };
 
   const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
+    if (touchStartRef.current === null || touchEndRef.current === null) return;
+    const distance = touchStartRef.current - touchEndRef.current;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
     if (isLeftSwipe) {
       nextSlide();
       interact();
-    }
-    if (isRightSwipe) {
+    } else if (isRightSwipe) {
       prevSlide();
       interact();
     }
+    touchStartRef.current = null;
+    touchEndRef.current = null;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -144,7 +145,7 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
           <h2 id="engineering-heading" className="text-3xl md:text-5xl font-extrabold text-[#0B1F38] mb-6 tracking-tight">
             Engineering Services
           </h2>
-          <p className="text-slate-600 text-base md:text-xl font-light leading-relaxed">
+          <p className="text-black font-medium text-[17px] md:text-[20px] leading-relaxed">
             Beyond manufacturing, we provide comprehensive lifecycle support for vertical mobility infrastructure.
           </p>
         </div>

@@ -80,7 +80,7 @@ export default function PassengerLiftsPage() {
               <h2 className="text-2xl sm:text-3xl font-bold text-midnight mb-4">
                 Architectural Integration & Silent Motion
               </h2>
-              <p className="text-slate-muted leading-relaxed font-light mb-6 text-sm sm:text-base">
+              <p className="text-black font-normal mb-6 text-[15px] sm:text-[17px] leading-relaxed">
                 Designed primarily for residential apartments, independent bungalows, and multi-story commercial complexes, our passenger elevators are tailored to seamlessly integrate into your building&apos;s architectural specifications. With capacities ranging from 5 to 20 persons, we provide flexible car configurations to match diverse traffic requirements.
               </p>
               
@@ -110,7 +110,7 @@ export default function PassengerLiftsPage() {
               </div>
 
               <Link
-                href="/contact?service=Passenger+Lifts"
+                href="/contact?service=Passenger+Lifts#quotation-form"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#0877F9] hover:bg-[#0666D8] text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95"
               >
                 <span>Request Passenger Lift Quotation</span>
@@ -130,19 +130,19 @@ export default function PassengerLiftsPage() {
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
             <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
               <h3 className="text-base sm:text-lg font-bold text-midnight mb-2">Custom Cabins</h3>
-              <p className="text-slate-muted text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-black text-[13px] sm:text-[15px] font-normal leading-relaxed">
                 Aesthetically designed cabins with brushed stainless steel, panoramic glass, and customized ambient ceiling lighting to match your interior styling.
               </p>
             </div>
             <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
               <h3 className="text-base sm:text-lg font-bold text-midnight mb-2">Intelligent Controls</h3>
-              <p className="text-slate-muted text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-black text-[13px] sm:text-[15px] font-normal leading-relaxed">
                 Advanced 32-bit microprocessor controls ensure precise leveling accuracy, smooth acceleration, and reduced waiting times during peak traffic hours.
               </p>
             </div>
             <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
               <h3 className="text-base sm:text-lg font-bold text-midnight mb-2">Automatic Rescue Device (ARD)</h3>
-              <p className="text-slate-muted text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-black text-[13px] sm:text-[15px] font-normal leading-relaxed">
                 Emergency battery backup automatically brings the cabin to the nearest floor and opens the doors safely during sudden power interruptions.
               </p>
             </div>
