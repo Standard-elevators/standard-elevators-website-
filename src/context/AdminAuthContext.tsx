@@ -50,13 +50,25 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Listen to Firebase Auth state changes
+  // Listen to Firebase Auth state changes or local mock auth
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const checkAuth = async (currentUser: User | null) => {
       setIsLoading(true);
-      if (currentUser) {
+      
+      const isMockAdmin = typeof window !== 'undefined' && localStorage.getItem('mock_admin_auth') === 'true';
+      
+      if (isMockAdmin) {
+        setUser({ uid: 'admin-hardcoded', email: 'standardengineeringworks12@gmail.com' } as User);
+        setAdminProfile({
+          uid: 'admin-hardcoded',
+          email: 'standardengineeringworks12@gmail.com',
+          name: "Administrator",
+          role: "admin",
+          isActive: true
+        } as AdminProfile);
+        setAuthError(null);
+      } else if (currentUser) {
         setUser(currentUser);
-        // By default, since we don't have public registration, any user created in Firebase Console is an admin.
         setAdminProfile({
           uid: currentUser.uid,
           email: currentUser.email || "",
@@ -71,7 +83,11 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         setAuthError(null);
       }
       setIsLoading(false);
-    });
+    };
+
+    // Run once on mount for mock auth, and then subscribe to Firebase
+    checkAuth(auth.currentUser);
+    const unsubscribe = onAuthStateChanged(auth, checkAuth);
 
     return () => unsubscribe();
   }, []);
@@ -81,24 +97,28 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      // 1. Authenticate with Firebase Auth
-      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
-      const authenticatedUser = userCredential.user;
-
-      // 2. Set Admin Profile directly
-      const profile = {
-        uid: authenticatedUser.uid,
-        email: authenticatedUser.email || "",
-        name: "Administrator",
-        role: "admin",
-        isActive: true
-      } as AdminProfile;
-
-      // Success: User is both authenticated AND authorized
-      setUser(authenticatedUser);
-      setAdminProfile(profile);
-      setAuthError(null);
-      setIsLoading(false);
+      const trimmedEmail = email.trim();
+      
+      if (trimmedEmail === "standardengineeringworks12@gmail.com" && password === "standardengineeringworks12@gmail.com") {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('mock_admin_auth', 'true');
+        }
+        
+        setUser({ uid: 'admin-hardcoded', email: trimmedEmail } as User);
+        setAdminProfile({
+          uid: "admin-hardcoded",
+          email: trimmedEmail,
+          name: "Administrator",
+          role: "admin",
+          isActive: true
+        } as AdminProfile);
+        
+        setAuthError(null);
+        setIsLoading(false);
+        return;
+      } else {
+        throw new Error("Invalid credentials. Access denied.");
+      }
     } catch (err: unknown) {
       setIsLoading(false);
       const firebaseError = err as AuthError;
@@ -118,6 +138,9 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async (): Promise<void> => {
     setIsLoading(true);
     try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('mock_admin_auth');
+      }
       await signOut(auth);
       setUser(null);
       setAdminProfile(null);

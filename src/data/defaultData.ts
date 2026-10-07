@@ -191,8 +191,8 @@ export const CUSTOMIZATION_DATA = [
 ];
 
 export const GALLERY_CATEGORIES_MENU = [
-  { name: "Installation", href: "/gallery?category=Installation", desc: "Site preparations and shaft structural work", image: "/hero-elevator.jpg" },
-  { name: "Cabins", href: "/gallery?category=Cabins", desc: "Premium elevator cabins and custom interiors", image: "/images/card_modernization.jpg" },
-  { name: "Doors", href: "/gallery?category=Doors", desc: "Automatic, manual, and swing door designs", image: "/images/3d_apartments.jpg" },
-  { name: "Components", href: "/gallery?category=Components", desc: "Microprocessor control panels and machinery", image: "/images/card_maintenance.jpg" },
+  { name: "Installation", href: "/gallery?category=Installation#gallery-grid", desc: "Site preparations and shaft structural work", image: "/hero-elevator.jpg" },
+  { name: "Cabins", href: "/gallery?category=Cabins#gallery-grid", desc: "Premium elevator cabins and custom interiors", image: "/images/card_modernization.jpg" },
+  { name: "Doors", href: "/gallery?category=Doors#gallery-grid", desc: "Automatic, manual, and swing door designs", image: "/images/3d_apartments.jpg" },
+  { name: "Components", href: "/gallery?category=Components#gallery-grid", desc: "Microprocessor control panels and machinery", image: "/images/card_maintenance.jpg" },
 ];

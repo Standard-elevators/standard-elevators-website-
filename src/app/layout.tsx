@@ -4,15 +4,19 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SiteLoader from "@/components/SiteLoader";
-import MobileStickyBar from "@/components/MobileStickyBar";
 import RouteLoader from "@/components/RouteLoader";
 import { TransitionProvider } from "@/context/TransitionContext";
 import SmoothScrolling from "@/components/SmoothScrolling";
 import FloatingActions from "@/components/FloatingActions";
 import { SITE_URL, BUSINESS_INFO, getOrganizationSchema } from "@/lib/seo";
 
-const geistSans = { variable: "font-sans" };
-const geistMono = { variable: "font-mono" };
+import { Inter } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -79,7 +83,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      className={`${inter.variable} antialiased`}
     >
       <head>
         <script
@@ -97,7 +101,6 @@ export default function RootLayout({
             <Header />
             <main className="flex-grow">{children}</main>
             <Footer />
-            <MobileStickyBar />
             <FloatingActions />
           </TransitionProvider>
         </SmoothScrolling>

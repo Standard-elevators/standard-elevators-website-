@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, ImageIcon, Loader2, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { getPublishedGallery } from "@/lib/firestore-data";
 import { DEFAULT_GALLERY } from "@/data/defaultData";
@@ -18,10 +19,23 @@ const INITIAL_GALLERY_ITEMS: GalleryItem[] = DEFAULT_GALLERY.map((g, idx) => ({
   id: `default-g-${idx + 1}`,
 }));
 
-export default function GalleryPage() {
-  const [activeCategory, setActiveCategory] = useState<GalleryCategoryFilter>("All");
+function GalleryContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
+  
+  const initialCategory = CATEGORIES.includes(categoryParam as GalleryCategoryFilter) 
+    ? (categoryParam as GalleryCategoryFilter) 
+    : "All";
+
+  const [activeCategory, setActiveCategory] = useState<GalleryCategoryFilter>(initialCategory);
   const [items, setItems] = useState<GalleryItem[]>(INITIAL_GALLERY_ITEMS);
   const isLoading = false;
+
+  useEffect(() => {
+    if (categoryParam && CATEGORIES.includes(categoryParam as GalleryCategoryFilter)) {
+      setActiveCategory(categoryParam as GalleryCategoryFilter);
+    }
+  }, [categoryParam]);
 
   // Lightbox state
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -113,20 +127,29 @@ export default function GalleryPage() {
   // Helper for asymmetric grid layout pattern
   const getGridSpanClass = (index: number) => {
     const pos = index % 6;
-    if (pos === 0) return "md:col-span-2 md:row-span-2"; // Featured Large
-    if (pos === 1) return "md:col-span-1 md:row-span-1"; // Small stacked
-    if (pos === 2) return "md:col-span-1 md:row-span-1"; // Small stacked
-    if (pos === 3) return "md:col-span-2 md:row-span-1"; // Wide
-    if (pos === 4) return "md:col-span-1 md:row-span-1 lg:col-span-1"; // Portrait/Box
-    if (pos === 5) return "md:col-span-1 md:row-span-1 lg:col-span-1"; // Box
-    return "md:col-span-1 md:row-span-1";
+    let mdClass = "";
+    if (pos === 0) mdClass = "md:col-span-2 md:row-span-2";
+    else if (pos === 1) mdClass = "md:col-span-1 md:row-span-1";
+    else if (pos === 2) mdClass = "md:col-span-1 md:row-span-1";
+    else if (pos === 3) mdClass = "md:col-span-2 md:row-span-1";
+    else if (pos === 4) mdClass = "md:col-span-1 md:row-span-1";
+    else if (pos === 5) mdClass = "md:col-span-1 md:row-span-1";
+    else mdClass = "md:col-span-1 md:row-span-1";
+    
+    // For mobile bento: Full width, half, half, full width pattern
+    const mobilePos = index % 4;
+    let mobileClass = "";
+    if (mobilePos === 0 || mobilePos === 3) mobileClass = "col-span-2";
+    else mobileClass = "col-span-1";
+    
+    return `${mobileClass} ${mdClass}`;
   };
 
   return (
     <div className="flex flex-col w-full bg-[#F7F9FC] text-[#102A43] min-h-screen">
       
       {/* PREMIUM HERO SECTION */}
-      <section className="relative pt-24 pb-6 md:pt-28 md:pb-8 bg-[#061426] overflow-hidden">
+      <section className="relative pt-32 pb-24 md:pt-28 md:pb-32 bg-[#061426] overflow-hidden">
         {/* Subtle engineering grid & soft blue atmospheric glow */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.15]" 
@@ -146,18 +169,9 @@ export default function GalleryPage() {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#F7FAFF] mb-3 leading-tight">
                 PROJECT <span className="text-[#1498FF]">GALLERY</span>
               </h1>
-              <p className="text-base md:text-lg text-[#8FA2B8] font-light max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
+              <p className="text-base md:text-lg text-[#8FA2B8] font-light max-w-xl mx-auto lg:mx-0 leading-relaxed">
                 Explore our precision elevator installations, premium cabin finishes, and expertly engineered architectural components.
               </p>
-              
-              {/* EXPLORE PROJECTS Premium Button */}
-              <button 
-                onClick={() => document.getElementById('gallery-grid')?.scrollIntoView({ behavior: 'smooth' })}
-                className="group relative inline-flex items-center gap-3 px-8 py-3.5 bg-[#087CF5]/10 hover:bg-[#087CF5]/20 text-[#1498FF] border border-[#087CF5]/30 rounded-full font-semibold transition-all duration-300 shadow-[0_0_20px_rgba(8,124,245,0.1)] hover:shadow-[0_0_30px_rgba(8,124,245,0.25)] focus:outline-none"
-              >
-                <span className="tracking-wide text-sm">EXPLORE PROJECTS</span>
-                <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform duration-300" />
-              </button>
             </div>
 
             {/* Secondary Visual Preview */}
@@ -210,6 +224,13 @@ export default function GalleryPage() {
 
           </div>
         </div>
+
+        {/* Elegant Wave Divider Matching Screenshot */}
+        <div className="absolute -bottom-px left-0 right-0 w-full overflow-hidden leading-[0] z-20 pointer-events-none">
+          <svg className="relative block w-full h-[50px] md:h-[100px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0,72 C 288,0 900,130 1440,84 L1440,120 L0,120 Z" className="fill-[#F7F9FC]"></path>
+          </svg>
+        </div>
       </section>
 
       {/* GALLERY & FILTERS */}
@@ -217,25 +238,51 @@ export default function GalleryPage() {
         <div className="site-container px-4 sm:px-6 lg:px-8">
           
           {/* Premium Segmented Category Filters */}
-          <div className="flex justify-center mb-16 md:mb-20">
-            <div className="inline-flex flex-wrap justify-center bg-white p-2 rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#DCE5EF]">
-              {CATEGORIES.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => {
-                    setActiveCategory(category);
-                    setSelectedIndex(null); // Reset lightbox if open
-                  }}
-                  className={`px-5 sm:px-8 py-2.5 sm:py-3 rounded-full text-sm font-semibold transition-all duration-300 focus:outline-none ${
-                    activeCategory === category
-                      ? "bg-[#087CF5] text-white shadow-[0_4px_15px_rgba(8,124,245,0.3)]"
-                      : "text-[#102A43] hover:bg-[#F7F9FC]"
-                  }`}
-                  aria-pressed={activeCategory === category}
-                >
-                  {category}
-                </button>
-              ))}
+          <div className="w-full mb-12 md:mb-20">
+            <div className="flex justify-center w-full">
+              <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 md:gap-4 px-2 sm:px-8 mx-auto">
+                {CATEGORIES.map((category) => {
+                  const isActive = activeCategory === category;
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => {
+                        setActiveCategory(category);
+                        setSelectedIndex(null); // Reset lightbox if open
+                      }}
+                      className={`group relative px-4 py-2 sm:px-6 sm:py-3 md:px-7 md:py-3.5 rounded-[12px] md:rounded-2xl text-[12px] md:text-[14px] font-bold tracking-wide transition-all duration-500 overflow-hidden focus:outline-none shrink-0 ${
+                        isActive
+                          ? "text-white shadow-[0_10px_30px_rgba(8,124,245,0.4)] scale-105 border-transparent"
+                          : "text-[#475569] bg-white border border-[#DCE5EF] shadow-sm hover:shadow-[0_8px_20px_rgba(8,124,245,0.1)] hover:border-[#087CF5]/30 hover:text-[#087CF5]"
+                      }`}
+                      aria-pressed={isActive}
+                    >
+                      {/* Active State Backgrounds */}
+                      {isActive && (
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#061426] via-[#087CF5] to-[#1498FF] z-0"></div>
+                          <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/20 to-transparent z-0 mix-blend-overlay"></div>
+                        </>
+                      )}
+                      
+                      {/* Inactive Hover Sweep Effect */}
+                      {!isActive && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#087CF5]/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 z-0 -translate-x-full group-hover:translate-x-full"></div>
+                      )}
+                      
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        {category}
+                        {isActive && (
+                          <span className="relative flex h-2 w-2 ml-1">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white shadow-[0_0_8px_white]"></span>
+                          </span>
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
@@ -248,7 +295,7 @@ export default function GalleryPage() {
           ) : filteredItems.length > 0 ? (
             
             /* ASYMMETRIC CSS GRID LAYOUT */
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8 auto-rows-[250px] md:auto-rows-[280px]">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8 auto-rows-[200px] sm:auto-rows-[240px] md:auto-rows-[280px]">
               {filteredItems.map((item, idx) => {
                 const spanClass = getGridSpanClass(idx);
 
@@ -278,7 +325,7 @@ export default function GalleryPage() {
                     />
                     
                     {/* Glass Overlay (Premium Gradient) */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#07172B]/95 via-[#07172B]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 md:p-8">
+                    <div className="hidden md:flex absolute inset-0 bg-gradient-to-t from-[#07172B]/95 via-[#07172B]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-col justify-end p-6 md:p-8">
                       <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                         <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#1498FF] mb-2 block">
                           {item.category}
@@ -392,15 +439,6 @@ export default function GalleryPage() {
                   {selectedItem.title}
                 </h3>
               </div>
-
-              <Link
-                href={`/contact?service=${encodeURIComponent(selectedItem.category)}`}
-                onClick={closeLightbox}
-                className="shrink-0 px-6 py-3 bg-[#087CF5] hover:bg-[#1498FF] text-white text-sm font-semibold rounded-full tracking-wide transition-colors inline-flex items-center gap-2 shadow-[0_0_20px_rgba(8,124,245,0.4)]"
-              >
-                <span>Request Specs</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
             </div>
           </div>
         </div>
@@ -425,5 +463,13 @@ export default function GalleryPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function GalleryPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F7F9FC]" />}>
+      <GalleryContent />
+    </Suspense>
   );
 }

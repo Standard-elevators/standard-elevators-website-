@@ -147,7 +147,7 @@ export default function ElevatorSystems() {
 
             <Link
               href="/services"
-              className="group inline-flex items-center gap-1.5 text-sm xl:text-[15px] font-semibold text-[#0A78F5] hover:text-[#0863CB] transition-colors pt-3 shrink-0"
+              className="group inline-flex items-center justify-center gap-2 text-white bg-[#0A78F5] hover:bg-[#0863CB] py-2.5 px-6 rounded-full font-bold text-sm shadow-md shadow-[#0A78F5]/25 transition-all active:scale-95 shrink-0"
             >
               <span>View all specifications</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

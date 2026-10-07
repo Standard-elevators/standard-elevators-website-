@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "@/components/TransitionLink";
 import { motion } from "framer-motion";
+import FounderLeadership from "@/components/FounderLeadership";
+import SafetyArchitecture from "@/components/SafetyArchitecture";
 import {
   ArrowRight,
   ShieldCheck,
@@ -17,6 +19,59 @@ import {
 
 export default function AboutView() {
   const [ownerImgSrc, setOwnerImgSrc] = useState("/images/team/founder.jpg");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let animationFrameId: number;
+    let isPaused = false;
+    let resumeTimeoutId: NodeJS.Timeout;
+    
+    const isMobile = () => window.innerWidth < 768;
+
+    const handleInteractionStart = () => {
+      isPaused = true;
+      clearTimeout(resumeTimeoutId);
+    };
+    
+    const handleInteractionEnd = () => {
+      resumeTimeoutId = setTimeout(() => {
+        isPaused = false;
+      }, 3000);
+    };
+
+    container.addEventListener('touchstart', handleInteractionStart, { passive: true });
+    container.addEventListener('touchend', handleInteractionEnd);
+    container.addEventListener('mousedown', handleInteractionStart);
+    container.addEventListener('mouseup', handleInteractionEnd);
+
+    const scrollContinuously = () => {
+      if (!isPaused && isMobile()) {
+        const maxScroll = container.scrollWidth - container.clientWidth;
+        if (maxScroll > 0) {
+          if (container.scrollLeft >= maxScroll - 1) {
+            container.scrollLeft = 0;
+          } else {
+            container.scrollLeft += 0.5;
+          }
+        }
+      }
+      animationFrameId = requestAnimationFrame(scrollContinuously);
+    };
+
+    animationFrameId = requestAnimationFrame(scrollContinuously);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      clearTimeout(resumeTimeoutId);
+      container.removeEventListener('touchstart', handleInteractionStart);
+      container.removeEventListener('touchend', handleInteractionEnd);
+      container.removeEventListener('mousedown', handleInteractionStart);
+      container.removeEventListener('mouseup', handleInteractionEnd);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col w-full text-slate-800 antialiased overflow-hidden">
@@ -32,6 +87,8 @@ export default function AboutView() {
             alt="Standard Engineering Works Advanced Vertical Mobility Architecture"
             fill
             priority
+            quality={100}
+            unoptimized
             sizes="100vw"
             className="object-cover object-center"
           />
@@ -75,7 +132,7 @@ export default function AboutView() {
 
             {/* Supporting Statement */}
             <p className="text-base sm:text-lg lg:text-[19px] text-slate-200 font-light leading-relaxed max-w-2xl mb-8">
-              Since 2003, Standard Engineering Works Elevators has pioneered custom design, indigenous manufacturing, turnkey installation, and scientific maintenance for high-reliability vertical transport across Telangana and Andhra Pradesh.
+              Since 2003, we have pioneered custom design, manufacturing, and turnkey installation of high-reliability elevators across Telangana and Andhra Pradesh.
             </p>
 
             {/* CTA action buttons */}
@@ -162,71 +219,32 @@ export default function AboutView() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="lg:col-span-6 flex flex-col justify-between py-1"
+              className="lg:col-span-6 flex flex-col justify-center py-6 lg:py-10 px-2 sm:px-0"
             >
               <div>
                 {/* Eyebrow */}
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-xs font-bold tracking-[0.22em] text-[#0A78F5] uppercase">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#0A78F5] uppercase">
                     OUR HISTORY
                   </span>
-                  <div className="h-px w-10 bg-[#0A78F5]/40" />
+                  <div className="h-px w-8 bg-[#0A78F5]/40" />
                 </div>
 
                 {/* Heading */}
-                <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-[#0B1F3A] tracking-tight leading-[1.12] mb-6">
-                  Over two decades of <br />
-                  <span className="text-[#0A78F5]">vertical mobility</span> innovation.
+                <h2 className="text-[32px] sm:text-4xl lg:text-[46px] font-extrabold text-[#0B1F3A] tracking-tight leading-[1.15] mb-8 text-balance">
+                  Over two decades of <span className="text-[#0A78F5]">vertical mobility</span> innovation.
                 </h2>
 
                 {/* Approved Company Narrative */}
-                <p className="text-slate-600 leading-relaxed font-normal text-sm sm:text-base mb-5">
-                  Established in the year 2003, Standard Engineering Works Elevators has quickly scaled to become a leading elevator company in the region. We operate a full-fledged design centre and manufacturing unit in Hyderabad, ensuring strict quality control at every stage of production.
-                </p>
-                <p className="text-slate-600 leading-relaxed font-normal text-sm sm:text-base mb-8">
-                  Our corporate office is centrally located in Hyderabad and features an exclusive showroom that showcases fully functional elevators with a wide range of aesthetic choices for our customers.
-                </p>
-              </div>
-
-              {/* Architectural Stage Marker / Timeline */}
-              <div className="pt-6 border-t border-slate-200">
-                <span className="text-[11px] font-bold tracking-[0.2em] text-slate-400 uppercase block mb-4">
-                  GROWTH MILESTONES
-                </span>
-                
-                <div className="space-y-3.5">
-                  <div className="flex items-start gap-4">
-                    <span className="px-2.5 py-1 rounded bg-[#0A78F5]/10 text-[#0A78F5] font-mono font-bold text-xs shrink-0">
-                      2003
-                    </span>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#0B1F3A]">Foundation &amp; Initial Manufacturing</h4>
-                      <p className="text-xs text-slate-500 mt-0.5">Established in Hyderabad with focus on precision elevator engineering.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <span className="px-2.5 py-1 rounded bg-slate-200 text-slate-700 font-mono font-bold text-xs shrink-0">
-                      PHASE 02
-                    </span>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#0B1F3A]">Design Centre &amp; Commercial Showroom</h4>
-                      <p className="text-xs text-slate-500 mt-0.5">Integrated CAD modeling, full-scale testing tower, and live display facility.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <span className="px-2.5 py-1 rounded bg-slate-200 text-slate-700 font-mono font-bold text-xs shrink-0">
-                      PHASE 03
-                    </span>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#0B1F3A]">100+ Verified Installations Across TS &amp; AP</h4>
-                      <p className="text-xs text-slate-500 mt-0.5">Comprehensive turnkey erection, MRL technology, and 24/7 AMC network.</p>
-                    </div>
-                  </div>
+                <div className="space-y-6">
+                  <p className="text-slate-800 leading-[1.8] font-medium text-[16px] sm:text-[17px]">
+                    Established in 2003, Standard Engineering Works Elevators has rapidly scaled to become a leading precision elevator company in the region. We operate a full-fledged design centre and manufacturing unit in Hyderabad, ensuring stringent quality control at every stage.
+                  </p>
+                  <p className="text-slate-800 leading-[1.8] font-medium text-[16px] sm:text-[17px]">
+                    Our corporate headquarters features an exclusive showroom showcasing fully functional elevators, offering a wide array of premium aesthetic choices for our customers.
+                  </p>
                 </div>
               </div>
-
             </motion.div>
 
           </div>
@@ -237,118 +255,7 @@ export default function AboutView() {
       {/* SECTION 03 — LEADERSHIP / OWNER (Deep Navy #071426 / #0D213A)              */}
       {/* High-end editorial architectural presentation for future photo           */}
       {/* ========================================================================= */}
-      <section className="relative w-full py-24 sm:py-28 lg:py-32 bg-gradient-to-b from-[#071426] via-[#0D213A] to-[#071426] text-white overflow-hidden">
-        {/* Soft background illumination */}
-        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[#0877F9]/10 blur-[130px] pointer-events-none" />
-
-        <div className="site-container px-6 sm:px-8 lg:px-12 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            
-            {/* LEFT / CENTER: Large Owner Portrait Architectural Frame */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.65, ease: "easeOut" }}
-              className="lg:col-span-5 flex justify-center"
-            >
-              <div className="relative w-full max-w-[400px] p-[2px] rounded-[28px] overflow-hidden group transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_40px_80px_rgba(8,119,249,0.25)]">
-                {/* Animated Glowing Border */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[#1E2D40] to-[#0A162B] transition-opacity duration-700 group-hover:opacity-0" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0%,transparent_60%,#0062FF_80%,#38BDF8_100%)] opacity-0 group-hover:opacity-100 group-hover:animate-[spin_4s_linear_infinite] transition-opacity duration-700" />
-                
-                <div className="relative w-full h-full bg-[#050D1A]/95 backdrop-blur-3xl rounded-[26px] overflow-hidden flex flex-col items-center">
-                  {/* Photo Area */}
-                  <div className="relative w-full aspect-[4/4.2] overflow-hidden bg-[#0A162B]">
-                    <Image
-                      src={ownerImgSrc}
-                      alt="Founder of Standard Elevators"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 400px"
-                      className="object-cover object-[center_40%] transition-transform duration-1000 group-hover:scale-110"
-                      onError={() => {
-                        setOwnerImgSrc("/images/owner/owner-placeholder.svg");
-                      }}
-                    />
-                    {/* Cinematic Lighting overlays */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#050D1A] via-transparent to-transparent opacity-90 pointer-events-none" />
-                    <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-t-[26px] pointer-events-none" />
-                  </div>
-
-                  {/* Details Section Below Image */}
-                  <div className="relative w-full px-6 py-8 flex flex-col items-center text-center -mt-8 z-10">
-                    <div className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[#28B8FF]/30 to-transparent" />
-                    
-                    <h4 className="text-2xl sm:text-[26px] font-extrabold text-white tracking-tight mb-2 drop-shadow-sm group-hover:text-[#38BDF8] transition-colors duration-500">
-                      Founder
-                    </h4>
-                    <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.25em] text-[#38BDF8] uppercase mb-4">
-                      Standard Engineering Works
-                    </span>
-                    
-                    <div className="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#28B8FF]/50 to-transparent rounded-full mb-4" />
-                    
-                    <p className="text-[13px] text-slate-400 font-light leading-relaxed tracking-wide">
-                      Leading with precision & vision
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* RIGHT COLUMN: Leadership Message & Corporate Vision */}
-            <motion.div
-              initial={{ opacity: 0, x: 24 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.65, ease: "easeOut" }}
-              className="lg:col-span-7 flex flex-col justify-center"
-            >
-              {/* Eyebrow */}
-              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-[#071426] border border-[#26384D] w-fit mb-5 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-[#28B8FF]" />
-                <span className="text-[11px] sm:text-xs font-bold tracking-[0.22em] text-[#28B8FF] uppercase">
-                  LEADERSHIP
-                </span>
-              </div>
-
-              {/* Heading */}
-              <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-white tracking-tight leading-[1.12] mb-6">
-                Building Vertical Mobility <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0877F9] via-[#28B8FF] to-[#38BDF8]">
-                  With Engineering Discipline.
-                </span>
-              </h2>
-
-              {/* Approved Leadership Statements */}
-              <p className="text-slate-300 text-base sm:text-[17px] leading-relaxed mb-5 font-light">
-                Under the strategic guidance of our founder, Standard Engineering Works Elevators was established with a singular vision: to revolutionize vertical mobility through uncompromising quality and innovative engineering. Since 2003, this vision has guided every project we undertake.
-              </p>
-              <p className="text-slate-300 text-base sm:text-[17px] leading-relaxed mb-8 font-light">
-                Our leadership believes in fostering a culture of continuous improvement, where safety, reliability, and customer satisfaction remain the core pillars of our operational philosophy. We are dedicated to building elevator systems that stand the test of time and elevate the standard of modern infrastructure.
-              </p>
-
-              {/* Three Executive Pillars */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-[#26384D]">
-                <div className="p-4 rounded-xl bg-[#071426]/70 border border-[#26384D]">
-                  <div className="text-[#28B8FF] font-bold text-xs tracking-wider uppercase mb-1">SAFETY FIRST</div>
-                  <div className="text-[12px] text-slate-400">Strict adherence to Indian safety standards at every phase.</div>
-                </div>
-                <div className="p-4 rounded-xl bg-[#071426]/70 border border-[#26384D]">
-                  <div className="text-[#28B8FF] font-bold text-xs tracking-wider uppercase mb-1">IN-HOUSE CRAFT</div>
-                  <div className="text-[12px] text-slate-400">Direct manufacturing control without third-party compromises.</div>
-                </div>
-                <div className="p-4 rounded-xl bg-[#071426]/70 border border-[#26384D]">
-                  <div className="text-[#28B8FF] font-bold text-xs tracking-wider uppercase mb-1">LONG-TERM CARE</div>
-                  <div className="text-[12px] text-slate-400">Dedicated maintenance protocols ensuring permanent uptime.</div>
-                </div>
-              </div>
-
-            </motion.div>
-
-          </div>
-        </div>
-      </section>
+      <FounderLeadership />
 
 
 
@@ -370,11 +277,14 @@ export default function AboutView() {
             </p>
           </div>
 
-          {/* 3-Panel Composition */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+          {/* 3-Panel Composition - Horizontal Scroll on Mobile */}
+          <div 
+            ref={scrollContainerRef}
+            className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 lg:gap-8 overflow-x-auto pb-6 -mx-6 px-6 md:mx-0 md:px-0 md:overflow-visible items-stretch no-scrollbar"
+          >
             
             {/* Panel 1: Turnkey Installation */}
-            <div className="rounded-2xl overflow-hidden bg-white border border-[#CBD5E1] shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1">
+            <div className="min-w-[85vw] md:min-w-0 rounded-2xl overflow-hidden bg-white border border-[#CBD5E1] shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1">
               <div className="relative w-full aspect-[16/10] overflow-hidden">
                 <Image
                   src="/images/card_installation.jpg"
@@ -406,7 +316,7 @@ export default function AboutView() {
             </div>
 
             {/* Panel 2: Modernization */}
-            <div className="rounded-2xl overflow-hidden bg-white border border-[#CBD5E1] shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1">
+            <div className="min-w-[85vw] md:min-w-0 rounded-2xl overflow-hidden bg-white border border-[#CBD5E1] shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1">
               <div className="relative w-full aspect-[16/10] overflow-hidden">
                 <Image
                   src="/images/card_modernization.jpg"
@@ -438,7 +348,7 @@ export default function AboutView() {
             </div>
 
             {/* Panel 3: Maintenance */}
-            <div className="rounded-2xl overflow-hidden bg-white border border-[#CBD5E1] shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1">
+            <div className="min-w-[85vw] md:min-w-0 rounded-2xl overflow-hidden bg-white border border-[#CBD5E1] shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1">
               <div className="relative w-full aspect-[16/10] overflow-hidden">
                 <Image
                   src="/images/card_maintenance.jpg"
@@ -477,66 +387,7 @@ export default function AboutView() {
       {/* ========================================================================= */}
       {/* SECTION 06 — QUALITY, SAFETY & STANDARDS (Deep Navy #071426)              */}
       {/* ========================================================================= */}
-      <section className="relative w-full py-24 sm:py-28 lg:py-32 bg-[#071426] text-white overflow-hidden">
-        <div className="site-container px-6 sm:px-8 lg:px-12 relative z-10">
-          
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <span className="text-xs font-bold tracking-[0.25em] text-[#28B8FF] uppercase block mb-3">
-              SAFETY ARCHITECTURE
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-white tracking-tight leading-tight mb-4">
-              Compliant With Bureau of Indian Standards (BIS)
-            </h2>
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
-              Every elevator system designed and manufactured by Standard Engineering Works adheres to strict national safety codes, including IS 14665 standards for electric traction elevators.
-            </p>
-          </div>
-
-          {/* 4 Safety Pillars Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-6 rounded-2xl bg-[#0D213A] border border-[#26384D] shadow-lg">
-              <div className="w-10 h-10 rounded-xl bg-[#071426] border border-[#28B8FF]/40 flex items-center justify-center text-[#28B8FF] mb-4">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h4 className="text-lg font-bold text-white mb-2">Automatic Rescue Device (ARD)</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Emergency battery system that safely guides the car to the nearest floor and unlocks doors during utility power interruptions.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#0D213A] border border-[#26384D] shadow-lg">
-              <div className="w-10 h-10 rounded-xl bg-[#071426] border border-[#28B8FF]/40 flex items-center justify-center text-[#28B8FF] mb-4">
-                <Cog className="w-5 h-5" />
-              </div>
-              <h4 className="text-lg font-bold text-white mb-2">Over-Speed Governor</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Instantaneous and progressive mechanical safety gear that clamps firmly onto the guide rails if normal descending speed is exceeded.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#0D213A] border border-[#26384D] shadow-lg">
-              <div className="w-10 h-10 rounded-xl bg-[#071426] border border-[#28B8FF]/40 flex items-center justify-center text-[#28B8FF] mb-4">
-                <Activity className="w-5 h-5" />
-              </div>
-              <h4 className="text-lg font-bold text-white mb-2">Infrared Door Curtain</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Full-height optical multi-beam sensor scanning the door entrance to prevent closure if passengers, pets, or objects cross the threshold.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#0D213A] border border-[#26384D] shadow-lg">
-              <div className="w-10 h-10 rounded-xl bg-[#071426] border border-[#28B8FF]/40 flex items-center justify-center text-[#28B8FF] mb-4">
-                <Layers className="w-5 h-5" />
-              </div>
-              <h4 className="text-lg font-bold text-white mb-2">Phase Failure &amp; Overload</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Intelligent electrical monitors preventing elevator operation under phase loss, reverse phasing, or rated weight capacity breach.
-              </p>
-            </div>
-          </div>
-
-        </div>
-      </section>
+      <SafetyArchitecture />
 
       {/* ========================================================================= */}
       {/* SECTION 07 — WHY STANDARD ENGINEERING WORKS (Warm White #F8FAFC)           */}
@@ -558,42 +409,53 @@ export default function AboutView() {
           </div>
 
           {/* 3 Core Pillars in Clean Architectural Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
-            <div className="p-8 rounded-2xl bg-white border border-[#CBD5E1] shadow-xs flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#0A78F5]/10 text-[#0A78F5] flex items-center justify-center mb-5">
-                  <Sparkles className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-[#0B1F3A] mb-3">Smooth Rides</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  Utilizing advanced gearless traction technology and intellectual microprocessor controls with VVVF drives to achieve perfect levelling accuracy and a seamless ride experience.
-                </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 max-w-5xl mx-auto mb-16">
+            
+            {/* Card 1 */}
+            <div className="group relative p-6 md:p-8 rounded-2xl overflow-hidden shadow-md flex flex-col items-start justify-end min-h-[220px] md:h-auto border border-[#CBD5E1]/20 text-left">
+              <div className="absolute inset-0 z-0">
+                <img src="/images/card_modernization.jpg" alt="Smooth Rides" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-[#071426]/75 group-hover:bg-[#071426]/65 transition-colors"></div>
               </div>
+              <div className="relative z-10 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-[#28B8FF] flex items-center justify-center mb-4">
+                <Sparkles className="w-5 h-5 md:w-6 md:h-6" />
+              </div>
+              <h3 className="relative z-10 text-[18px] md:text-xl font-bold text-white mb-2">Smooth Rides</h3>
+              <p className="relative z-10 text-slate-200 text-[13px] md:text-sm leading-relaxed">
+                Utilizing advanced gearless traction technology and intellectual microprocessor controls with VVVF drives to achieve perfect levelling accuracy and a seamless ride experience.
+              </p>
             </div>
 
-            <div className="p-8 rounded-2xl bg-white border border-[#CBD5E1] shadow-xs flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#0A78F5]/10 text-[#0A78F5] flex items-center justify-center mb-5">
-                  <Cog className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-[#0B1F3A] mb-3">Smart Technology</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  Integration of automatic rescue devices, advanced safety gears, and energy-efficient systems that guarantee high reliability and substantial energy savings.
-                </p>
+            {/* Card 2 */}
+            <div className="group relative p-6 md:p-8 rounded-2xl overflow-hidden shadow-md flex flex-col items-start justify-end min-h-[220px] md:h-auto border border-[#CBD5E1]/20 text-left">
+              <div className="absolute inset-0 z-0">
+                <img src="/images/card_maintenance.jpg" alt="Smart Technology" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-[#071426]/75 group-hover:bg-[#071426]/65 transition-colors"></div>
               </div>
+              <div className="relative z-10 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-[#28B8FF] flex items-center justify-center mb-4">
+                <Cog className="w-5 h-5 md:w-6 md:h-6" />
+              </div>
+              <h3 className="relative z-10 text-[18px] md:text-xl font-bold text-white mb-2">Smart Technology</h3>
+              <p className="relative z-10 text-slate-200 text-[13px] md:text-sm leading-relaxed">
+                Integration of automatic rescue devices, advanced safety gears, and energy-efficient systems that guarantee high reliability and substantial energy savings.
+              </p>
             </div>
 
-            <div className="p-8 rounded-2xl bg-white border border-[#CBD5E1] shadow-xs flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#0A78F5]/10 text-[#0A78F5] flex items-center justify-center mb-5">
-                  <Maximize2 className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-[#0B1F3A] mb-3">Spacious Cabins</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  Aesthetically designed cabins customized to suit the interiors of commercial buildings, bungalows, and high-rise apartments, maximizing usable interior volume.
-                </p>
+            {/* Card 3 */}
+            <div className="group relative p-6 md:p-8 rounded-2xl overflow-hidden shadow-md flex flex-col items-start justify-end min-h-[220px] md:h-auto border border-[#CBD5E1]/20 text-left">
+              <div className="absolute inset-0 z-0">
+                <img src="/images/card_installation.jpg" alt="Spacious Cabins" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-[#071426]/75 group-hover:bg-[#071426]/65 transition-colors"></div>
               </div>
+              <div className="relative z-10 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-[#28B8FF] flex items-center justify-center mb-4">
+                <Maximize2 className="w-5 h-5 md:w-6 md:h-6" />
+              </div>
+              <h3 className="relative z-10 text-[18px] md:text-xl font-bold text-white mb-2">Spacious Cabins</h3>
+              <p className="relative z-10 text-slate-200 text-[13px] md:text-sm leading-relaxed">
+                Aesthetically designed cabins customized to suit the interiors of commercial buildings, bungalows, and high-rise apartments, maximizing usable interior volume.
+              </p>
             </div>
+            
           </div>
 
 

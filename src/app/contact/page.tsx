@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Mail, Phone, MapPin, Send, CheckCircle2, ShieldCheck, AlertCircle } from "lucide-react";
 import { submitInquiry } from "@/lib/firestore-data";
 import { trackEvent } from "@/lib/analytics";
+import Image from "next/image";
 
 export interface EnquiryFormData {
   fullName: string;
@@ -128,337 +129,348 @@ function ContactFormContent() {
   };
 
   return (
-    <div className="flex flex-col w-full bg-warm-white text-graphite">
-      {/* Header */}
-      <section className="pt-32 pb-20 md:pt-40 md:pb-24 bg-midnight text-warm-white">
-        <div className="container mx-auto px-6 text-center">
-          <span className="text-xs font-bold tracking-[0.25em] uppercase text-electric mb-3 inline-block">
-            Standard Engineering Works
-          </span>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            Consultation & <span className="text-electric">Quotation</span>
+    <div className="flex flex-col w-full bg-[#F7F9FC] text-[#102A43]">
+      
+      {/* 1. PREMIUM CONTACT HERO */}
+      <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden bg-[#061426]">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/bg_engineering.jpg"
+            alt="Engineering Background"
+            fill
+            className="object-cover opacity-30 mix-blend-overlay"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#061426] via-[#061426]/80 to-transparent" />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-50" />
+        </div>
+        
+        <div className="site-container relative z-10 px-6 text-center max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0062FF]/30 bg-[#0062FF]/10 backdrop-blur-sm mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] animate-pulse" />
+            <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-[#00E5FF]">
+              Standard Engineering Works
+            </span>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6">
+            Consultation & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00E5FF] to-[#0062FF]">Quotation</span>
           </h1>
-          <p className="text-base md:text-lg text-pale-steel font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base md:text-lg text-[#8FA2B8] font-light leading-relaxed max-w-2xl mx-auto">
             Request an engineering consultation or technical quotation for new lift installations, modernization, or preventative AMC maintenance across Telangana & Andhra Pradesh.
           </p>
         </div>
+
+
       </section>
 
-      {/* Main Content */}
-      <section className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto items-start">
+      {/* MAIN CONTENT AREA */}
+      <section className="pb-24 pt-10 md:pt-16">
+        <div className="site-container px-6">
+          <div className="grid lg:grid-cols-12 gap-10 xl:gap-16 max-w-7xl mx-auto items-start">
             
-            {/* Contact Details & Verified Information */}
-            <div className="sticky top-28 space-y-8">
-              <div>
-                <h2 className="text-2xl font-bold text-midnight mb-2">Verified Company Information</h2>
-                <p className="text-sm text-slate-muted leading-relaxed font-light">
+            {/* ========================================================================= */}
+            {/* LEFT: INFORMATION AREA */}
+            {/* ========================================================================= */}
+            <div className="lg:col-span-5 sticky top-28 space-y-6">
+              <div className="mb-8">
+                <h2 className="text-2xl lg:text-3xl font-black text-[#102A43] mb-3 tracking-tight">Verified Company Information</h2>
+                <p className="text-[#64748B] leading-relaxed font-light text-[15px]">
                   A pioneer in vertical mobility since 2003 with 100+ installations across commercial, residential, and healthcare sectors.
                 </p>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex items-start gap-4 p-5 bg-pale-steel rounded-sm border border-slate-muted/10">
-                  <div className="p-3 bg-white rounded text-engineering shadow-sm">
-                    <MapPin className="w-5 h-5 text-electric" />
+              <div className="relative p-[1px] rounded-2xl bg-gradient-to-b from-[#E2E8F0] to-transparent">
+                <div className="bg-white rounded-2xl p-6 sm:p-8 space-y-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+                  
+                  {/* Item 1 */}
+                  <div className="flex items-start gap-5 group">
+                    <div className="w-12 h-12 rounded-xl bg-[#F0F7FF] border border-[#0062FF]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0062FF] group-hover:text-white transition-colors duration-300">
+                      <MapPin className="w-5 h-5 text-[#0062FF] group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[#102A43] text-sm tracking-wide uppercase mb-1">Operational Coverage</h3>
+                      <p className="text-[#64748B] font-light leading-relaxed text-sm">
+                        Providing turnkey engineering across <strong>Telangana & Andhra Pradesh</strong>.
+                        <br className="hidden sm:block" />
+                        <span className="text-[13px] mt-1 block">Key hubs: Hyderabad, Secunderabad, Warangal, Vijayawada, Visakhapatnam, Guntur.</span>
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-midnight text-sm mb-1">Operational Coverage</h3>
-                    <p className="text-slate-muted font-light leading-relaxed text-xs sm:text-sm">
-                      Providing turnkey engineering across <strong>Telangana & Andhra Pradesh</strong>.
-                      <br />
-                      Key hubs: Hyderabad, Secunderabad, Warangal, Vijayawada, Visakhapatnam, Guntur.
-                    </p>
-                  </div>
-                </div>
 
-                <div className="flex items-start gap-4 p-5 bg-pale-steel rounded-sm border border-slate-muted/10">
-                  <div className="p-3 bg-white rounded text-engineering shadow-sm">
-                    <Phone className="w-5 h-5 text-electric" />
+                  <div className="h-px w-full bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent" />
+
+                  {/* Item 2 */}
+                  <div className="flex items-start gap-5 group">
+                    <div className="w-12 h-12 rounded-xl bg-[#F0F7FF] border border-[#0062FF]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0062FF] group-hover:text-white transition-colors duration-300">
+                      <Phone className="w-5 h-5 text-[#0062FF] group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[#102A43] text-sm tracking-wide uppercase mb-2">Direct Engineering Hotline</h3>
+                      <div className="flex flex-col gap-1.5">
+                        <a href="tel:9515231555" onClick={() => trackEvent("click_phone", { label: "9515231555" })} className="text-[#102A43] font-medium hover:text-[#0062FF] transition-colors text-[15px] flex items-center gap-2">
+                          +91 9515231555
+                        </a>
+                        <a href="tel:9652951116" onClick={() => trackEvent("click_phone", { label: "9652951116" })} className="text-[#102A43] font-medium hover:text-[#0062FF] transition-colors text-[15px] flex items-center gap-2">
+                          +91 9652951116
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-midnight text-sm mb-1">Direct Engineering Hotline</h3>
-                    <div className="flex flex-col gap-1">
-                      <a
-                        href="tel:9515231555"
-                        onClick={() => trackEvent("click_phone", { label: "9515231555" })}
-                        className="text-slate-muted font-medium hover:text-electric transition-colors text-sm"
-                      >
-                        +91 9515231555
-                      </a>
-                      <a
-                        href="tel:9652951116"
-                        onClick={() => trackEvent("click_phone", { label: "9652951116" })}
-                        className="text-slate-muted font-medium hover:text-electric transition-colors text-sm"
-                      >
-                        +91 9652951116
+
+                  <div className="h-px w-full bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent" />
+
+                  {/* Item 3 */}
+                  <div className="flex items-start gap-5 group">
+                    <div className="w-12 h-12 rounded-xl bg-[#F0F7FF] border border-[#0062FF]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0062FF] group-hover:text-white transition-colors duration-300">
+                      <Mail className="w-5 h-5 text-[#0062FF] group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[#102A43] text-sm tracking-wide uppercase mb-1">Technical Inquiries Desk</h3>
+                      <a href="mailto:standardelevators.engworks12@gmail.com" onClick={() => trackEvent("click_email", { label: "technical_desk" })} className="text-[#64748B] font-light hover:text-[#0062FF] transition-colors break-all text-sm">
+                        standardelevators.engworks12@gmail.com
                       </a>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-start gap-4 p-5 bg-pale-steel rounded-sm border border-slate-muted/10">
-                  <div className="p-3 bg-white rounded text-engineering shadow-sm">
-                    <Mail className="w-5 h-5 text-electric" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-midnight text-sm mb-1">Technical Inquiries Desk</h3>
-                    <a
-                      href="mailto:standardelevators.engworks12@gmail.com"
-                      onClick={() => trackEvent("click_email", { label: "technical_desk" })}
-                      className="text-slate-muted font-light hover:text-electric transition-colors break-all text-xs sm:text-sm"
-                    >
-                      standardelevators.engworks12@gmail.com
-                    </a>
-                  </div>
                 </div>
               </div>
 
-              {/* Verified Trust Badges */}
-              <div className="p-6 bg-white border border-slate-muted/10 rounded-sm shadow-xs space-y-3">
-                <div className="flex items-center gap-2 text-xs font-bold text-midnight uppercase tracking-wider">
-                  <ShieldCheck className="w-4 h-4 text-electric" /> Verified Engineering Principles
-                </div>
-                <ul className="text-xs text-slate-muted space-y-1.5 list-disc list-inside font-light">
-                  <li>In-house structural fabrication & shaft alignment</li>
-                  <li>Bureau of Indian Standards (BIS) compliant safety hardware</li>
-                  <li>Automatic Rescue Device (ARD) power backup integration</li>
-                  <li>Comprehensive annual maintenance contract (AMC) support</li>
-                </ul>
-              </div>
+
             </div>
 
-            {/* Quotation / Enquiry Form */}
-            <div className="bg-white p-8 md:p-10 rounded-sm shadow-sm border border-slate-muted/10" id="quotation-form">
-              <h2 className="text-2xl font-bold text-midnight mb-2">Request Technical Quotation</h2>
-              <p className="text-xs text-slate-muted font-light mb-6">
-                Receive shaft layout dimensions and technical cost estimates tailored to your building.
-              </p>
+            {/* ========================================================================= */}
+            {/* RIGHT: QUOTATION FORM AREA */}
+            {/* ========================================================================= */}
+            <div className="lg:col-span-7" id="quotation-form">
+              <div className="bg-white p-8 md:p-12 rounded-3xl shadow-[0_10px_40px_rgba(6,25,45,0.06)] border border-[#E2E8F0] relative overflow-hidden">
+                
+                {/* Subtle blueprint grid background inside form container */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.02]" style={{ backgroundImage: `linear-gradient(#0062FF 1px, transparent 1px), linear-gradient(90deg, #0062FF 1px, transparent 1px)`, backgroundSize: '20px 20px' }}></div>
 
-              {errorMessage && (
-                <div className="mb-6 p-4 rounded-sm bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              {submitted ? (
-                <div className="bg-pale-steel p-8 text-center rounded-sm border border-electric/20" role="alert">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-electric mx-auto mb-4 shadow-sm">
-                    <CheckCircle2 className="w-8 h-8 text-electric" />
-                  </div>
-                  <h3 className="text-xl font-bold text-midnight mb-2">Quotation Request Received</h3>
-                  <p className="text-slate-muted font-light text-sm mb-4 leading-relaxed max-w-sm mx-auto">
-                    Thank you, <strong className="text-midnight">{formData.fullName}</strong>. Our engineering desk will review your building requirements and contact you at <strong className="text-midnight">{formData.phone}</strong>.
+                <div className="relative z-10 mb-8">
+                  <h2 className="text-2xl md:text-3xl font-black text-[#102A43] tracking-tight mb-2">Request Technical Quotation</h2>
+                  <p className="text-sm text-[#64748B] font-light leading-relaxed">
+                    Receive shaft layout dimensions and technical cost estimates tailored to your building.
                   </p>
-                  {submissionId && (
-                    <p className="text-xs text-slate-400 font-mono mb-6">
-                      Reference ID: {submissionId.slice(0, 12)}
+                </div>
+
+                {errorMessage && (
+                  <div className="mb-8 p-4 rounded-xl bg-red-50 border border-red-100 text-red-700 text-sm flex items-center gap-3 relative z-10">
+                    <AlertCircle className="w-5 h-5 shrink-0 text-red-500" />
+                    <span className="font-medium">{errorMessage}</span>
+                  </div>
+                )}
+
+                {submitted ? (
+                  <div className="bg-[#F8FAFC] p-10 text-center rounded-2xl border border-[#E2E8F0] relative z-10 animate-in fade-in zoom-in duration-500">
+                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-[#0062FF] mx-auto mb-6 shadow-sm border border-[#E2E8F0]">
+                      <CheckCircle2 className="w-10 h-10 text-[#0062FF]" />
+                    </div>
+                    <h3 className="text-2xl font-black text-[#102A43] mb-3">Quotation Request Received</h3>
+                    <p className="text-[#64748B] font-light text-[15px] mb-6 leading-relaxed max-w-sm mx-auto">
+                      Thank you, <strong className="text-[#102A43] font-medium">{formData.fullName}</strong>. Our engineering desk will review your building requirements and contact you at <strong className="text-[#102A43] font-medium">{formData.phone}</strong>.
                     </p>
-                  )}
-                  <div className="pt-4 border-t border-slate-muted/15 flex flex-col sm:flex-row gap-3 justify-center">
-                    <button
-                      onClick={() => {
-                        setSubmitted(false);
-                        setFormData({
-                          fullName: "",
-                          phone: "",
-                          email: "",
-                          buildingType: "",
-                          serviceRequired: "",
-                          projectLocation: "",
-                          message: "",
-                          consent: false,
-                          honeypot: "",
-                        });
-                      }}
-                      className="px-6 py-2.5 bg-electric hover:bg-electric-hover text-white text-xs font-semibold rounded-sm transition-colors"
-                    >
-                      Submit Another Inquiry
-                    </button>
-                    <a
-                      href="tel:9515231555"
-                      className="px-6 py-2.5 bg-white border border-slate-muted/20 text-midnight text-xs font-medium rounded-sm hover:border-electric transition-colors"
-                    >
-                      Call Desk Now: 9515231555
-                    </a>
-                  </div>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-                  {/* Anti-spam honeypot (invisible to humans) */}
-                  <input
-                    type="text"
-                    name="honeypot"
-                    value={formData.honeypot}
-                    onChange={handleInputChange}
-                    tabIndex={-1}
-                    autoComplete="off"
-                    className="hidden"
-                    aria-hidden="true"
-                  />
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label htmlFor="fullName" className="text-sm font-semibold text-midnight flex items-center gap-1">
-                        Full Name <span className="text-electric">*</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        name="fullName"
-                        required
-                        type="text"
-                        value={formData.fullName}
-                        onChange={handleInputChange}
-                        className="w-full p-3 bg-warm-white border border-slate-muted/20 rounded-sm focus:outline-none focus:border-electric focus:ring-1 focus:ring-electric transition-shadow text-sm"
-                        placeholder="e.g. Ramesh Kumar"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="phone" className="text-sm font-semibold text-midnight flex items-center gap-1">
-                        Phone Number <span className="text-electric">*</span>
-                      </label>
-                      <input
-                        id="phone"
-                        name="phone"
-                        required
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className="w-full p-3 bg-warm-white border border-slate-muted/20 rounded-sm focus:outline-none focus:border-electric focus:ring-1 focus:ring-electric transition-shadow text-sm"
-                        placeholder="e.g. 9515231555"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-semibold text-midnight">
-                        Email Address <span className="text-slate-muted font-normal text-xs">(Optional)</span>
-                      </label>
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        className="w-full p-3 bg-warm-white border border-slate-muted/20 rounded-sm focus:outline-none focus:border-electric focus:ring-1 focus:ring-electric transition-shadow text-sm"
-                        placeholder="e.g. name@domain.com"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label htmlFor="projectLocation" className="text-sm font-semibold text-midnight">
-                        Project City / Location <span className="text-slate-muted font-normal text-xs">(Optional)</span>
-                      </label>
-                      <input
-                        id="projectLocation"
-                        name="projectLocation"
-                        type="text"
-                        value={formData.projectLocation}
-                        onChange={handleInputChange}
-                        className="w-full p-3 bg-warm-white border border-slate-muted/20 rounded-sm focus:outline-none focus:border-electric focus:ring-1 focus:ring-electric transition-shadow text-sm"
-                        placeholder="e.g. Hyderabad, Secunderabad, Vijayawada"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label htmlFor="buildingType" className="text-sm font-semibold text-midnight flex items-center gap-1">
-                        Building Typology <span className="text-electric">*</span>
-                      </label>
-                      <select
-                        id="buildingType"
-                        name="buildingType"
-                        required
-                        value={formData.buildingType}
-                        onChange={handleInputChange}
-                        className="w-full p-3 bg-warm-white border border-slate-muted/20 rounded-sm focus:outline-none focus:border-electric focus:ring-1 focus:ring-electric transition-shadow text-sm"
-                      >
-                        <option value="">Select building type</option>
-                        <option value="Residential Bungalow / Villa">Private Bungalow / Independent Villa</option>
-                        <option value="Residential Apartment">Apartment / Gated Community (RWA)</option>
-                        <option value="Commercial Complex">Commercial Complex / Office Space</option>
-                        <option value="Hospital / Medical Facility">Hospital / Healthcare Facility</option>
-                        <option value="Industrial / Warehouse">Industrial Factory / Warehouse</option>
-                        <option value="Builder / Architecture Project">Architect / Turnkey Civil Project</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label htmlFor="serviceRequired" className="text-sm font-semibold text-midnight flex items-center gap-1">
-                        System Required <span className="text-electric">*</span>
-                      </label>
-                      <select
-                        id="serviceRequired"
-                        name="serviceRequired"
-                        required
-                        value={formData.serviceRequired}
-                        onChange={handleInputChange}
-                        className="w-full p-3 bg-warm-white border border-slate-muted/20 rounded-sm focus:outline-none focus:border-electric focus:ring-1 focus:ring-electric transition-shadow text-sm"
-                      >
-                        <option value="">Select elevator solution</option>
-                        <option value="Passenger Lifts">Passenger Lifts (Dynamo Premium)</option>
-                        <option value="MRL Lifts">Machine-Room-Less (MRL) Lifts</option>
-                        <option value="Goods Lifts">Goods & Freight Elevators</option>
-                        <option value="Hospital Lifts">Hospital & Stretcher Lifts</option>
-                        <option value="Hydraulic Elevators">Hydraulic Elevators</option>
-                        <option value="Modernization & AMC">Modernization & AMC Maintenance</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="message" className="text-sm font-semibold text-midnight">
-                      Project Notes / Shaft Dimensions <span className="text-slate-muted font-normal text-xs">(Optional)</span>
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={4}
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      className="w-full p-3 bg-warm-white border border-slate-muted/20 rounded-sm focus:outline-none focus:border-electric focus:ring-1 focus:ring-electric transition-shadow resize-none text-sm"
-                      placeholder="Number of floors/stops, pit depth, capacity, or specific cabin finishes required..."
-                    ></textarea>
-                  </div>
-
-                  <div className="flex items-start gap-3 pt-2">
-                    <input
-                      type="checkbox"
-                      id="consent"
-                      name="consent"
-                      required
-                      checked={formData.consent}
-                      onChange={handleInputChange}
-                      className="mt-1 w-4 h-4 rounded-sm border-slate-muted/30 text-electric focus:ring-electric"
-                    />
-                    <label htmlFor="consent" className="text-xs text-slate-muted font-light leading-relaxed">
-                      I agree to be contacted by Standard Engineering Works Elevators regarding this quotation. Details are kept confidential and used solely to prepare technical estimates. <span className="text-electric">*</span>
-                    </label>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || !formData.fullName || !formData.phone || !formData.buildingType || !formData.serviceRequired || !formData.consent}
-                    className="w-full py-4 bg-electric text-white font-medium rounded-sm hover:bg-electric-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-electric shadow-md shadow-electric/20"
-                  >
-                    {isSubmitting ? (
-                      <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
-                    ) : (
-                      <>
-                        <span>Submit Quotation Request</span>
-                        <Send className="w-4 h-4" />
-                      </>
+                    {submissionId && (
+                      <div className="inline-block px-4 py-2 bg-[#E2E8F0]/50 rounded-lg text-xs text-[#475569] font-mono mb-8">
+                        Reference ID: {submissionId.slice(0, 12)}
+                      </div>
                     )}
-                  </button>
-                  <p className="text-xs text-slate-muted font-light text-center">
-                    Fields marked with an asterisk (<span className="text-electric">*</span>) are required.
-                  </p>
-                </form>
-              )}
+                    <div className="pt-6 border-t border-[#E2E8F0] flex flex-col sm:flex-row gap-4 justify-center">
+                      <button
+                        onClick={() => {
+                          setSubmitted(false);
+                          setFormData({
+                            fullName: "", phone: "", email: "", buildingType: "", serviceRequired: "", projectLocation: "", message: "", consent: false, honeypot: "",
+                          });
+                        }}
+                        className="px-8 py-3.5 bg-[#0062FF] hover:bg-[#0052D6] text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-[#0062FF]/20"
+                      >
+                        Submit Another Inquiry
+                      </button>
+                      <a
+                        href="tel:9515231555"
+                        className="px-8 py-3.5 bg-white border border-[#E2E8F0] text-[#102A43] text-sm font-bold rounded-xl hover:border-[#0062FF] hover:text-[#0062FF] transition-all flex items-center justify-center gap-2"
+                      >
+                        <Phone className="w-4 h-4" /> Call Desk Now
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6 relative z-10" noValidate>
+                    {/* Anti-spam honeypot (invisible to humans) */}
+                    <input type="text" name="honeypot" value={formData.honeypot} onChange={handleInputChange} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label htmlFor="fullName" className="text-[13px] font-bold text-[#102A43] uppercase tracking-wider flex items-center gap-1">
+                          Full Name <span className="text-[#0062FF]">*</span>
+                        </label>
+                        <input
+                          id="fullName"
+                          name="fullName"
+                          required
+                          type="text"
+                          value={formData.fullName}
+                          onChange={handleInputChange}
+                          className="w-full p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#0062FF] focus:ring-4 focus:ring-[#0062FF]/10 transition-all text-[15px] font-medium text-[#102A43] placeholder-[#94A3B8]"
+                          placeholder="e.g. Ramesh Kumar"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="phone" className="text-[13px] font-bold text-[#102A43] uppercase tracking-wider flex items-center gap-1">
+                          Phone Number <span className="text-[#0062FF]">*</span>
+                        </label>
+                        <input
+                          id="phone"
+                          name="phone"
+                          required
+                          type="tel"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          className="w-full p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#0062FF] focus:ring-4 focus:ring-[#0062FF]/10 transition-all text-[15px] font-medium text-[#102A43] placeholder-[#94A3B8]"
+                          placeholder="e.g. 9515231555"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label htmlFor="email" className="text-[13px] font-bold text-[#102A43] uppercase tracking-wider">
+                          Email Address <span className="text-[#94A3B8] font-normal normal-case ml-1">(Optional)</span>
+                        </label>
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className="w-full p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#0062FF] focus:ring-4 focus:ring-[#0062FF]/10 transition-all text-[15px] font-medium text-[#102A43] placeholder-[#94A3B8]"
+                          placeholder="name@domain.com"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label htmlFor="projectLocation" className="text-[13px] font-bold text-[#102A43] uppercase tracking-wider">
+                          Project City / Location <span className="text-[#94A3B8] font-normal normal-case ml-1">(Optional)</span>
+                        </label>
+                        <input
+                          id="projectLocation"
+                          name="projectLocation"
+                          type="text"
+                          value={formData.projectLocation}
+                          onChange={handleInputChange}
+                          className="w-full p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#0062FF] focus:ring-4 focus:ring-[#0062FF]/10 transition-all text-[15px] font-medium text-[#102A43] placeholder-[#94A3B8]"
+                          placeholder="e.g. Hyderabad, Vijayawada"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label htmlFor="buildingType" className="text-[13px] font-bold text-[#102A43] uppercase tracking-wider flex items-center gap-1">
+                          Building Typology <span className="text-[#0062FF]">*</span>
+                        </label>
+                        <div className="relative">
+                          <select
+                            id="buildingType"
+                            name="buildingType"
+                            required
+                            value={formData.buildingType}
+                            onChange={handleInputChange}
+                            className="w-full p-4 pr-10 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#0062FF] focus:ring-4 focus:ring-[#0062FF]/10 transition-all text-[15px] font-medium text-[#102A43] appearance-none"
+                          >
+                            <option value="">Select building type</option>
+                            <option value="Residential Bungalow / Villa">Private Bungalow / Independent Villa</option>
+                            <option value="Residential Apartment">Apartment / Gated Community (RWA)</option>
+                            <option value="Commercial Complex">Commercial Complex / Office Space</option>
+                            <option value="Hospital / Medical Facility">Hospital / Healthcare Facility</option>
+                            <option value="Industrial / Warehouse">Industrial Factory / Warehouse</option>
+                            <option value="Builder / Architecture Project">Architect / Turnkey Civil Project</option>
+                          </select>
+                          <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-[#64748B]">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label htmlFor="serviceRequired" className="text-[13px] font-bold text-[#102A43] uppercase tracking-wider flex items-center gap-1">
+                          System Required <span className="text-[#0062FF]">*</span>
+                        </label>
+                        <div className="relative">
+                          <select
+                            id="serviceRequired"
+                            name="serviceRequired"
+                            required
+                            value={formData.serviceRequired}
+                            onChange={handleInputChange}
+                            className="w-full p-4 pr-10 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#0062FF] focus:ring-4 focus:ring-[#0062FF]/10 transition-all text-[15px] font-medium text-[#102A43] appearance-none"
+                          >
+                            <option value="">Select elevator solution</option>
+                            <option value="Passenger Lifts">Passenger Lifts (Dynamo Premium)</option>
+                            <option value="MRL Lifts">Machine-Room-Less (MRL) Lifts</option>
+                            <option value="Goods Lifts">Goods & Freight Elevators</option>
+                            <option value="Hospital Lifts">Hospital & Stretcher Lifts</option>
+                            <option value="Hydraulic Elevators">Hydraulic Elevators</option>
+                            <option value="Modernization & AMC">Modernization & AMC Maintenance</option>
+                          </select>
+                          <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-[#64748B]">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label htmlFor="message" className="text-[13px] font-bold text-[#102A43] uppercase tracking-wider">
+                        Project Notes / Shaft Dimensions <span className="text-[#94A3B8] font-normal normal-case ml-1">(Optional)</span>
+                      </label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        rows={4}
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        className="w-full p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#0062FF] focus:ring-4 focus:ring-[#0062FF]/10 transition-all resize-none text-[15px] font-medium text-[#102A43] placeholder-[#94A3B8]"
+                        placeholder="Number of floors/stops, pit depth, capacity, or specific cabin finishes required..."
+                      ></textarea>
+                    </div>
+
+                    <div className="flex items-start gap-3 pt-4 px-4 py-3 rounded-xl bg-[#F0F7FF] border border-[#0062FF]/10">
+                      <input
+                        type="checkbox"
+                        id="consent"
+                        name="consent"
+                        required
+                        checked={formData.consent}
+                        onChange={handleInputChange}
+                        className="mt-1 w-5 h-5 rounded border-[#CBD5E1] text-[#0062FF] focus:ring-[#0062FF]"
+                      />
+                      <label htmlFor="consent" className="text-[13px] text-[#475569] font-light leading-relaxed">
+                        I agree to be contacted by Standard Engineering Works Elevators regarding this quotation. Details are kept confidential and used solely to prepare technical estimates. <span className="text-[#0062FF] font-bold">*</span>
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !formData.fullName || !formData.phone || !formData.buildingType || !formData.serviceRequired || !formData.consent}
+                      className="w-full py-4.5 bg-[#102A43] hover:bg-[#061426] text-white font-bold text-[15px] tracking-wide rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0062FF]/20 shadow-[0_4px_15px_rgba(16,42,67,0.2)] mt-8"
+                    >
+                      {isSubmitting ? (
+                        <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+                      ) : (
+                        <>
+                          <span>Submit Quotation Request</span>
+                          <Send className="w-4 h-4 ml-1" />
+                        </>
+                      )}
+                    </button>
+                    <p className="text-[11px] text-[#94A3B8] font-light text-center uppercase tracking-wider">
+                      Fields marked with an asterisk (<span className="text-[#0062FF] font-bold">*</span>) are required
+                    </p>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -469,7 +481,7 @@ function ContactFormContent() {
 
 export default function ContactPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-warm-white" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F7F9FC]" />}>
       <ContactFormContent />
     </Suspense>
   );

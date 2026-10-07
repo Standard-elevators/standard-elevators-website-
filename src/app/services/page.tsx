@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import CustomizationCarousel from "@/components/CustomizationCarousel";
 import EngineeringServicesCarousel from "@/components/EngineeringServicesCarousel";
+import PrimarySolutionsCarousel from "@/components/PrimarySolutionsCarousel";
 import { 
   ArrowRight, Building2, Box, Stethoscope, ArrowUpFromLine, Layers, 
   Hammer, Zap, PaintRoller, Frame, Maximize
@@ -29,13 +30,13 @@ function getServiceIcon(slug: string, category?: string) {
 
 // Data for Other Engineering Services
 const OTHER_SERVICES = [
-  { title: "Structural Fabrication", icon: <Hammer className="w-5 h-5" />, desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
-  { title: "Glass & ACP Sheets", icon: <Maximize className="w-5 h-5" />, desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
-  { title: "UPVC Window & Door", icon: <Frame className="w-5 h-5" />, desc: "High-quality UPVC systems for residential and commercial spaces." },
-  { title: "Renovation Works", icon: <PaintRoller className="w-5 h-5" />, desc: "Complete architectural and interior renovation services." },
-  { title: "SS Railing", icon: <Layers className="w-5 h-5" />, desc: "Custom stainless steel handrails and balustrades." },
-  { title: "Electrical House Wirings", icon: <Zap className="w-5 h-5" />, desc: "Complete residential and commercial electrical wiring systems." },
-  { title: "Civil Works", icon: <Building2 className="w-5 h-5" />, desc: "Comprehensive civil construction and shaft preparation." },
+  { title: "Structural Fabrication", icon: <Hammer className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1541888086225-f641713cb094?q=80&w=800&auto=format&fit=crop", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
+  { title: "Glass & ACP Sheets", icon: <Maximize className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1507676184212-d0330a15233c?q=80&w=800&auto=format&fit=crop", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
+  { title: "UPVC Window & Door", icon: <Frame className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop", desc: "High-quality UPVC systems for residential and commercial spaces." },
+  { title: "Renovation Works", icon: <PaintRoller className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=800&auto=format&fit=crop", desc: "Complete architectural and interior renovation services." },
+  { title: "SS Railing", icon: <Layers className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1600607688969-a5bfcd64bd28?q=80&w=800&auto=format&fit=crop", desc: "Custom stainless steel handrails and balustrades." },
+  { title: "Electrical House Wirings", icon: <Zap className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=800&auto=format&fit=crop", desc: "Complete residential and commercial electrical wiring systems." },
+  { title: "Civil Works", icon: <Building2 className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop", desc: "Comprehensive civil construction and shaft preparation." },
 ];
 
 export default async function ServicesPage() {
@@ -56,7 +57,7 @@ export default async function ServicesPage() {
       />
 
       {/* SECTION 1: HERO */}
-      <section className="relative w-full min-h-[68vh] md:min-h-[73vh] lg:min-h-[78vh] max-h-[900px] flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden bg-[#06172B]">
+      <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden bg-[#06172B]">
         <video
           autoPlay
           muted
@@ -87,7 +88,7 @@ export default async function ServicesPage() {
       </section>
 
       {/* SECTION 2: ELEVATOR SOLUTIONS */}
-      <section className="py-24 md:py-32 bg-[#F7FAFD]">
+      <section id="primary-solutions" className="py-24 md:py-32 bg-[#F7FAFD]">
         <div className="site-container px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0A2342] mb-6">
@@ -98,124 +99,97 @@ export default async function ServicesPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-            {services.map((service, index) => {
-              const icon = getServiceIcon(service.slug, service.category);
-              return (
-                <div
-                  key={service.id || service.slug}
-                  id={service.slug}
-                  className="group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-[0_4px_20px_rgba(10,35,66,0.06)] hover:shadow-[0_20px_40px_rgba(8,119,249,0.12)] hover:border-[#0877F9]/30 transition-all duration-500"
-                >
-                  <div className="relative w-full aspect-[16/10] bg-[#06172B] overflow-hidden">
-                    <Image
-                      src={service.imageUrl || "/hero-elevator.jpg"}
-                      alt={service.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A2342]/90 via-[#0A2342]/20 to-transparent" />
-                    
-                    <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
-                      <span className="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest rounded-md border border-white/20">
-                        0{index + 1} &mdash; {service.category || "Lift"}
-                      </span>
-                      <div className="w-10 h-10 bg-[#0877F9] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#0877F9]/30 group-hover:scale-110 transition-transform duration-500">
-                        {icon}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 md:p-8 flex flex-col flex-1">
-                    <h3 className="text-xl md:text-2xl font-bold text-[#0A2342] mb-3 group-hover:text-[#0877F9] transition-colors">
-                      {service.title}
-                    </h3>
-                    <p className="text-[#475569] text-sm leading-relaxed mb-6 line-clamp-3">
-                      {service.description}
-                    </p>
-
-                    <div className="flex items-center gap-3 mt-auto pt-4 border-t border-[#F1F5F9]">
-                      <Link
-                        href={`/services/${service.slug}`}
-                        className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#0A2342] hover:bg-[#0877F9] text-white text-sm font-semibold rounded-lg transition-colors"
-                      >
-                        View Details
-                      </Link>
-                      <Link
-                        href={`/contact?service=${encodeURIComponent(service.title)}`}
-                        className="inline-flex items-center justify-center px-4 py-2.5 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#0A2342] text-sm font-semibold rounded-lg transition-colors"
-                      >
-                        Quote
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <PrimarySolutionsCarousel services={services} />
         </div>
       </section>
 
       {/* SECTION 3: ENGINEERING SERVICES */}
-      <EngineeringServicesCarousel initialData={settings.engineeringServices} />
+      <div id="engineering-services">
+        <EngineeringServicesCarousel initialData={settings.engineeringServices} />
+      </div>
 
       {/* SECTION 4: ELEVATOR CUSTOMIZATION & COMPONENTS */}
-      <CustomizationCarousel initialData={settings.customization} />
+      <div id="customization">
+        <CustomizationCarousel initialData={settings.customization} />
+      </div>
 
       {/* SECTION 5: OTHER ENGINEERING SERVICES */}
-      <section className="relative py-20 md:py-28 overflow-hidden">
+      <section id="other-services" className="relative py-16 md:py-24 bg-[#F8FAFC] overflow-hidden">
         
-        {/* Realistic Architectural Background Image */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/bg_engineering.jpg"
-            alt="Engineering and Structural Background"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            quality={60}
-          />
-          {/* Deep Corporate Blue Gradient Overlay to ensure text and cards remain visible */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#003A8C]/95 via-[#00225A]/95 to-[#001033]/95 mix-blend-multiply"></div>
+        {/* 3D Light Background Elements */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          {/* 3D Soft Light Orbs */}
+          <div className="absolute -top-[10%] -right-[5%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-white/90 to-[#E2E8F0]/40 shadow-[inset_0_0_80px_rgba(255,255,255,1)] blur-2xl"></div>
+          <div className="absolute top-[40%] -left-[10%] w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-[#0062FF]/5 to-transparent blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-[800px] h-[400px] bg-gradient-to-tl from-[#38BDF8]/10 to-transparent blur-3xl"></div>
           
-          {/* Soft ambient light to make the overlay feel premium */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#001033] via-transparent to-transparent opacity-80"></div>
+          {/* Subtle Grid Pattern for Technical Feel */}
+          <div className="absolute inset-0 opacity-[0.3]" 
+               style={{ 
+                 backgroundImage: `linear-gradient(#CBD5E1 1px, transparent 1px), linear-gradient(90deg, #CBD5E1 1px, transparent 1px)`, 
+                 backgroundSize: "40px 40px" 
+               }}>
+          </div>
         </div>
-        
-
 
         <div className="site-container px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl mb-16 md:mb-20">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[#38BDF8] text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm shadow-[0_0_20px_rgba(56,189,248,0.1)]">
+          <div className="max-w-3xl mb-12 md:mb-16">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0062FF]/20 bg-[#0062FF]/10 text-[#0062FF] text-[11px] font-bold uppercase tracking-widest mb-6 shadow-sm">
               Structural & Fabrication
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">Other Engineering Services</h2>
-            <p className="text-blue-100 text-lg md:text-xl font-light leading-relaxed">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#0B1F38] mb-6 tracking-tight">Other Engineering Services</h2>
+            <p className="text-slate-600 text-base md:text-lg font-light leading-relaxed">
               Our engineering expertise extends beyond elevators. We provide a range of structural and architectural services including heavy-duty fabrication, civil works, and premium exterior cladding.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {(settings.otherServices?.length > 0 ? settings.otherServices : OTHER_SERVICES).map((srv, idx) => (
-              <div key={idx} className="bg-white p-6 md:p-8 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] border border-transparent hover:border-[#0062FF]/30 hover:shadow-[0_20px_40px_-15px_rgba(0,98,255,0.4)] transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden">
-                {/* Card Top Highlight */}
-                <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-transparent via-[#0062FF] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                {(srv as any).image ? (
-                  <div className="w-12 h-12 bg-slate-50 border border-slate-100 mb-6 rounded-xl relative overflow-hidden group-hover:scale-110 transition-all duration-300">
-                    <Image src={(srv as any).image} alt={srv.title} fill className="object-cover" />
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+            {(settings.otherServices?.length > 0 ? settings.otherServices : OTHER_SERVICES).map((srv, idx) => {
+              const bgImage = (srv as any).image || OTHER_SERVICES[idx % OTHER_SERVICES.length].image;
+              const IconComp = (srv as any).icon || OTHER_SERVICES[idx % OTHER_SERVICES.length].icon;
+              
+              return (
+                <div key={idx} className="group relative h-[140px] md:h-[280px] rounded-2xl md:rounded-2xl bg-white md:bg-transparent overflow-hidden border border-[#CBD5E1] md:border-none shadow-xs md:shadow-[0_10px_25px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_rgba(0,98,255,0.25)] transition-all duration-500 cursor-pointer flex flex-col items-center justify-center md:block">
+                  
+                  {/* MOBILE VIEW: White Card Style */}
+                  <div className="md:hidden flex flex-col items-center text-center p-4">
+                    <div className="w-12 h-12 rounded-full bg-[#E5F3FF] flex items-center justify-center text-[#0A78F5] mb-3">
+                      {IconComp}
+                    </div>
+                    <h3 className="text-[13px] font-bold text-[#0B1F3A] leading-tight">
+                      {srv.title}
+                    </h3>
                   </div>
-                ) : (
-                  <div className="text-[#0062FF] mb-6 p-4 bg-slate-50 border border-slate-100 inline-block rounded-xl group-hover:scale-110 group-hover:bg-[#0062FF] group-hover:text-white transition-all duration-300">
-                    {(srv as any).icon || <Hammer className="w-5 h-5" />}
+
+                  {/* DESKTOP VIEW: Image Background Style */}
+                  <div className="hidden md:block absolute inset-0">
+                    <Image 
+                      src={bgImage} 
+                      alt={srv.title} 
+                      fill 
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F38]/95 via-[#0B1F38]/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <div className="absolute inset-0 p-5 flex flex-col justify-end">
+                      <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 flex items-center justify-center text-white mb-4 group-hover:-translate-y-1.5 group-hover:bg-[#0062FF] group-hover:border-[#0062FF] transition-all duration-300 shadow-md">
+                        {IconComp}
+                      </div>
+                      
+                      <h3 className="text-lg md:text-xl font-bold text-white mb-2 group-hover:-translate-y-1.5 transition-transform duration-300 delay-[50ms]">
+                        {srv.title}
+                      </h3>
+                      
+                      <p className="text-[13px] text-slate-300 leading-relaxed font-light line-clamp-2 group-hover:-translate-y-1.5 transition-transform duration-300 delay-100">
+                        {srv.desc}
+                      </p>
+                    </div>
+                    
+                    <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#0062FF] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
-                )}
-                
-                <h3 className="text-lg font-bold text-slate-900 mb-3">{srv.title}</h3>
-                <p className="text-sm text-slate-600 leading-relaxed font-light">{srv.desc}</p>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -8,8 +8,8 @@ export default function FinalCTA() {
   return (
     <section className="relative w-full flex flex-col lg:flex-row overflow-hidden border-t border-slate-100 bg-[#F7F9FC]">
       
-      {/* LEFT IMAGE AREA (Base Layer for Desktop, Top block for Mobile) */}
-      <div className="relative order-1 lg:order-none lg:absolute lg:inset-0 lg:right-[45%] w-full h-[240px] sm:h-[300px] lg:w-auto lg:h-full z-0">
+      {/* LEFT IMAGE AREA (Base Layer for Desktop, Hidden on Mobile) */}
+      <div className="hidden lg:block relative order-1 lg:order-none lg:absolute lg:inset-0 lg:right-[45%] w-full h-[240px] sm:h-[300px] lg:w-auto lg:h-full z-0">
         <Image 
           src="/images/3d_commercial.jpg"
           alt="Premium Elevator Architectural Lobby"

@@ -3,7 +3,10 @@ import { Metadata } from "next";
 import Hero from "@/components/Hero";
 import EngineeringCredentials from "@/components/EngineeringCredentials";
 import ElevatorSystems from "@/components/ElevatorSystems";
+import EngineeringServicesCarousel from "@/components/EngineeringServicesCarousel";
+import FounderLeadership from "@/components/FounderLeadership";
 import StandardDifference from "@/components/StandardDifference";
+
 import ProjectPortfolio from "@/components/ProjectPortfolio";
 import FinalCTA from "@/components/FinalCTA";
 import { constructMetadata, getWebSiteSchema } from "@/lib/seo";
@@ -35,7 +38,13 @@ export default function Home() {
       {/* SECTION C — ELEVATOR SOLUTIONS */}
       <ElevatorSystems />
 
-      {/* SECTION E — WHY STANDARD ENGINEERING WORKS */}
+      {/* SECTION D — ENGINEERING SERVICES */}
+      <EngineeringServicesCarousel showViewAllButton={true} />
+
+      {/* SECTION E — LEADERSHIP & VISION */}
+      <FounderLeadership />
+
+      {/* SECTION F — WHY STANDARD ENGINEERING WORKS */}
       <StandardDifference />
 
       {/* SECTION F — DYNAMIC REAL-DATA PROJECT PORTFOLIO */}

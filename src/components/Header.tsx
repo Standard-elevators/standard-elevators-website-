@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "@/components/TransitionLink";
-import { Menu, X, ChevronDown, ArrowRight, Phone, Home, User, Settings, Image as ImageIcon, Mail } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, ArrowRight, Phone, Home, User, Settings, Image as ImageIcon, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { DEFAULT_SERVICES, GALLERY_CATEGORIES_MENU, ENGINEERING_SERVICES_DATA, CUSTOMIZATION_DATA } from "@/data/defaultData";
 
@@ -126,33 +126,42 @@ export default function Header() {
   }
 
   // REUSABLE MEGA MENU ITEM COMPONENT
-  const MenuItem = ({ item, onClick }: { item: { name: string; href: string; desc: string; image: string }, onClick: () => void }) => (
-    <Link
-      href={item.href}
-      onClick={onClick}
-      className="group flex items-start gap-4 p-3 rounded-xl hover:bg-[#F8FAFC] transition-all border border-transparent hover:border-[#E2E8F0]"
-    >
-      <div className="relative w-14 h-11 rounded-[10px] overflow-hidden shrink-0 border border-slate-200 shadow-[0_2px_8px_rgba(0,0,0,0.06)] group-hover:shadow-[0_4px_12px_rgba(8,119,249,0.15)] transition-all">
-        <Image
-          src={item.image}
-          alt={item.name}
-          fill
-          className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
-        />
-      </div>
-      <div className="flex flex-col flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 mb-1">
-          <span className="text-[14px] font-bold text-[#0B1F38] group-hover:text-[#0877F9] transition-colors truncate">
-            {item.name}
-          </span>
-          <ArrowRight className="w-3.5 h-3.5 text-[#0877F9] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+  const MenuItem = ({ item, onClick }: { item: { name: string; href: string; desc: string; image: string }, onClick: () => void }) => {
+    // Check if active (avoid matching '#' links incorrectly)
+    const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/services' && !item.href.includes('#'));
+    
+    return (
+      <Link
+        href={item.href}
+        onClick={onClick}
+        className={`group flex items-start gap-4 p-3 rounded-xl transition-all border ${
+          isActive 
+            ? "bg-[#F0F7FF] border-[#0877F9]/30 shadow-sm" 
+            : "hover:bg-[#F8FAFC] border-transparent hover:border-[#E2E8F0]"
+        }`}
+      >
+        <div className={`relative w-14 h-11 rounded-[10px] overflow-hidden shrink-0 border shadow-[0_2px_8px_rgba(0,0,0,0.06)] group-hover:shadow-[0_4px_12px_rgba(8,119,249,0.15)] transition-all ${isActive ? 'border-[#0877F9]/40' : 'border-slate-200'}`}>
+          <Image
+            src={item.image}
+            alt={item.name}
+            fill
+            className={`object-cover transition-transform duration-500 ease-out ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
+          />
         </div>
-        <span className="text-[12px] text-[#64748B] leading-[1.4] line-clamp-2 font-light">
-          {item.desc}
-        </span>
-      </div>
-    </Link>
-  );
+        <div className="flex flex-col flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className={`text-[14px] font-bold transition-colors truncate ${isActive ? 'text-[#0877F9]' : 'text-[#0B1F38] group-hover:text-[#0877F9]'}`}>
+              {item.name}
+            </span>
+            <ArrowRight className={`w-3.5 h-3.5 text-[#0877F9] transition-all duration-300 ${isActive ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'}`} />
+          </div>
+          <span className={`text-[12px] leading-[1.4] line-clamp-2 font-light ${isActive ? 'text-[#0B1F38]/80 font-medium' : 'text-[#64748B]'}`}>
+            {item.desc}
+          </span>
+        </div>
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -191,19 +200,19 @@ export default function Header() {
           </div>
 
           {/* LEFT: LOGO */}
-          <div className="relative z-10 flex items-center shrink-0 w-auto lg:w-[23%] pl-4 lg:pl-6 py-2">
+          <div className="relative z-10 flex items-center justify-center shrink-0 w-auto lg:w-[23%] py-2 pl-3 md:pl-0">
             <a
               href="/"
-              className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0062FF] rounded-md transition-opacity hover:opacity-90 relative z-20 cursor-pointer"
+              className="flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0062FF] rounded-md transition-opacity hover:opacity-90 relative z-20 cursor-pointer"
               aria-label="Standard Engineering Works Elevators Home"
             >
               <Image
                 src="/logo-header-transparent.png"
                 alt="Standard Engineering Works Elevators"
-                width={260}
-                height={80}
+                width={280}
+                height={90}
                 priority
-                className="h-8 sm:h-10 lg:h-[48px] w-auto object-contain shrink-0"
+                className="h-[46px] sm:h-12 lg:h-[58px] w-auto object-contain shrink-0"
               />
             </a>
           </div>
@@ -437,7 +446,7 @@ export default function Header() {
                 <Link
                   href="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] rounded-xl transition-opacity hover:opacity-90 bg-white shadow-sm px-3 py-2 cursor-pointer"
+                  className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] rounded-xl transition-opacity hover:opacity-90 cursor-pointer"
                   aria-label="Standard Engineering Works Elevators Home"
                 >
                   <Image
@@ -446,7 +455,7 @@ export default function Header() {
                     width={220}
                     height={70}
                     priority
-                    className="h-9 w-auto object-contain"
+                    className="h-12 w-auto object-contain"
                   />
                 </Link>
 
@@ -468,19 +477,17 @@ export default function Header() {
 
                   if (item.hasMegaMenu) {
                     return (
-                      <div key={item.name} className="flex flex-col bg-white/5 rounded-2xl overflow-hidden border border-white/10">
+                      <div key={item.name} className="flex flex-col overflow-hidden">
                         <button
                           type="button"
                           onClick={() => setActiveMobileDropdown(isOpen ? null : item.name)}
-                          className={`w-full flex items-center justify-between px-4 py-3.5 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] active:bg-white/10 relative ${
+                          className={`w-full flex items-center gap-3.5 px-4 py-3.5 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] active:bg-white/10 relative ${
                             active ? "font-bold text-white" : "font-medium text-white/90"
                           }`}
                           aria-expanded={isOpen}
                         >
-                          <div className="flex items-center gap-3.5">
-                            {IconComponent && <IconComponent className="w-5 h-5 stroke-[2] shrink-0 text-white" />}
-                            <span className="text-[17px] sm:text-[18px] text-white tracking-wide">{item.name}</span>
-                          </div>
+                          {IconComponent && <IconComponent className="w-5 h-5 stroke-[2] shrink-0 text-white" />}
+                          <span className="text-[17px] sm:text-[18px] text-white tracking-wide">{item.name}</span>
                           <ChevronDown
                             className={`w-5 h-5 transition-transform duration-200 ${
                               isOpen ? "rotate-180 text-[#00E5FF]" : "text-white/70"
@@ -490,47 +497,47 @@ export default function Header() {
 
                         {/* MOBILE ACCORDION CONTENT */}
                         {isOpen && (
-                          <div className="px-3 pb-3 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200">
-                            {item.menuType === 'services' ? (
-                              <>
-                                <div className="flex flex-col gap-1.5">
-                                  <div className="text-[10px] font-bold text-[#00E5FF] uppercase tracking-wider px-2">Primary Solutions</div>
-                                  {primarySolutions.map((sub, idx) => (
-                                    <Link key={idx} href={sub.href} onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-3">
-                                      <div className="w-8 h-6 relative rounded overflow-hidden shrink-0"><Image src={sub.image!} alt={sub.name} fill className="object-cover" /></div>
-                                      <span className="truncate">{sub.name}</span>
-                                    </Link>
-                                  ))}
-                                </div>
-                                <div className="flex flex-col gap-1.5">
-                                  <div className="text-[10px] font-bold text-[#00E5FF] uppercase tracking-wider px-2">Engineering Services</div>
-                                  {engineeringServices.map((sub, idx) => (
-                                    <Link key={idx} href={sub.href} onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-3">
-                                      <div className="w-8 h-6 relative rounded overflow-hidden shrink-0"><Image src={sub.image!} alt={sub.name} fill className="object-cover" /></div>
-                                      <span className="truncate">{sub.name}</span>
-                                    </Link>
-                                  ))}
-                                </div>
-                              </>
-                            ) : (
-                              <div className="flex flex-col gap-1.5 pt-1">
-                                {GALLERY_CATEGORIES_MENU.map((sub, idx) => (
-                                  <Link key={idx} href={sub.href} onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-3">
-                                    <div className="w-8 h-6 relative rounded overflow-hidden shrink-0"><Image src={sub.image!} alt={sub.name} fill className="object-cover" /></div>
-                                    <span className="truncate">{sub.name}</span>
+                          <div className="px-2 pb-2 animate-in slide-in-from-top-2 duration-200">
+                            <div className="bg-[#EAF3FA] rounded-2xl p-2 flex flex-col gap-2">
+                              {item.menuType === 'services' ? (
+                                <>
+                                  <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className="bg-[#D1E6F7] text-[#0A64BC] font-bold py-3.5 px-4 rounded-xl flex items-center justify-between shadow-sm">
+                                    <span>All services</span>
+                                    <ArrowRight className="w-4 h-4 -rotate-45" />
                                   </Link>
-                                ))}
-                              </div>
-                            )}
-                            <div className="pt-2 border-t border-white/10 px-2">
-                              <Link
-                                href={item.href}
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-[13px] font-bold text-[#00E5FF] flex items-center justify-between py-2"
-                              >
-                                <span>{item.viewAllText}</span>
-                                <ArrowRight className="w-4 h-4" />
-                              </Link>
+                                  {primarySolutions.slice(0, 5).map((service, idx) => (
+                                    <Link key={idx} href={service.href} onClick={() => setIsMobileMenuOpen(false)} className="bg-white p-3 rounded-xl flex items-center gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
+                                      <div className="w-12 h-12 relative rounded-lg overflow-hidden shrink-0 border border-slate-100">
+                                        <Image src={service.image} alt={service.name} fill className="object-cover" />
+                                      </div>
+                                      <div className="flex flex-col flex-1 min-w-0 justify-center">
+                                        <span className="text-[#102A43] font-bold text-[14px] leading-tight mb-0.5">{service.name}</span>
+                                        <span className="text-[#64748B] text-[12px] truncate">{service.desc}</span>
+                                      </div>
+                                      <ChevronRight className="w-4 h-4 text-[#102A43] shrink-0" />
+                                    </Link>
+                                  ))}
+                                </>
+                              ) : (
+                                <>
+                                  <Link href="/gallery" onClick={() => setIsMobileMenuOpen(false)} className="bg-[#D1E6F7] text-[#0A64BC] font-bold py-3.5 px-4 rounded-xl flex items-center justify-between shadow-sm">
+                                    <span>All gallery</span>
+                                    <ArrowRight className="w-4 h-4 -rotate-45" />
+                                  </Link>
+                                  {GALLERY_CATEGORIES_MENU.map((sub, idx) => (
+                                    <Link key={idx} href={sub.href} onClick={() => setIsMobileMenuOpen(false)} className="bg-white p-3 rounded-xl flex items-center gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
+                                      <div className="w-12 h-12 relative rounded-lg overflow-hidden shrink-0 border border-slate-100">
+                                        <Image src={sub.image!} alt={sub.name} fill className="object-cover" />
+                                      </div>
+                                      <div className="flex flex-col flex-1 min-w-0 justify-center">
+                                        <span className="text-[#102A43] font-bold text-[14px] leading-tight mb-0.5">{sub.name}</span>
+                                        <span className="text-[#64748B] text-[12px] truncate">Explore {sub.name.toLowerCase()} projects</span>
+                                      </div>
+                                      <ChevronRight className="w-4 h-4 text-[#102A43] shrink-0" />
+                                    </Link>
+                                  ))}
+                                </>
+                              )}
                             </div>
                           </div>
                         )}
@@ -543,8 +550,8 @@ export default function Header() {
                       key={item.name}
                       href={item.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] bg-transparent hover:bg-white/10 active:bg-white/20 border border-transparent relative ${
-                        active ? "font-bold text-white border-white/10 bg-white/5" : "font-medium text-white/90"
+                      className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF] bg-transparent relative ${
+                        active ? "font-bold text-[#00E5FF]" : "font-medium text-white/90"
                       }`}
                     >
                       {IconComponent && <IconComponent className="w-5 h-5 stroke-[2] shrink-0 text-white" />}

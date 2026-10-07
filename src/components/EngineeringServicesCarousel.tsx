@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const DEFAULT_ENGINEERING_SERVICES = [
@@ -43,7 +44,7 @@ const DEFAULT_ENGINEERING_SERVICES = [
   }
 ];
 
-export default function EngineeringServicesCarousel({ initialData }: { initialData?: any[] }) {
+export default function EngineeringServicesCarousel({ initialData, showViewAllButton }: { initialData?: any[], showViewAllButton?: boolean }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [interactionState, setInteractionState] = useState(0);
   
@@ -118,7 +119,7 @@ export default function EngineeringServicesCarousel({ initialData }: { initialDa
   return (
     <section 
       id="engineering-services"
-      className="py-20 md:py-32 bg-white text-slate-900 relative overflow-hidden"
+      className="py-20 md:py-32 bg-white text-slate-900 relative"
       aria-labelledby="engineering-heading"
     >
       {/* Creative Light Background Ambience */}
@@ -148,9 +149,9 @@ export default function EngineeringServicesCarousel({ initialData }: { initialDa
           </p>
         </div>
 
-        {/* Expanding Cards Container */}
+        {/* Expanding Cards Container (DESKTOP ONLY) */}
         <div 
-          className="relative w-full h-[440px] md:h-[480px] flex gap-3 md:gap-4 touch-pan-y items-center"
+          className="relative w-full h-[480px] hidden md:flex gap-4 touch-pan-y items-center"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
@@ -172,16 +173,14 @@ export default function EngineeringServicesCarousel({ initialData }: { initialDa
               <motion.div
                 layout
                 transition={{ type: "spring", bounce: 0.1, duration: 0.6 }}
-                key={srv.id}
+                key={srv.id || `srv-${index}`}
                 onClick={() => {
                   setActiveIndex(index);
                   interact();
                 }}
                 onMouseEnter={() => {
-                  if (typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches) {
-                    setActiveIndex(index);
-                    interact();
-                  }
+                  setActiveIndex(index);
+                  interact();
                 }}
                 className={`group relative rounded-[2rem] overflow-hidden cursor-pointer ${
                   isActive 
@@ -259,48 +258,88 @@ export default function EngineeringServicesCarousel({ initialData }: { initialDa
           })}
         </div>
 
-        {/* Mobile / Tablet Arrows */}
-        <div className="flex items-center justify-center gap-6 mt-8 z-20 md:hidden">
-          <button
-            onClick={() => { prevSlide(); interact(); }}
-            onMouseEnter={() => {
-              if (typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches) {
-                prevSlide(); interact();
-              }
-            }}
-            className="w-12 h-12 rounded-full flex items-center justify-center bg-white/5 border border-white/10 text-white hover:bg-[#0062FF] hover:border-[#0062FF] transition-all hover:scale-110 active:scale-95 shadow-[0_0_20px_rgba(0,0,0,0.2)]"
-            aria-label="Previous service"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <div className="flex gap-2">
-            {services.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => { setActiveIndex(i); interact(); }}
-                onMouseEnter={() => {
-                  if (typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches) {
-                    setActiveIndex(i); interact();
-                  }
-                }}
-                className={`transition-all duration-300 rounded-full ${activeIndex === i ? 'w-6 h-2 bg-[#38BDF8]' : 'w-2 h-2 bg-white/30'}`}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
+        {/* MOBILE VIEW - Premium Sticky Deck Stack */}
+        <div className="block md:hidden relative w-full mt-4 pb-6">
+          <div className="flex flex-col w-full relative" style={{ gap: '20vh' }}>
+            {services.map((srv, index) => {
+              // Base top offset + progressive layer offset for the deck stacking effect
+              const stickyTop = 85 + (index * 16); 
+              
+              return (
+                <div 
+                  key={`mobile-${srv.id || index}`}
+                  className="sticky w-full rounded-[28px] overflow-hidden bg-white flex flex-col will-change-transform shadow-[0_-15px_40px_rgba(11,31,56,0.15)] border border-slate-100"
+                  style={{ 
+                    top: `${stickyTop}px`,
+                    height: '62vh',
+                    minHeight: '420px',
+                    maxHeight: '550px',
+                    zIndex: 10 + index
+                  }}
+                >
+                  {/* Image Area - 55% height */}
+                  <div className="relative w-full h-[55%] bg-[#040D1A] overflow-hidden shrink-0">
+                     <Image 
+                       src={srv.image} 
+                       alt={srv.title}
+                       fill
+                       sizes="(max-width: 768px) 100vw, 0vw"
+                       className="object-cover object-center"
+                     />
+                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                  </div>
+                  
+                  {/* Content Area - 45% height */}
+                  <div className="relative flex-1 p-6 md:p-8 flex flex-col bg-white z-10">
+                     <div className="flex items-center justify-between mb-3 w-full">
+                       <div className="flex items-center gap-3">
+                         <span className="text-[#0877F9] font-mono text-[12px] font-bold tracking-widest">
+                           {srv.id}
+                         </span>
+                         <div className="w-1 h-1 rounded-full bg-slate-300" />
+                         <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+                           FIELD CREW
+                         </span>
+                       </div>
+                       
+
+                     </div>
+                     
+                     <h3 className="text-[26px] font-extrabold text-[#0B1F38] mb-3 leading-tight tracking-tight">
+                       {srv.title}
+                     </h3>
+                     
+                     <p className="text-slate-600 text-[14px] leading-[1.65] line-clamp-3">
+                       {srv.desc}
+                     </p>
+                     
+                     <Link href={srv.href || "/services"} className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100/80 group focus:outline-none">
+                       <span className="text-[#0877F9] font-bold text-[13px] uppercase tracking-wider group-active:text-[#0051D4] transition-colors">
+                         Explore Service
+                       </span>
+                       <div className="w-9 h-9 rounded-full bg-[#F0F7FF] flex items-center justify-center text-[#0877F9] group-active:scale-95 transition-transform">
+                         <ArrowRight className="w-4 h-4" />
+                       </div>
+                     </Link>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <button
-            onClick={() => { nextSlide(); interact(); }}
-            onMouseEnter={() => {
-              if (typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches) {
-                nextSlide(); interact();
-              }
-            }}
-            className="w-12 h-12 rounded-full flex items-center justify-center bg-white/5 border border-white/10 text-white hover:bg-[#0062FF] hover:border-[#0062FF] transition-all hover:scale-110 active:scale-95 shadow-[0_0_20px_rgba(0,0,0,0.2)]"
-            aria-label="Next service"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
         </div>
+        
+        {/* View All Services Button */}
+        {showViewAllButton && (
+          <div className="mt-8 md:mt-16 text-center z-20 relative w-full">
+            <Link 
+              href="/services" 
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0062FF] hover:bg-[#0051D4] text-white rounded-full font-semibold transition-all duration-300 shadow-[0_4px_15px_rgba(0,98,255,0.4)] hover:shadow-[0_8px_25px_rgba(0,98,255,0.5)] hover:-translate-y-1 focus:outline-none"
+            >
+              <span className="tracking-wide">VIEW ALL SERVICES</span>
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

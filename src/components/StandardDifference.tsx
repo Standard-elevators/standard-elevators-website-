@@ -1,12 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { FileText, ShieldCheck, Wrench, Headset } from "lucide-react";
+import { FileText, ShieldCheck, Wrench, Headset, ChevronLeft, ChevronRight } from "lucide-react";
+
+const MOBILE_STAGES = [
+  { num: "01", title: "Planning", desc: "Detailed site study, architectural shaft drafting, and structural planning.", img: "/images/standard-difference-bg.jpg", icon: FileText },
+  { num: "02", title: "Manufacturing", desc: "High-grade steel fabrication, gearless motor assembly, and BIS quality checks.", img: "/images/card_modernization.jpg", icon: ShieldCheck },
+  { num: "03", title: "Installation", desc: "Skilled hoistway installation, guide rail alignment, and testing.", img: "/images/card_installation.jpg", icon: Wrench },
+  { num: "04", title: "After-Sales & AMC", desc: "Scientific maintenance schedules, safety audits, and rapid support.", img: "/images/3d_apartments.jpg", icon: Headset }
+];
 
 export default function StandardDifference() {
   return (
-    <section className="relative w-full overflow-hidden text-white py-20 md:py-28 group" style={{ backgroundColor: '#020617' }}>
+    <>
+      {/* ========================================== */}
+      {/* DESKTOP VERSION - STRICTLY UNTOUCHED       */}
+      {/* ========================================== */}
+      <section className="relative w-full overflow-hidden text-white py-20 md:py-28 group hidden md:block" style={{ backgroundColor: '#020617' }}>
       {/* 1. BACKGROUND IMAGE WITH REFINED CINEMATIC SHEET */}
       <div className="absolute inset-0 z-0">
         <Image 
@@ -132,5 +143,70 @@ export default function StandardDifference() {
 
       </div>
     </section>
+
+    {/* ========================================== */}
+    {/* MOBILE VERSION - PREMIUM VERTICAL TIMELINE */}
+    {/* ========================================== */}
+    <section className="block md:hidden relative w-full overflow-hidden text-white py-16 bg-[#020617]">
+      {/* Background Image Setup matches desktop */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="/images/standard-difference-bg.jpg" 
+          alt="Architectural Elevator Integration by Standard Engineering Works" 
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-[#020617]/75 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/90 via-[#020617]/60 to-[#020617]/90" />
+      </div>
+
+      <div className="relative z-10 w-full flex flex-col h-full">
+        {/* Intro Typography */}
+        <div className="mb-12 px-5 text-center">
+          <h2 className="text-[#38bdf8] text-[11px] font-bold tracking-[0.2em] uppercase mb-3 flex items-center justify-center gap-2">
+            <span className="w-1.5 h-1.5 bg-[#38bdf8] rounded-full shadow-[0_0_8px_#38bdf8]" />
+            The Standard Difference
+          </h2>
+          <h3 className="text-[28px] font-extrabold text-white leading-[1.2] tracking-tight mb-4 drop-shadow-md">
+            Architectural Integration <span className="text-[#38bdf8]">&amp;</span><br/>Engineering Focus
+          </h3>
+          <p className="text-slate-300 text-[14px] leading-relaxed px-2 font-light">
+            Precision engineering that connects design, performance, and people.
+          </p>
+        </div>
+
+        {/* Vertical Timeline */}
+        <div className="relative w-full px-6">
+          
+          {/* Continuous Vertical Line */}
+          <div className="absolute left-[52px] top-[28px] bottom-[28px] w-[2px] bg-[#38bdf8]/40 shadow-[0_0_10px_#38bdf8]" />
+
+          <div className="flex flex-col gap-10 relative z-10">
+            {MOBILE_STAGES.map((stage, i) => (
+              <div key={i} className="relative flex items-start w-full">
+                
+                {/* Glowing Circular Node */}
+                <div className="relative z-10 w-[56px] h-[56px] rounded-full bg-[#020617] border-[2.5px] border-[#38bdf8] flex items-center justify-center shadow-[0_0_15px_rgba(56,189,248,0.5),inset_0_0_10px_rgba(56,189,248,0.3)] shrink-0">
+                  <stage.icon size={22} className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" />
+                </div>
+                
+                {/* Text Content */}
+                <div className="pl-6 pt-1 flex-1">
+                  <div className="text-[12px] font-bold text-[#38bdf8] mb-1 tracking-widest uppercase">STAGE {stage.num}</div>
+                  <h4 className="text-[20px] font-bold text-white mb-2 leading-tight">{stage.title}</h4>
+                  <p className="text-[14px] font-light leading-[1.65] text-slate-300">
+                    {stage.desc}
+                  </p>
+                </div>
+                
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </section>
+    </>
   );
 }

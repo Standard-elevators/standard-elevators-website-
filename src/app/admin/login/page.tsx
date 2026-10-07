@@ -64,10 +64,10 @@ function AdminLoginForm() {
           <Image
             src="/logo-header.png"
             alt="Standard Engineering Works Elevators Logo"
-            width={240}
-            height={46}
+            width={320}
+            height={62}
             priority
-            className="h-10 sm:h-11 w-auto mx-auto object-contain"
+            className="h-16 sm:h-20 w-auto mx-auto object-contain"
           />
         </Link>
         <h1 className="text-2xl font-bold tracking-tight text-white mb-2">

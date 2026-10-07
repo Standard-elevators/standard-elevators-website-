@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
+import AdminHeader from "@/components/admin/AdminHeader";
 
 export const metadata: Metadata = {
   title: "Admin Portal | Standard Engineering Works Elevators",
@@ -18,6 +19,7 @@ export default function AdminLayout({
   return (
     <AdminAuthProvider>
       <div className="min-h-screen bg-[#071221] text-slate-100 flex flex-col">
+        <AdminHeader />
         {children}
       </div>
     </AdminAuthProvider>

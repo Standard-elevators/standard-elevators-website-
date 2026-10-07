@@ -8,12 +8,10 @@ import AdminGuard from "@/components/admin/AdminGuard";
 import { getAllServices, getAllGallery } from "@/lib/firestore-data";
 import { ServiceItem, GalleryItem } from "@/types/data";
 import {
-  LogOut,
   Building,
   Image as ImageIcon,
   MessageSquare,
   ShieldCheck,
-  ExternalLink,
   ChevronRight,
   Database,
   Layers,
@@ -62,8 +60,7 @@ function parseTimestamp(ts: unknown): number | null {
 }
 
 function AdminDashboardContent() {
-  const { user, adminProfile, logout } = useAdminAuth();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { user, adminProfile } = useAdminAuth();
 
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
@@ -116,15 +113,6 @@ function AdminDashboardContent() {
     setIsRefreshing(true);
     setError(null);
     loadData();
-  };
-
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      await logout();
-    } finally {
-      setIsLoggingOut(false);
-    }
   };
 
   // Derive real statistics from verified Firestore data
@@ -194,89 +182,7 @@ function AdminDashboardContent() {
   const latestActivities = recentActivities.slice(0, 6);
 
   return (
-    <div className="min-h-screen bg-[#071221] text-slate-100 flex flex-col">
-      {/* Admin Top Navigation Bar */}
-      <header className="sticky top-0 z-30 bg-[#071221]/80 backdrop-blur-xl border-b border-white/5 px-4 sm:px-8 py-4 flex items-center justify-between shadow-sm">
-        {/* Left Side: Logo & Badge */}
-        <div className="flex items-center gap-6">
-          <Link href="/admin" className="flex items-center group">
-            <div className="relative h-10 sm:h-12 w-[180px] sm:w-[220px] transition-transform duration-300 group-hover:scale-[1.02]">
-              <Image
-                src="/logo-header.png"
-                alt="Standard Engineering Works Elevators Logo"
-                fill
-                priority
-                className="object-contain object-left"
-              />
-            </div>
-          </Link>
-          <div className="hidden md:flex items-center gap-2.5 px-3 py-1.5 bg-[#0062FF]/10 border border-[#0062FF]/20 rounded-lg shadow-inner">
-            <div className="relative flex items-center justify-center w-2 h-2">
-              <span className="absolute w-full h-full rounded-full bg-emerald-400 animate-ping opacity-75" />
-              <span className="relative w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            </div>
-            <span className="text-[11px] font-bold tracking-widest uppercase text-[#38BDF8]">
-              Admin Control
-            </span>
-          </div>
-        </div>
-
-        {/* Right Side: Controls & Profile */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          <div className="hidden sm:flex items-center gap-2">
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing || isLoading}
-              title="Refresh Data"
-              className="flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#0062FF]" : ""}`} />
-              <span>Refresh</span>
-            </button>
-
-            <Link
-              href="/"
-              target="_blank"
-              className="flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
-            >
-              <span>Live Website</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          <div className="h-6 w-px bg-white/10 hidden sm:block" />
-
-          {/* User Profile & Sign Out */}
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex flex-col items-end justify-center">
-              <div className="text-[13px] font-semibold text-white tracking-wide">
-                {user?.email?.split('@')[0] || "Administrator"}
-              </div>
-              <div className="text-[10px] text-[#0062FF] font-bold uppercase tracking-wider">
-                {adminProfile?.role || "ADMIN"}
-              </div>
-            </div>
-
-            <button
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              aria-label="Sign Out"
-              title="Sign Out"
-              className="p-2 sm:px-4 sm:py-2 bg-[#0C1A2E] hover:bg-red-500/10 text-slate-300 hover:text-red-400 border border-white/5 hover:border-red-500/20 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500/50 shadow-sm"
-            >
-              {isLoggingOut ? (
-                <Loader2 className="w-4 h-4 animate-spin text-red-400" />
-              ) : (
-                <>
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">Sign Out</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <div className="flex-grow flex flex-col w-full">
       {/* Main Admin Workspace */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 sm:py-10">
         {/* Welcome Banner */}
@@ -315,14 +221,24 @@ function AdminDashboardContent() {
 
         {/* Real Data Metrics Strip */}
         <div className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-[#0070F3]" />
-              <span>Live Firestore Content Metrics</span>
-            </h2>
-            <span className="text-xs text-slate-500">
-              Verified from Firebase Firestore
-            </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div>
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-[#0070F3]" />
+                <span>Live Firestore Content Metrics</span>
+              </h2>
+              <span className="text-xs text-slate-500">
+                Verified from Firebase Firestore
+              </span>
+            </div>
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing || isLoading}
+              className="flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white px-3 py-2 rounded-lg bg-[#0C1A2E] hover:bg-[#10243E] border border-white/10 hover:border-white/20 transition-all disabled:opacity-50 shadow-sm w-fit"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#0062FF]" : ""}`} />
+              <span>Refresh Metrics</span>
+            </button>
           </div>
 
           {isLoading ? (
@@ -614,48 +530,7 @@ function AdminDashboardContent() {
           )}
         </div>
 
-        {/* Security & Infrastructure Info Grid */}
-        <div className="bg-[#0C1A2E]/80 border border-white/10 rounded-2xl p-6">
-          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/10 text-slate-300">
-            <ShieldCheck className="w-4 h-4 text-[#0070F3]" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-              Security & Environment Status
-            </h3>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            <div className="bg-[#071221] p-3.5 rounded-xl border border-white/5">
-              <span className="text-slate-500 block mb-1">Authentication Mode</span>
-              <span className="text-slate-200 font-medium flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                Firebase Email/Password
-              </span>
-            </div>
-
-            <div className="bg-[#071221] p-3.5 rounded-xl border border-white/5">
-              <span className="text-slate-500 block mb-1">Authorization Model</span>
-              <span className="text-slate-200 font-medium flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5 text-blue-400" />
-                Firestore Admins Allowlist
-              </span>
-            </div>
-
-            <div className="bg-[#071221] p-3.5 rounded-xl border border-white/5">
-              <span className="text-slate-500 block mb-1">Session UID</span>
-              <span className="text-[#38BDF8] font-mono text-[11px] truncate block" title={user?.uid}>
-                {user?.uid}
-              </span>
-            </div>
-
-            <div className="bg-[#071221] p-3.5 rounded-xl border border-white/5">
-              <span className="text-slate-500 block mb-1">Storage Pipeline</span>
-              <span className="text-slate-200 font-medium flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-purple-400" />
-                Cloudinary Signed API
-              </span>
-            </div>
-          </div>
-        </div>
       </main>
 
       {/* Admin Footer */}

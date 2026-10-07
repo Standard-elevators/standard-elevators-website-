@@ -61,13 +61,13 @@ export default function ProjectPortfolio() {
   }, []);
 
 
-  // Mobile Carousel Auto-play (5-7 seconds interval, paused on interaction)
+  // Mobile Carousel Auto-play (paused on interaction)
   useEffect(() => {
     if (items.length <= 1 || isInteracting) return;
 
     autoPlayTimerRef.current = setInterval(() => {
       setActiveMobileIndex((prev) => (prev + 1) % items.length);
-    }, 6000);
+    }, 3500);
 
     return () => {
       if (autoPlayTimerRef.current) clearInterval(autoPlayTimerRef.current);
@@ -218,7 +218,7 @@ export default function ProjectPortfolio() {
               {featuredItem && (
                 <div className={`${supportingItemsPool.length === 0 ? "col-span-12" : "col-span-12 lg:col-span-6"} row-span-2`}>
                   <Link
-                    href="/gallery"
+                    href={`/gallery${featuredItem.category ? `?category=${encodeURIComponent(featuredItem.category)}` : ''}`}
                     className="group relative w-full h-full block rounded-2xl overflow-hidden bg-[#071324] border border-[#102B46]/20 shadow-[0_10px_30px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_45px_rgba(8,119,249,0.18)] hover:-translate-y-1.5 transition-all duration-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9]"
                   >
                     {/* Background Photograph */}
@@ -274,7 +274,7 @@ export default function ProjectPortfolio() {
                 return (
                   <div key={uniqueKey} className="col-span-6 lg:col-span-3 row-span-1">
                     <Link
-                      href="/gallery"
+                      href={`/gallery${item.category ? `?category=${encodeURIComponent(item.category)}` : ''}`}
                       className="group relative w-full h-full block rounded-2xl overflow-hidden bg-[#071324] border border-[#102B46]/20 shadow-[0_8px_25px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_rgba(8,119,249,0.15)] hover:-translate-y-1.5 transition-all duration-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9]"
                     >
                       {/* Background Photograph */}
@@ -347,128 +347,39 @@ export default function ProjectPortfolio() {
         )}
 
         {/* ========================================================================= */}
-        {/* MOBILE HORIZONTAL CAROUSEL (Visible on screen < 768px)                    */}
-        {/* Centered active card with subtle previous & next peeking hints            */}
+        {/* ========================================================================= */}
+        {/* MOBILE BENTO GRID (Visible on screen < 768px)                             */}
+        {/* Exact reference match: Pure images, no text, bento layout                 */}
         {/* ========================================================================= */}
         {!isLoading && items.length > 0 && (
-          <div className="block md:hidden">
-            
-            {/* Carousel Track Container */}
-            <div 
-              className="relative w-full overflow-hidden py-4 select-none touch-pan-y"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div 
-                className="flex items-center transition-transform duration-500 ease-out"
-                style={{
-                  transform: `translateX(calc(50% - 150px - ${activeMobileIndex * 280}px))`,
-                }}
-              >
-                {items.map((item, idx) => {
-                  const isActive = idx === activeMobileIndex;
-                  const uniqueKey = item.id || `mobile-${idx}`;
+          <div className="block md:hidden mt-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {items.slice(0, 4).map((item, idx) => {
+                const uniqueKey = item.id || `mobile-bento-${idx}`;
+                
+                // Pattern: Full width, half, half, full width
+                const isFullWidth = idx === 0 || idx === 3;
+                const colClass = isFullWidth ? "col-span-2" : "col-span-1";
+                const heightClass = isFullWidth ? "h-[240px] sm:h-[280px]" : "h-[180px] sm:h-[200px]";
 
-                  return (
-                    <div 
-                      key={uniqueKey}
-                      className="shrink-0 px-2 transition-all duration-500 ease-out"
-                      style={{
-                        width: "280px",
-                        opacity: isActive ? 1 : 0.45,
-                        transform: isActive ? "scale(1)" : "scale(0.92)",
-                      }}
-                    >
-                      <Link
-                        href="/gallery"
-                        className={`block relative h-[380px] rounded-2xl overflow-hidden bg-[#071324] transition-all duration-300 ${
-                          isActive 
-                            ? "border-2 border-[#0877F9] shadow-[0_16px_40px_rgba(8,119,249,0.25)]" 
-                            : "border border-white/10 shadow-md"
-                        }`}
-                      >
-                        {/* Image */}
-                        <div className="absolute inset-0 z-0">
-                          <Image
-                            src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
-                            alt={item.altText || item.title}
-                            fill
-                            sizes="280px"
-                            onError={() => handleImageError(uniqueKey)}
-                            className="object-cover object-center"
-                          />
-                        </div>
-
-                        {/* Gradient */}
-                        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#040D1A]/95 via-[#040D1A]/40 to-transparent" />
-
-                        {/* Top Category Badge */}
-                        <div className="absolute top-4 left-4 z-20">
-                          <span className="px-2.5 py-1 bg-[#0877F9]/90 backdrop-blur-md text-white text-[10px] font-bold tracking-wider uppercase rounded-full shadow-xs">
-                            {item.category || "Installation"}
-                          </span>
-                        </div>
-
-                        {/* Bottom Text Content */}
-                        <div className="absolute inset-x-0 bottom-0 z-20 p-5 flex items-end justify-between gap-3">
-                          <div className="min-w-0">
-                            <h4 className="text-base font-bold text-white leading-snug line-clamp-2 drop-shadow-md">
-                              {item.title}
-                            </h4>
-                          </div>
-
-                          <div className="w-8 h-8 rounded-full bg-[#0877F9] text-white flex items-center justify-center shrink-0 shadow-md">
-                            <ArrowUpRight className="w-4 h-4" />
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  );
-                })}
-              </div>
+                return (
+                  <Link
+                    key={uniqueKey}
+                    href={`/gallery${item.category ? `?category=${encodeURIComponent(item.category)}` : ''}`}
+                    className={`${colClass} ${heightClass} relative rounded-[24px] overflow-hidden bg-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.06)] active:scale-[0.98] transition-transform`}
+                  >
+                    <Image
+                      src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
+                      alt={item.altText || item.title || "Project Image"}
+                      fill
+                      sizes={isFullWidth ? "100vw" : "50vw"}
+                      onError={() => handleImageError(uniqueKey)}
+                      className="object-cover object-center"
+                    />
+                  </Link>
+                );
+              })}
             </div>
-
-            {/* Mobile Carousel Controls & Pagination Dots */}
-            <div className="flex items-center justify-between mt-4 px-2">
-              <button
-                type="button"
-                onClick={prevMobile}
-                className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center active:scale-95 transition-all shadow-xs"
-                aria-label="Previous project"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              {/* Dots */}
-              <div className="flex items-center gap-1.5">
-                {items.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setIsInteracting(true);
-                      setActiveMobileIndex(idx);
-                      setTimeout(() => setIsInteracting(false), 3000);
-                    }}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      idx === activeMobileIndex ? "w-6 bg-[#0877F9]" : "w-2 bg-slate-300"
-                    }`}
-                    aria-label={`Go to project slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={nextMobile}
-                className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center active:scale-95 transition-all shadow-xs"
-                aria-label="Next project"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-
           </div>
         )}
 

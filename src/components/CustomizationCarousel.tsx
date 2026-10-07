@@ -214,7 +214,7 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
 
             return (
               <div
-                key={card.id}
+                key={card.id || `custom-${index}`}
                 onClick={() => { setActiveIndex(index); interact(); }}
                 className={`absolute top-1/2 left-1/2 w-full max-w-[280px] sm:max-w-[300px] md:max-w-[340px] lg:max-w-[360px] h-[450px] sm:h-[400px] md:h-[420px] lg:h-[440px] rounded-[24px] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] cursor-pointer select-none group/card`}
                 style={{
@@ -225,13 +225,13 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
                 aria-hidden={!isActive}
               >
                 {/* Card Surface */}
-                <div className={`relative w-full h-full rounded-[24px] overflow-hidden bg-white/95 backdrop-blur-xl border ${isActive ? 'border-[#0062FF]/30 shadow-[0_30px_70px_-15px_rgba(0,98,255,0.2)]' : 'border-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)]'} flex flex-col group transition-all duration-500`}>
+                <div className={`relative w-full h-full rounded-[24px] overflow-hidden bg-[#0A1628]/70 backdrop-blur-2xl border ${isActive ? 'border-[#38BDF8]/40 shadow-[0_30px_70px_-15px_rgba(56,189,248,0.25)]' : 'border-white/10 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]'} flex flex-col group transition-all duration-500`}>
                   
                   {/* Natural Depth Dimming Overlay for Background Side Cards */}
-                  <div className={`absolute inset-0 bg-[#050C17] transition-opacity duration-500 pointer-events-none z-20 ${isActive ? 'opacity-0' : Math.abs(diff) === 1 ? 'opacity-[0.3]' : 'opacity-70'}`} />
+                  <div className={`absolute inset-0 bg-[#050C17] transition-opacity duration-500 pointer-events-none z-20 ${isActive ? 'opacity-0' : Math.abs(diff) === 1 ? 'opacity-[0.4]' : 'opacity-80'}`} />
 
                   {/* Image Area - Expands to full height on background cards, compact on active card */}
-                  <div className={`relative w-full overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isActive ? 'h-[50%] border-b border-slate-100' : 'h-full'}`}>
+                  <div className={`relative w-full overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isActive ? 'h-[50%] border-b border-white/10' : 'h-full'}`}>
                     <Image
                       src={card.image}
                       alt={card.title}
@@ -240,34 +240,38 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
                       className={`object-cover transition-transform duration-700 ease-out ${isActive ? 'scale-100 group-hover/card:scale-110' : 'scale-105'}`}
                       draggable={false}
                     />
-                    {/* Removed the white gradient overlay to ensure complete image clarity */}
-                    {/* Subtle border glow on image */}
-                    {isActive && <div className="absolute inset-0 ring-1 ring-inset ring-[#0062FF]/10 rounded-t-[24px] pointer-events-none"></div>}
+                    {/* Subtle inner shadow/gradient on image to blend with dark card */}
+                    {isActive && (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0A1628]/90 to-transparent pointer-events-none" />
+                        <div className="absolute inset-0 ring-1 ring-inset ring-[#38BDF8]/20 rounded-t-[24px] pointer-events-none" />
+                      </>
+                    )}
                   </div>
 
                   {/* Content Area - ONLY visible on the Active Card, hidden completely on background cards */}
-                  <div className={`flex flex-col p-5 lg:p-6 pt-2 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+                  <div className={`flex flex-col p-5 lg:p-6 pt-0 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] relative z-10 ${
                     isActive 
                       ? 'flex-1 opacity-100 translate-y-0' 
                       : 'h-0 opacity-0 overflow-hidden pointer-events-none p-0 invisible'
                   }`}>
-                    <h3 className="text-xl font-bold mb-2 text-[#0B1F38]">
+                    <h3 className="text-xl font-bold mb-2 text-white">
                       {card.title}
                     </h3>
-                    <p className="text-xs md:text-sm text-slate-600 leading-relaxed mb-4 font-light">
+                    <p className="text-xs md:text-sm text-[#94A3B8] leading-relaxed mb-4 font-light">
                       {card.description}
                     </p>
                     
                     {/* Features List */}
                     <div className="mt-auto">
-                      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent mb-3"></div>
-                      <ul className="grid grid-cols-1 gap-y-2">
+                      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/15 to-transparent mb-3"></div>
+                      <ul className="grid grid-cols-1 gap-y-2.5">
                         {card.items.map((item: string, i: number) => (
-                          <li key={i} className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 bg-[#0062FF]/10 text-[#0062FF]">
-                              <Check className="w-2.5 h-2.5 stroke-[3]" />
+                          <li key={i} className="flex items-center gap-2.5 group/item">
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-[#38BDF8]/10 text-[#38BDF8] border border-[#38BDF8]/30 group-hover/item:bg-[#38BDF8]/20 transition-colors">
+                              <Check className="w-3 h-3 stroke-[3]" />
                             </div>
-                            <span className="text-xs font-medium text-slate-700">
+                            <span className="text-xs md:text-[13px] font-medium text-slate-300 group-hover/item:text-white transition-colors">
                               {item}
                             </span>
                           </li>
@@ -296,7 +300,6 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
               <button
                 key={i}
                 onClick={() => { setActiveIndex(i); interact(); }}
-                onMouseEnter={() => { setActiveIndex(i); interact(); }}
                 className={`transition-all duration-500 rounded-full ${activeIndex === i ? 'w-10 h-2 bg-[#0062FF] shadow-[0_0_15px_rgba(0,98,255,0.4)]' : 'w-2 h-2 bg-slate-300 hover:bg-[#0062FF]/40'}`}
                 aria-label={`Go to slide ${i + 1}`}
                 aria-current={activeIndex === i ? "true" : "false"}

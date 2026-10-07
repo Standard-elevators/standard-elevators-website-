@@ -31,15 +31,7 @@ function InstagramIcon({ className = "w-4 h-4" }: { className?: string }) {
   );
 }
 
-function LinkedinIcon({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect width="4" height="12" x="2" y="9" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  );
-}
+
 
 function YoutubeIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -93,10 +85,10 @@ export default function Footer() {
       <div className="relative z-10 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 flex flex-col lg:flex-row pt-16 pb-12 lg:pt-20 lg:pb-14">
         
         {/* TEXT COLUMNS WRAPPER */}
-        <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 lg:pr-[30%]">
+        <div className="w-full grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-10 lg:gap-8 xl:gap-12 lg:pr-[30%]">
           
           {/* COLUMN 1: BRAND (lg:col-span-4) */}
-          <div className="lg:col-span-4 flex flex-col">
+          <div className="col-span-2 sm:col-span-2 lg:col-span-4 flex flex-col">
             {/* Logo */}
             <Link href="/" className="inline-block mb-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9] rounded-md">
               <Image 
@@ -117,12 +109,11 @@ export default function Footer() {
             {/* Social Icons */}
             <div className="flex items-center gap-3">
               {[
-                { icon: FacebookIcon, label: "Facebook" },
-                { icon: InstagramIcon, label: "Instagram" },
-                { icon: LinkedinIcon, label: "LinkedIn" },
-                { icon: YoutubeIcon, label: "YouTube" }
+                { icon: FacebookIcon, label: "Facebook", href: "https://www.facebook.com/share/r/17sFZPW8Uw/?mibextid=wwXIfr" },
+                { icon: InstagramIcon, label: "Instagram", href: "https://www.instagram.com/standardelevators.engworks12/" },
+                { icon: YoutubeIcon, label: "YouTube", href: "https://youtube.com/@standardelevators1212?si=Hrhd1KxKQBozTIXp" }
               ].map((social, idx) => (
-                <a key={idx} href="#" aria-label={social.label} className="w-[36px] h-[36px] rounded-full border border-white/15 flex items-center justify-center text-white hover:bg-[#0877F9] hover:border-[#0877F9] transition-all shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9]">
+                <a key={idx} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-[36px] h-[36px] rounded-full border border-white/15 flex items-center justify-center text-white hover:bg-[#0877F9] hover:border-[#0877F9] transition-all shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9]">
                   <social.icon className="w-4 h-4" />
                 </a>
               ))}
@@ -130,7 +121,7 @@ export default function Footer() {
           </div>
 
           {/* COLUMN 2: QUICK LINKS (lg:col-span-2) */}
-          <nav className="lg:col-span-2" aria-label="Quick Links Navigation">
+          <nav className="col-span-1 sm:col-span-1 lg:col-span-2" aria-label="Quick Links Navigation">
             <h4 className="text-[16px] font-bold text-white mb-6">Quick Links</h4>
             <ul className="space-y-3.5">
               {[
@@ -153,17 +144,14 @@ export default function Footer() {
           </nav>
 
           {/* COLUMN 3: OUR SERVICES (lg:col-span-3) */}
-          <nav className="lg:col-span-3" aria-label="Services Navigation">
+          <nav className="col-span-1 sm:col-span-1 lg:col-span-3" aria-label="Services Navigation">
             <h4 className="text-[16px] font-bold text-white mb-6">Our Services</h4>
             <ul className="space-y-3.5">
               {[
-                { name: 'Passenger Lifts', path: '/services/passenger-lifts' },
-                { name: 'Hospital Lifts', path: '/services/hospital-lifts' },
-                { name: 'MRL System', path: '/services/mrl-lifts' },
-                { name: 'Hydraulic Lifts', path: '/services' },
-                { name: 'Control Panel', path: '/services' },
-                { name: 'Modernization', path: '/services' },
-                { name: 'AMC & Maintenance', path: '/services' }
+                { name: 'Primary Elevator Solutions', path: '/services#primary-solutions' },
+                { name: 'Engineering Services', path: '/services#engineering-services' },
+                { name: 'Elevator Customization & Components', path: '/services#customization' },
+                { name: 'Other Engineering Services', path: '/services#other-services' }
               ].map(service => (
                 <li key={service.name}>
                   <Link 
@@ -178,7 +166,7 @@ export default function Footer() {
           </nav>
 
           {/* COLUMN 4: CONTACT DETAILS (lg:col-span-3) */}
-          <address className="lg:col-span-3 not-italic">
+          <address className="col-span-2 sm:col-span-2 lg:col-span-3 not-italic">
             <h4 className="text-[16px] font-bold text-white mb-6">Contact Details</h4>
             <ul className="space-y-5">
               <li className="flex items-center gap-3.5">
@@ -225,80 +213,89 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* MOBILE ARCHITECTURAL IMAGE (Shown only on small screens) */}
-      <div className="w-full h-[240px] relative block lg:hidden z-0">
-        <Image 
-          src="/images/3d_commercial.jpg" 
-          alt="Premium Elevator Architecture" 
-          fill 
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#061426] via-transparent to-[#0B2036]" />
-      </div>
-
       {/* ========================================================================= */}
-      {/* LEVEL 2: VALUE / SERVICE STRIP                                             */}
+      {/* COMBINED LEVEL 2 & 3 WITH MOBILE BACKGROUND IMAGE                         */}
       {/* ========================================================================= */}
-      <div className="w-full border-t border-white/5 bg-[#0B2036] relative z-10">
-        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-5 lg:py-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 md:gap-y-0 gap-x-4 md:gap-x-0 md:divide-x divide-white/10">
-            
-            <div className="flex items-center gap-3 lg:justify-center md:px-2">
-              <div className="shrink-0 text-[#B8C8D7]">
-                 <Settings size={22} strokeWidth={1.5} />
-              </div>
-              <div className="text-[13px] lg:text-[14.5px] font-semibold text-white tracking-wide">
-                Quality Installation
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 lg:justify-center md:px-2">
-              <div className="shrink-0 text-[#B8C8D7]">
-                 <ShieldCheck size={22} strokeWidth={1.5} />
-              </div>
-              <div className="text-[13px] lg:text-[14.5px] font-semibold text-white tracking-wide">
-                Reliable Performance
-              </div>
-            </div>
+      <div className="relative w-full overflow-hidden">
+        
+        {/* Background Image (Mobile Only) */}
+        <div className="absolute inset-0 z-0 block lg:hidden">
+          <Image 
+            src="/images/3d_commercial.jpg" 
+            alt="Premium Elevator Architecture" 
+            fill 
+            className="object-cover object-center opacity-[0.55]"
+            sizes="100vw"
+          />
+          {/* Gradients to darken image so text remains highly readable */}
+          <div className="absolute inset-0 bg-[#061426]/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#061426] via-transparent to-[#061426]/80" />
+        </div>
 
-            <div className="flex items-center gap-3 lg:justify-center md:px-2">
-              <div className="shrink-0 text-[#B8C8D7]">
-                 <Users size={22} strokeWidth={1.5} />
+        {/* ========================================================================= */}
+        {/* LEVEL 2: VALUE / SERVICE STRIP                                             */}
+        {/* ========================================================================= */}
+        <div className="w-full border-t border-white/5 bg-transparent lg:bg-[#0B2036] relative z-10">
+          <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-8 lg:py-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8 md:gap-y-0 gap-x-4 md:gap-x-0 md:divide-x divide-white/10">
+              
+              <div className="flex items-center gap-3 lg:justify-center md:px-2">
+                <div className="shrink-0 text-[#38BDF8]">
+                   <Settings size={22} strokeWidth={1.5} />
+                </div>
+                <div className="text-[13px] lg:text-[14.5px] font-semibold text-white tracking-wide">
+                  Quality Installation
+                </div>
               </div>
-              <div className="text-[13px] lg:text-[14.5px] font-semibold text-white tracking-wide">
-                Expert Support
+              
+              <div className="flex items-center gap-3 lg:justify-center md:px-2">
+                <div className="shrink-0 text-[#38BDF8]">
+                   <ShieldCheck size={22} strokeWidth={1.5} />
+                </div>
+                <div className="text-[13px] lg:text-[14.5px] font-semibold text-white tracking-wide">
+                  Reliable Performance
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-3 lg:justify-center md:px-2">
-              <div className="shrink-0 text-[#B8C8D7]">
-                 <Wrench size={20} strokeWidth={1.5} />
+              <div className="flex items-center gap-3 lg:justify-center md:px-2">
+                <div className="shrink-0 text-[#38BDF8]">
+                   <Users size={22} strokeWidth={1.5} />
+                </div>
+                <div className="text-[13px] lg:text-[14.5px] font-semibold text-white tracking-wide">
+                  Expert Support
+                </div>
               </div>
-              <div className="text-[13px] lg:text-[14.5px] font-semibold text-white tracking-wide">
-                AMC &amp; Maintenance
-              </div>
-            </div>
 
+              <div className="flex items-center gap-3 lg:justify-center md:px-2">
+                <div className="shrink-0 text-[#38BDF8]">
+                   <Wrench size={20} strokeWidth={1.5} />
+                </div>
+                <div className="text-[13px] lg:text-[14.5px] font-semibold text-white tracking-wide">
+                  AMC &amp; Maintenance
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ========================================================================= */}
-      {/* LEVEL 3: LEGAL BAR                                                         */}
-      {/* ========================================================================= */}
-      <div className="w-full bg-[#0A2136] relative z-10 border-t border-white/5 pb-[72px] md:pb-0">
-        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-5">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-[#B8C8D7] font-medium">
-            <div className="text-center md:text-left leading-relaxed">
-              &copy; {currentYear} Standard Engineering Works Elevators.<br className="block sm:hidden" /> All Rights Reserved.
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-              <Link href="/privacy-policy" className="hover:text-white transition-colors focus:outline-none focus-visible:underline">Privacy Policy</Link>
-              <span className="text-white/20">|</span>
-              <Link href="/terms" className="hover:text-white transition-colors focus:outline-none focus-visible:underline">Terms &amp; Conditions</Link>
-              <span className="text-white/20">|</span>
-              <Link href="/sitemap" className="hover:text-white transition-colors focus:outline-none focus-visible:underline">Sitemap</Link>
+        {/* ========================================================================= */}
+        {/* LEVEL 3: LEGAL BAR                                                         */}
+        {/* ========================================================================= */}
+        <div className="w-full bg-transparent lg:bg-[#0A2136] relative z-10 border-t border-white/5 pb-[72px] md:pb-0">
+          <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-[#B8C8D7] font-medium">
+              <div className="text-center md:text-left leading-relaxed">
+                &copy; {currentYear} Standard Engineering Works Elevators.<br className="block sm:hidden" /> All Rights Reserved.
+                <span className="block mt-1">
+                  Design and developed by <a href="https://www.thedreamteamservices.com/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#0877F9] transition-colors focus:outline-none focus-visible:underline">Dream Team Services</a>
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-2 md:mt-0">
+                <Link href="/privacy-policy" className="hover:text-white transition-colors focus:outline-none focus-visible:underline">Privacy Policy</Link>
+                <span className="text-white/20">|</span>
+                <Link href="/terms" className="hover:text-white transition-colors focus:outline-none focus-visible:underline">Terms &amp; Conditions</Link>
+              </div>
             </div>
           </div>
         </div>
