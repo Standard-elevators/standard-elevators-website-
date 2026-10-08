@@ -11,8 +11,8 @@ export default function FinalCTA() {
       {/* LEFT IMAGE AREA (Base Layer for Desktop, Hidden on Mobile) */}
       <div className="hidden lg:block relative order-1 lg:order-none lg:absolute lg:inset-0 lg:right-[45%] w-full h-[240px] sm:h-[300px] lg:w-auto lg:h-full z-0">
         <Image 
-          src="/images/3d_commercial.jpg"
-          alt="Premium Elevator Architectural Lobby"
+          src="/images/engineer_panel.jpg"
+          alt="Elevator Engineer working on control panel"
           fill
           className="object-cover object-center"
           sizes="(max-width: 1024px) 100vw, 55vw"

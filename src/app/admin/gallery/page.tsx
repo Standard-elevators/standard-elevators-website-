@@ -334,19 +334,7 @@ function AdminGalleryContent() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={handleSeedDefaults}
-            disabled={isSeeding || isLoading}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 text-xs font-semibold rounded-xl transition-all disabled:opacity-50"
-            title="Seed verified gallery projects into Firestore"
-          >
-            {isSeeding ? (
-              <Loader2 className="w-4 h-4 animate-spin text-[#0070F3]" />
-            ) : (
-              <Sparkles className="w-4 h-4 text-[#38BDF8]" />
-            )}
-            <span>Sync Default Gallery</span>
-          </button>
+
 
           <button
             onClick={openCreateModal}

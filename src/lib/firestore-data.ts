@@ -217,7 +217,7 @@ export async function createService(
   }
 
   const servicesRef = collection(db, "services");
-  const docRef = await addDoc(servicesRef, {
+  const docRef = await withTimeout(addDoc(servicesRef, {
     title: data.title.trim(),
     slug: cleanSlug,
     description: data.description?.trim() || "",
@@ -230,7 +230,7 @@ export async function createService(
     updatedBy: data.updatedBy || null,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-  });
+  }), 8000, "Failed to create service. Request timed out.");
 
   return docRef.id;
 }
@@ -265,8 +265,7 @@ export async function updateService(
   // We use setDoc with { merge: true } instead of updateDoc
   // This allows us to "upsert" fallback data that might have a fake slug-based ID
   // and hasn't actually been seeded into the database yet.
-  const { setDoc } = await import("firebase/firestore");
-  await setDoc(docRef, updatePayload, { merge: true });
+  await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 8000, "Failed to update service. Request timed out.");
 }
 
 /**
@@ -274,7 +273,7 @@ export async function updateService(
  */
 export async function deleteService(id: string): Promise<void> {
   const docRef = doc(db, "services", id);
-  await deleteDoc(docRef);
+  await withTimeout(deleteDoc(docRef), 8000, "Failed to delete service. Request timed out.");
 }
 
 /**
@@ -396,7 +395,7 @@ export async function createGalleryItem(
   }
 
   const galleryRef = collection(db, "gallery");
-  const docRef = await addDoc(galleryRef, {
+  const docRef = await withTimeout(addDoc(galleryRef, {
     title: data.title.trim(),
     category: data.category || "Installation",
     imageUrl: data.imageUrl.trim(),
@@ -407,7 +406,7 @@ export async function createGalleryItem(
     updatedBy: data.updatedBy || null,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-  });
+  }), 8000, "Failed to create gallery item. Request timed out.");
 
   return docRef.id;
 }
@@ -429,7 +428,7 @@ export async function updateGalleryItem(
     (key) => updatePayload[key] === undefined && delete updatePayload[key]
   );
 
-  await updateDoc(docRef, updatePayload);
+  await withTimeout(updateDoc(docRef, updatePayload), 8000, "Failed to update gallery item. Request timed out.");
 }
 
 /**
@@ -437,7 +436,7 @@ export async function updateGalleryItem(
  */
 export async function deleteGalleryItem(id: string): Promise<void> {
   const docRef = doc(db, "gallery", id);
-  await deleteDoc(docRef);
+  await withTimeout(deleteDoc(docRef), 8000, "Failed to delete gallery item. Request timed out.");
 }
 
 /**
@@ -450,7 +449,7 @@ export async function seedInitialGallery(): Promise<number> {
   if (!snapshot.empty) {
     return 0;
   }
-
+  
   let count = 0;
   for (const item of DEFAULT_GALLERY) {
     await addDoc(galleryRef, {
@@ -461,6 +460,28 @@ export async function seedInitialGallery(): Promise<number> {
     count++;
   }
   return count;
+}
+
+/* =========================================================================
+   SETTINGS / FOUNDER CRUD MODULE
+   ========================================================================= */
+
+export async function getFounderData(): Promise<{ name: string; imageUrl: string; imagePublicId?: string }> {
+  try {
+    const docRef = doc(db, "settings", "founder");
+    const docSnap = await withTimeout(getDoc(docRef), 3000);
+    if (docSnap.exists()) {
+      return docSnap.data() as { name: string; imageUrl: string; imagePublicId?: string };
+    }
+  } catch (error) {
+    console.warn("Failed to fetch founder data from Firestore", error);
+  }
+  return { name: "Sandeep Goud", imageUrl: "/images/team/founder.jpg" };
+}
+
+export async function updateFounderData(data: { name: string; imageUrl: string; imagePublicId?: string }): Promise<void> {
+  const docRef = doc(db, "settings", "founder");
+  await withTimeout(setDoc(docRef, data, { merge: true }), 8000, "Failed to update founder data.");
 }
 
 export interface InquirySubmission {

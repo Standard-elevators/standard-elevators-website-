@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const DEFAULT_CAROUSEL_DATA = [
   {
@@ -227,59 +227,35 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
                 aria-hidden={!isActive}
               >
                 {/* Card Surface */}
-                <div className={`relative w-full h-full rounded-[24px] overflow-hidden bg-[#0A1628]/90 md:bg-[#0A1628]/70 backdrop-blur-md md:backdrop-blur-2xl border ${isActive ? 'border-[#38BDF8]/40 shadow-[0_20px_50px_-10px_rgba(56,189,248,0.3)]' : 'border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]'} flex flex-col group transition-all duration-300`}>
+                <div className={`relative w-full h-full rounded-[24px] overflow-hidden bg-white shadow-xl flex flex-col group transition-all duration-300 border ${isActive ? 'border-transparent shadow-[0_20px_50px_-10px_rgba(0,98,255,0.2)]' : 'border-slate-200'}`}>
                   
-                  {/* Natural Depth Dimming Overlay for Background Side Cards */}
-                  <div className={`absolute inset-0 bg-[#050C17] transition-opacity duration-300 pointer-events-none z-20 ${isActive ? 'opacity-0' : Math.abs(diff) === 1 ? 'opacity-[0.4]' : 'opacity-80'}`} />
-
-                  {/* Image Area - Expands to full height on background cards, compact on active card */}
-                  <div className={`relative w-full overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isActive ? 'h-[50%] border-b border-white/10' : 'h-full'}`}>
+                  {/* Image Area - top part when active, full height when inactive */}
+                  <div className={`relative w-full overflow-hidden transition-all duration-500 ease-in-out bg-slate-100 ${isActive ? 'h-[65%] md:h-[70%]' : 'h-full'}`}>
                     <Image
                       src={card.image}
                       alt={card.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 400px"
-                      className={`object-cover transition-transform duration-700 ease-out ${isActive ? 'scale-100 group-hover/card:scale-110' : 'scale-105'}`}
+                      className={`object-cover transition-transform duration-700 ease-out ${isActive ? 'scale-100 group-hover/card:scale-105' : 'scale-110'}`}
                       draggable={false}
                     />
-                    {/* Subtle inner shadow/gradient on image to blend with dark card */}
-                    {isActive && (
-                      <>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0A1628]/90 to-transparent pointer-events-none" />
-                        <div className="absolute inset-0 ring-1 ring-inset ring-[#38BDF8]/20 rounded-t-[24px] pointer-events-none" />
-                      </>
-                    )}
                   </div>
 
-                  {/* Content Area - ONLY visible on the Active Card, hidden completely on background cards */}
-                  <div className={`flex flex-col p-5 lg:p-6 pt-0 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] relative z-10 ${
+                  {/* Dark overlay for inactive cards */}
+                  <div className={`absolute inset-0 bg-[#050C17] transition-opacity duration-300 z-10 pointer-events-none ${isActive ? 'opacity-0' : Math.abs(diff) === 1 ? 'opacity-50' : 'opacity-80'}`} />
+
+                  {/* Content Area - bottom part */}
+                  <div className={`flex flex-col justify-center bg-white p-5 lg:p-6 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] relative z-20 ${
                     isActive 
                       ? 'flex-1 opacity-100 translate-y-0' 
                       : 'h-0 opacity-0 overflow-hidden pointer-events-none p-0 invisible'
                   }`}>
-                    <h3 className="text-xl font-bold mb-2 text-white">
+                    <h3 className="text-lg md:text-xl font-bold mb-2 text-slate-900">
                       {card.title}
                     </h3>
-                    <p className="text-xs md:text-sm text-[#94A3B8] leading-relaxed mb-4 font-light">
+                    <p className="text-[13px] md:text-sm text-slate-600 leading-relaxed font-normal m-0 line-clamp-3">
                       {card.description}
                     </p>
-                    
-                    {/* Features List */}
-                    <div className="mt-auto">
-                      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/15 to-transparent mb-3"></div>
-                      <ul className="grid grid-cols-1 gap-y-2.5">
-                        {card.items.map((item: string, i: number) => (
-                          <li key={i} className="flex items-center gap-2.5 group/item">
-                            <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-[#38BDF8]/10 text-[#38BDF8] border border-[#38BDF8]/30 group-hover/item:bg-[#38BDF8]/20 transition-colors">
-                              <Check className="w-3 h-3 stroke-[3]" />
-                            </div>
-                            <span className="text-xs md:text-[13px] font-medium text-slate-300 group-hover/item:text-white transition-colors">
-                              {item}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
                   </div>
                 </div>
               </div>

@@ -15,6 +15,9 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import { getFounderData, updateFounderData } from "@/lib/firestore-data";
+import { useAdminAuth } from "@/context/AdminAuthContext";
 
 export default function LeadershipAdminPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>("/images/team/founder.jpg");
@@ -27,13 +30,15 @@ export default function LeadershipAdminPage() {
   // Force cache bust to show latest image on load
   const [imageKey, setImageKey] = useState(Date.now());
 
+  const { user } = useAdminAuth();
+
   useEffect(() => {
-    fetch("/data/founder.json?" + Date.now())
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.name) setFounderName(data.name);
-      })
-      .catch(() => console.log("No existing founder name found, using default."));
+    getFounderData().then((data) => {
+      if (data) {
+        setFounderName(data.name || "Founder");
+        if (data.imageUrl) setSelectedImage(data.imageUrl);
+      }
+    });
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,23 +62,23 @@ export default function LeadershipAdminPage() {
     setStatus({ type: null, msg: "" });
     
     try {
-      const formData = new FormData();
-      if (fileToUpload) formData.append("image", fileToUpload);
-      formData.append("name", founderName);
-
-      const res = await fetch("/api/upload-leadership", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error("Upload failed");
+      let finalImageUrl = selectedImage || "/images/owner/owner-placeholder.svg";
+      if (fileToUpload) {
+        const idToken = user ? await user.getIdToken() : undefined;
+        const uploadRes = await uploadImageToCloudinary(fileToUpload, {
+          folder: "standard_elevators",
+          idToken,
+        });
+        finalImageUrl = uploadRes.secure_url;
+      }
       
-      setStatus({ type: "success", msg: "Leadership profile image updated successfully!" });
-      setImageKey(Date.now()); // refresh cache
+      await updateFounderData({ name: founderName, imageUrl: finalImageUrl });
+
+      setStatus({ type: "success", msg: "Leadership profile updated successfully!" });
       setFileToUpload(null);
     } catch (err) {
       console.error(err);
-      setStatus({ type: "error", msg: "Failed to upload image. Please try again." });
+      setStatus({ type: "error", msg: "Failed to update profile. Please try again." });
     } finally {
       setIsUploading(false);
     }
@@ -202,9 +207,9 @@ export default function LeadershipAdminPage() {
                     <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-t-[26px] pointer-events-none" />
                   </div>
 
-                  <div className="relative w-full px-6 py-8 flex flex-col items-center text-center -mt-8 z-10">
+                  <div className="relative w-full px-6 py-8 pb-10 flex flex-col items-center text-center -mt-8 z-10">
                     <div className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[#28B8FF]/30 to-transparent" />
-                    <h4 className="text-2xl sm:text-[26px] font-extrabold text-white tracking-tight mb-2 drop-shadow-sm group-hover:text-[#38BDF8] transition-colors duration-500">
+                    <h4 className="text-2xl sm:text-[26px] font-extrabold text-white tracking-tight mb-4 drop-shadow-sm group-hover:text-[#38BDF8] transition-colors duration-500">
                       {founderName || "Founder"}
                     </h4>
                     <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.25em] text-[#38BDF8] uppercase mb-4">

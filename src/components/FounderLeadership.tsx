@@ -4,17 +4,19 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
+import { getFounderData } from "@/lib/firestore-data";
+
 export default function FounderLeadership() {
   const [ownerImgSrc, setOwnerImgSrc] = useState("/images/team/founder.jpg");
   const [founderName, setFounderName] = useState("Founder");
 
   React.useEffect(() => {
-    fetch("/data/founder.json?" + Date.now())
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.name) setFounderName(data.name);
-      })
-      .catch(() => console.log("Using default founder name."));
+    getFounderData().then((data) => {
+      if (data) {
+        setFounderName(data.name || "Founder");
+        if (data.imageUrl) setOwnerImgSrc(data.imageUrl);
+      }
+    });
   }, []);
 
   return (
@@ -57,10 +59,10 @@ export default function FounderLeadership() {
                 </div>
 
                 {/* Details Section Below Image */}
-                <div className="relative w-full px-6 py-8 flex flex-col items-center text-center -mt-8 z-10">
+                <div className="relative w-full px-6 py-8 pb-10 flex flex-col items-center text-center -mt-8 z-10">
                   <div className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[#28B8FF]/30 to-transparent" />
                   
-                  <h4 className="text-2xl sm:text-[26px] font-extrabold text-white tracking-tight mb-2 drop-shadow-sm group-hover:text-[#38BDF8] transition-colors duration-500">
+                  <h4 className="text-2xl sm:text-[26px] font-extrabold text-white tracking-tight mb-4 drop-shadow-sm group-hover:text-[#38BDF8] transition-colors duration-500">
                     {founderName || "Founder"}
                   </h4>
                   <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.25em] text-[#38BDF8] uppercase mb-4">

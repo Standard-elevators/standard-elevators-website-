@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import AdminGuard from "@/components/admin/AdminGuard";
-import { getAllServices, getAllGallery } from "@/lib/firestore-data";
-import { ServiceItem, GalleryItem } from "@/types/data";
+import { getAllServices, getAllGallery, getAllInquiries } from "@/lib/firestore-data";
+import { ServiceItem, GalleryItem, InquiryItem } from "@/types/data";
 import {
   Building,
   Image as ImageIcon,
@@ -64,18 +64,21 @@ function AdminDashboardContent() {
 
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
+  const [inquiries, setInquiries] = useState<InquiryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
-      const [servicesData, galleryData] = await Promise.all([
+      const [servicesData, galleryData, inquiriesData] = await Promise.all([
         getAllServices(),
         getAllGallery(),
+        getAllInquiries(),
       ]);
       setServices(servicesData);
       setGallery(galleryData);
+      setInquiries(inquiriesData);
     } catch (err) {
       console.error("Dashboard fetch error:", err);
       setError((err as Error).message || "Failed to load dashboard metrics from Firebase.");
@@ -87,11 +90,12 @@ function AdminDashboardContent() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([getAllServices(), getAllGallery()])
-      .then(([servicesData, galleryData]) => {
+    Promise.all([getAllServices(), getAllGallery(), getAllInquiries()])
+      .then(([servicesData, galleryData, inquiriesData]) => {
         if (active) {
           setServices(servicesData);
           setGallery(galleryData);
+          setInquiries(inquiriesData);
         }
       })
       .catch((err) => {
@@ -309,21 +313,23 @@ function AdminDashboardContent() {
                 </div>
               </Link>
 
-              {/* Publication Health */}
-              <div className="bg-[#0C1A2E] border border-white/10 rounded-xl p-5 shadow-lg">
+              {/* Total Inquiries Received */}
+              <Link
+                href="/admin/inquiries"
+                className="bg-[#0C1A2E] hover:bg-[#10243E] border border-white/10 hover:border-emerald-500/40 transition-all rounded-xl p-5 shadow-lg group block"
+              >
                 <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-                  <span>Public Visibility</span>
-                  <FileCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Total Inquiries Received</span>
+                  <MessageSquare className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold text-emerald-400 mb-2">
-                  {totalCatalogRecords > 0
-                    ? `${Math.round((totalPublished / totalCatalogRecords) * 100)}%`
-                    : "0%"}
+                <div className="text-2xl sm:text-3xl font-bold text-white mb-2 flex items-center justify-between">
+                  <span>{inquiries.length}</span>
+                  <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-300 transition-colors" />
                 </div>
                 <div className="text-[11px] text-slate-400 truncate">
-                  Available to public inquiries
+                  Available in the Inbox
                 </div>
-              </div>
+              </Link>
             </div>
           )}
         </div>
