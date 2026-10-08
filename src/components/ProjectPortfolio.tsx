@@ -348,37 +348,130 @@ export default function ProjectPortfolio() {
 
         {/* ========================================================================= */}
         {/* ========================================================================= */}
-        {/* MOBILE BENTO GRID (Visible on screen < 768px)                             */}
-        {/* Exact reference match: Pure images, no text, bento layout                 */}
+        {/* MOBILE CAROUSEL (Visible on screen < 768px)                               */}
         {/* ========================================================================= */}
         {!isLoading && items.length > 0 && (
-          <div className="block md:hidden mt-6">
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              {items.slice(0, 4).map((item, idx) => {
-                const uniqueKey = item.id || `mobile-bento-${idx}`;
+          <div className="block md:hidden mt-8 relative"
+               onTouchStart={handleTouchStart}
+               onTouchMove={handleTouchMove}
+               onTouchEnd={handleTouchEnd}
+          >
+            {/* Carousel Track */}
+            <div className="relative h-[380px] sm:h-[420px] w-full overflow-hidden rounded-2xl">
+              {items.map((item, index) => {
+                // Calculate position relative to active index
+                let position = index - activeMobileIndex;
+                if (position < -1) position += items.length;
+                if (position > 1) position -= items.length;
                 
-                // Pattern: Full width, half, half, full width
-                const isFullWidth = idx === 0 || idx === 3;
-                const colClass = isFullWidth ? "col-span-2" : "col-span-1";
-                const heightClass = isFullWidth ? "h-[240px] sm:h-[280px]" : "h-[180px] sm:h-[200px]";
+                // Only render active, previous, and next for performance
+                if (Math.abs(position) > 1 && items.length > 3) return null;
+
+                const uniqueKey = item.id || `mobile-carousel-${index}`;
+                
+                const isActive = position === 0;
+                
+                let transformStyle = '';
+                let opacityStyle = 'opacity-0';
+                let zIndex = 0;
+                
+                if (isActive) {
+                  transformStyle = 'translateX(0) scale(1)';
+                  opacityStyle = 'opacity-100';
+                  zIndex = 20;
+                } else if (position === 1) {
+                  transformStyle = 'translateX(105%) scale(0.95)';
+                  opacityStyle = 'opacity-50';
+                  zIndex = 10;
+                } else if (position === -1) {
+                  transformStyle = 'translateX(-105%) scale(0.95)';
+                  opacityStyle = 'opacity-50';
+                  zIndex = 10;
+                }
 
                 return (
                   <Link
                     key={uniqueKey}
                     href={`/gallery${item.category ? `?category=${encodeURIComponent(item.category)}` : ''}`}
-                    className={`${colClass} ${heightClass} relative rounded-[24px] overflow-hidden bg-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.06)] active:scale-[0.98] transition-transform`}
+                    className={`absolute top-0 left-0 w-full h-full rounded-2xl overflow-hidden bg-[#071324] shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${opacityStyle}`}
+                    style={{
+                      transform: transformStyle,
+                      zIndex: zIndex,
+                      pointerEvents: isActive ? 'auto' : 'none'
+                    }}
                   >
-                    <Image
-                      src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
-                      alt={item.altText || item.title || "Project Image"}
-                      fill
-                      sizes={isFullWidth ? "100vw" : "50vw"}
-                      onError={() => handleImageError(uniqueKey)}
-                      className="object-cover object-center"
-                    />
+                    <div className="absolute inset-0 z-0">
+                      <Image
+                        src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
+                        alt={item.altText || item.title}
+                        fill
+                        sizes="100vw"
+                        onError={() => handleImageError(uniqueKey)}
+                        className="object-cover object-center"
+                      />
+                    </div>
+                    {/* Gradient for text legibility */}
+                    <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#040D1A]/95 via-[#040D1A]/30 to-transparent" />
+                    
+                    {/* Content */}
+                    <div className="absolute inset-x-0 bottom-0 z-20 p-5 flex flex-col justify-end">
+                      {item.category && (
+                        <span className="inline-block text-[10px] font-bold tracking-widest text-[#38BDF8] uppercase mb-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                          {item.category}
+                        </span>
+                      )}
+                      <h3 className="text-xl font-bold text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mb-4">
+                        {item.title}
+                      </h3>
+                      
+                      <div className="flex items-center gap-2 text-white/90 text-sm font-semibold">
+                        <span>View Project</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </div>
                   </Link>
                 );
               })}
+            </div>
+            
+            {/* Pagination Controls */}
+            <div className="flex items-center justify-between mt-6 px-1">
+              {/* Pagination Dots */}
+              <div className="flex items-center gap-2">
+                {items.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setIsInteracting(true);
+                      setActiveMobileIndex(idx);
+                    }}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      idx === activeMobileIndex ? "w-6 bg-[#0877F9]" : "w-1.5 bg-slate-300 hover:bg-slate-400"
+                    }`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+              
+              {/* Navigation Arrows */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={prevMobile}
+                  className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-xs active:scale-95 transition-all"
+                  aria-label="Previous project"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={nextMobile}
+                  className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-xs active:scale-95 transition-all"
+                  aria-label="Next project"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
         )}
