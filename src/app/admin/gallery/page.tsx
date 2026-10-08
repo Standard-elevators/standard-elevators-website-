@@ -121,6 +121,18 @@ function AdminGalleryContent() {
     };
   }, []);
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isFormOpen || deleteConfirmId !== null) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isFormOpen, deleteConfirmId]);
+
   const openCreateModal = () => {
     setEditingItem(null);
     const initial: GalleryFormData = {
@@ -198,12 +210,9 @@ function AdminGalleryContent() {
 
         // Safe replacement: if previous image had a Cloudinary publicId and was replaced
         if (previousPublicId && newPublicId && previousPublicId !== newPublicId && user) {
-          try {
-            const idToken = await user.getIdToken();
-            await deleteCloudinaryAsset(previousPublicId, idToken);
-          } catch {
-            // Non-blocking cleanup
-          }
+          user.getIdToken().then(idToken => {
+            deleteCloudinaryAsset(previousPublicId, idToken).catch(() => {});
+          }).catch(() => {});
         }
 
         setSuccessMessage(`Gallery project "${formData.title}" updated successfully.`);
@@ -239,12 +248,9 @@ function AdminGalleryContent() {
 
       // Clean up Cloudinary asset if an image was uploaded
       if (target?.imagePublicId && user) {
-        try {
-          const idToken = await user.getIdToken();
-          await deleteCloudinaryAsset(target.imagePublicId, idToken);
-        } catch {
-          // Non-blocking cleanup
-        }
+        user.getIdToken().then(idToken => {
+          deleteCloudinaryAsset(target.imagePublicId!, idToken).catch(() => {});
+        }).catch(() => {});
       }
 
       setSuccessMessage("Gallery project deleted successfully.");
@@ -555,9 +561,10 @@ function AdminGalleryContent() {
 
       {/* CREATE / EDIT MODAL */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start justify-center p-4 pt-10 sm:pt-16 overflow-y-auto">
-          <div className="bg-[#0C1A2E] border border-white/15 rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl mb-16 relative">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleCloseModal}></div>
+          <div className="bg-[#0C1A2E] border border-white/15 rounded-2xl max-w-xl w-full flex flex-col relative z-10 shadow-2xl max-h-[90vh]">
+            <div className="flex items-center justify-between p-6 sm:p-8 pb-4 border-b border-white/10 shrink-0">
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-bold text-white">
@@ -582,7 +589,8 @@ function AdminGalleryContent() {
               </button>
             </div>
 
-            <form onSubmit={handleFormSubmit} className="space-y-4">
+            <div className="p-6 sm:p-8 pt-4 overflow-y-auto">
+              <form onSubmit={handleFormSubmit} className="space-y-4">
               {/* Title */}
               <div>
                 <label
@@ -730,7 +738,8 @@ function AdminGalleryContent() {
                   <span>{editingItem ? "Update Project" : "Create Project"}</span>
                 </button>
               </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       )}
