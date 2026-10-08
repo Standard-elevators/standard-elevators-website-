@@ -95,15 +95,41 @@ export default function FloatingActions() {
       className="fixed bottom-5 right-5 md:bottom-8 md:right-8 z-40 flex flex-col items-center w-12 md:w-14"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      {/* Scroll to Top (Drop Up) Button - Positioned in the TOP slot */}
+      {/* Scroll to Top (Elevator Push Button) - Positioned in the TOP slot */}
       <button
         onClick={scrollToTop}
-        className={`w-12 h-12 md:w-14 md:h-14 mb-3 rounded-full bg-white hover:bg-gray-50 text-[#087CF5] flex items-center justify-center shadow-[0_4px_15px_rgba(8,124,245,0.25)] transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#087CF5] ${
-          isVisible ? "opacity-100 translate-y-0 scale-100 pointer-events-auto" : "opacity-0 translate-y-4 scale-90 pointer-events-none h-0 mb-0 overflow-hidden"
+        className={`relative shrink-0 flex items-center justify-center transition-all duration-500 rounded-full focus:outline-none group ${
+          isVisible ? "opacity-100 translate-y-0 scale-100 pointer-events-auto h-12 w-12 md:h-[56px] md:w-[56px] mb-4 md:mb-5" : "opacity-0 translate-y-4 scale-90 pointer-events-none h-0 w-12 md:w-[56px] mb-0 overflow-hidden"
         }`}
         aria-label="Scroll to top"
       >
-        <ArrowUp className="w-6 h-6 md:w-7 md:h-7" />
+        {/* 1. OUTER MOUNTING RING (Machined Steel) */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-b from-[#e8e8e8] via-[#a3a3a3] to-[#5a5a5a] shadow-[0_6px_15px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,1),inset_0_-2px_3px_rgba(0,0,0,0.5)]"></div>
+        
+        {/* 2. INNER RECESS (Dark shadow gap) */}
+        <div className="absolute inset-[3px] md:inset-[4px] rounded-full bg-gradient-to-b from-[#111111] to-[#333333] shadow-[inset_0_3px_5px_rgba(0,0,0,0.9)]"></div>
+        
+        {/* 3. PHYSICAL BUTTON SURFACE (Raised Brushed Steel) */}
+        <div className="absolute inset-[4px] md:inset-[5px] rounded-full bg-gradient-to-b from-[#fdfdfd] via-[#d4d4d4] to-[#9a9a9a] flex items-center justify-center transition-all duration-150 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-active:scale-[0.96] shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.7)] group-active:shadow-[inset_0_1px_2px_rgba(255,255,255,0.6),inset_0_-1px_2px_rgba(0,0,0,0.2),0_1px_3px_rgba(0,0,0,0.5)] group-hover:brightness-105">
+          
+          {/* Radial brushed metal sheen */}
+          <div className="absolute inset-0 rounded-full opacity-[0.25] mix-blend-overlay pointer-events-none" 
+               style={{ background: 'conic-gradient(from 0deg at 50% 50%, #fff 0deg, #333 45deg, #fff 90deg, #333 135deg, #fff 180deg, #333 225deg, #fff 270deg, #333 315deg, #fff 360deg)' }}>
+          </div>
+          
+          {/* 4. CENTER ARROW (Engraved symbol with subtle hover illumination) */}
+          <svg 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="3.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="relative z-10 w-5 h-5 md:w-[22px] md:h-[22px] text-[#1a1a1a] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)] transition-all duration-300 group-hover:text-[#0877F9] group-hover:drop-shadow-[0_0_8px_rgba(8,119,249,0.7)] group-active:drop-shadow-[0_0_4px_rgba(8,119,249,0.5)]"
+          >
+            <polyline points="18 15 12 8 6 15"></polyline>
+          </svg>
+        </div>
       </button>
 
       {/* WhatsApp Button - Positioned in the BOTTOM slot */}
