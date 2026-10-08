@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import AdminGuard from "@/components/admin/AdminGuard";
-import { getAllServices, getAllGallery, getAllInquiries } from "@/lib/firestore-data";
-import { ServiceItem, GalleryItem, InquiryItem } from "@/types/data";
+import { getAllServices, getAllGallery, getAllInquiries, InquiryItem } from "@/lib/firestore-data";
+import { ServiceItem, GalleryItem } from "@/types/data";
 import {
   Building,
   Image as ImageIcon,
