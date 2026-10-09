@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, ImageIcon, Loader2, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ArrowRight, ImageIcon, Loader2, ChevronLeft, ChevronRight, X, Play, Video } from "lucide-react";
 import { getPublishedGallery } from "@/lib/firestore-data";
 import { DEFAULT_GALLERY } from "@/data/defaultData";
 import { GalleryItem } from "@/types/data";
@@ -56,8 +56,18 @@ function GalleryContent() {
       }
     }
     loadData();
+
+    const handleSync = () => {
+      loadData();
+    };
+
+    window.addEventListener("se_gallery_updated", handleSync);
+    window.addEventListener("storage", handleSync);
+
     return () => {
       isMounted = false;
+      window.removeEventListener("se_gallery_updated", handleSync);
+      window.removeEventListener("storage", handleSync);
     };
   }, []);
 
@@ -124,23 +134,19 @@ function GalleryContent() {
     touchStartX.current = null;
   };
 
-  // Helper for asymmetric grid layout pattern
+  // Helper for grid layout pattern
   const getGridSpanClass = (index: number) => {
-    const pos = index % 6;
+    // 5-item recurring pattern for desktop:
+    // Index 0: 2 cols x 2 rows (Featured card)
+    // Index 1 & 2: Row 1 right side -> Two in the same line!
+    // Index 3 & 4: Row 2 right side -> Another two in another line!
+    const pos = index % 5;
     let mdClass = "";
     if (pos === 0) mdClass = "md:col-span-2 md:row-span-2";
-    else if (pos === 1) mdClass = "md:col-span-1 md:row-span-1";
-    else if (pos === 2) mdClass = "md:col-span-1 md:row-span-1";
-    else if (pos === 3) mdClass = "md:col-span-2 md:row-span-1";
-    else if (pos === 4) mdClass = "md:col-span-1 md:row-span-1";
-    else if (pos === 5) mdClass = "md:col-span-1 md:row-span-1";
     else mdClass = "md:col-span-1 md:row-span-1";
     
-    // For mobile bento: Full width, half, half, full width pattern
-    const mobilePos = index % 4;
-    let mobileClass = "";
-    if (mobilePos === 0 || mobilePos === 3) mobileClass = "col-span-2";
-    else mobileClass = "col-span-1";
+    // For mobile (2-column grid): 2 cards per line consistently (two in same line, another two in another line)
+    const mobileClass = "col-span-1";
     
     return `${mobileClass} ${mdClass}`;
   };
@@ -312,17 +318,35 @@ function GalleryContent() {
                     tabIndex={0}
                     role="button"
                     aria-label={`View ${item.title}`}
-                    className={`group relative rounded-2xl overflow-hidden bg-[#DCE5EF] cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#087CF5] ${spanClass}`}
+                    className={`group relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-200/40 cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#087CF5] ${spanClass}`}
                     style={{ transform: "translateZ(0)" }} // Hardware acceleration for smooth scale
                   >
-                    {/* Image */}
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.altText || item.title}
-                      fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
+                    {/* Media Asset (Video or Original Image) */}
+                    {Boolean(item.mediaType === "video" || item.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || item.imageUrl?.includes("/video/upload/")) ? (
+                      <>
+                        <video
+                          src={item.imageUrl}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-3 right-3 z-20 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-bold flex items-center gap-1 border border-white/20">
+                          <Play className="w-3 h-3 text-[#38BDF8] fill-[#38BDF8]" />
+                          <span>Video</span>
+                        </div>
+                      </>
+                    ) : (
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.altText || item.title}
+                        fill
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    )}
                     
                     {/* Glass Overlay (Premium Gradient) */}
                     <div className="hidden md:flex absolute inset-0 bg-gradient-to-t from-[#07172B]/95 via-[#07172B]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-col justify-end p-6 md:p-8">
@@ -417,16 +441,26 @@ function GalleryContent() {
             className="relative w-full h-full max-w-7xl max-h-screen flex flex-col items-center justify-center p-4 sm:p-8"
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking content
           >
-            {/* Image Container */}
-            <div className="relative w-full h-[70vh] md:h-[80vh] bg-transparent rounded-lg overflow-hidden">
-              <Image
-                src={selectedItem.imageUrl}
-                alt={selectedItem.altText || selectedItem.title}
-                fill
-                priority
-                className="object-contain"
-                sizes="100vw"
-              />
+            {/* Media Asset Container (Supports Video and Uncropped Image) */}
+            <div className="relative w-full h-[70vh] md:h-[80vh] bg-transparent rounded-lg overflow-hidden flex items-center justify-center">
+              {Boolean(selectedItem.mediaType === "video" || selectedItem.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || selectedItem.imageUrl?.includes("/video/upload/")) ? (
+                <video
+                  src={selectedItem.imageUrl}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="max-w-full max-h-full object-contain rounded-xl shadow-2xl z-10"
+                />
+              ) : (
+                <Image
+                  src={selectedItem.imageUrl}
+                  alt={selectedItem.altText || selectedItem.title}
+                  fill
+                  priority
+                  className="object-contain"
+                  sizes="100vw"
+                />
+              )}
             </div>
 
             {/* Metadata Footer */}

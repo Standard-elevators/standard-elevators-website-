@@ -11,13 +11,14 @@ import {
   deleteGalleryItem,
   seedInitialGallery,
 } from "@/lib/firestore-data";
-import { GalleryItem, GalleryCategory, PublicationStatus } from "@/types/data";
+import { GalleryItem, GalleryCategory, PublicationStatus, MediaType } from "@/types/data";
 import ImageUpload from "@/components/admin/ImageUpload";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import { deleteCloudinaryAsset } from "@/lib/cloudinary";
 import {
   ArrowLeft,
   Image as ImageIcon,
+  Video,
   Plus,
   Trash2,
   Edit3,
@@ -40,6 +41,7 @@ interface GalleryFormData {
   category: GalleryCategory;
   imageUrl: string;
   imagePublicId?: string;
+  mediaType: MediaType;
   altText: string;
   orderIndex: number;
   status: PublicationStatus;
@@ -50,6 +52,7 @@ const DEFAULT_GALLERY_FORM: GalleryFormData = {
   category: "Installation",
   imageUrl: "/hero-elevator.jpg",
   imagePublicId: undefined,
+  mediaType: "image",
   altText: "",
   orderIndex: 1,
   status: "published",
@@ -121,15 +124,19 @@ function AdminGalleryContent() {
     };
   }, []);
 
-  // Lock body scroll when modal is open
+  // Lock body scroll and stop Lenis when modal is open
   useEffect(() => {
+    const lenis = (window as any).__lenis;
     if (isFormOpen || deleteConfirmId !== null) {
       document.body.style.overflow = "hidden";
+      if (lenis && typeof lenis.stop === "function") lenis.stop();
     } else {
       document.body.style.overflow = "unset";
+      if (lenis && typeof lenis.start === "function") lenis.start();
     }
     return () => {
       document.body.style.overflow = "unset";
+      if (lenis && typeof lenis.start === "function") lenis.start();
     };
   }, [isFormOpen, deleteConfirmId]);
 
@@ -140,6 +147,7 @@ function AdminGalleryContent() {
       category: "Installation",
       imageUrl: "/hero-elevator.jpg",
       imagePublicId: undefined,
+      mediaType: "image",
       altText: "",
       orderIndex: items.length + 1,
       status: "published",
@@ -152,11 +160,13 @@ function AdminGalleryContent() {
 
   const openEditModal = (item: GalleryItem) => {
     setEditingItem(item);
+    const isVid = Boolean(item.mediaType === "video" || item.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || item.imageUrl?.includes("/video/upload/"));
     const initial: GalleryFormData = {
       title: item.title,
       category: item.category,
       imageUrl: item.imageUrl,
       imagePublicId: item.imagePublicId,
+      mediaType: isVid ? "video" : (item.mediaType || "image"),
       altText: item.altText || item.title || "",
       orderIndex: item.orderIndex || 1,
       status: item.status,
@@ -177,12 +187,9 @@ function AdminGalleryContent() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim()) {
-      setActionError("Project title is required.");
-      return;
-    }
+    const finalTitle = formData.title.trim() || `${formData.category} Installation Showcase`;
     if (!formData.imageUrl.trim()) {
-      setActionError("Image URL or upload is required.");
+      setActionError("Please upload an image or video before creating the project.");
       return;
     }
 
@@ -190,18 +197,20 @@ function AdminGalleryContent() {
     setActionError(null);
 
     const attribution = user?.email || user?.uid || "Admin";
-    const altTextFinal = formData.altText.trim() || formData.title.trim();
+    const altTextFinal = formData.altText.trim() || finalTitle;
 
     try {
       if (editingItem?.id) {
         const previousPublicId = editingItem.imagePublicId;
         const newPublicId = formData.imagePublicId;
 
+        const isVid = Boolean(formData.mediaType === "video" || formData.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || formData.imageUrl.includes("/video/upload/"));
         await updateGalleryItem(editingItem.id, {
-          title: formData.title.trim(),
+          title: finalTitle,
           category: formData.category,
           imageUrl: formData.imageUrl.trim(),
           imagePublicId: formData.imagePublicId,
+          mediaType: isVid ? "video" : "image",
           altText: altTextFinal,
           orderIndex: Number(formData.orderIndex),
           status: formData.status,
@@ -215,19 +224,21 @@ function AdminGalleryContent() {
           }).catch(() => {});
         }
 
-        setSuccessMessage(`Gallery project "${formData.title}" updated successfully.`);
+        setSuccessMessage(`Gallery project "${finalTitle}" updated successfully.`);
       } else {
+        const isVid = Boolean(formData.mediaType === "video" || formData.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || formData.imageUrl.includes("/video/upload/"));
         await createGalleryItem({
-          title: formData.title.trim(),
+          title: finalTitle,
           category: formData.category,
           imageUrl: formData.imageUrl.trim(),
           imagePublicId: formData.imagePublicId,
+          mediaType: isVid ? "video" : "image",
           altText: altTextFinal,
           orderIndex: Number(formData.orderIndex),
           status: formData.status,
           updatedBy: attribution,
         });
-        setSuccessMessage(`Gallery project "${formData.title}" created successfully.`);
+        setSuccessMessage(`Gallery project "${finalTitle}" created successfully.`);
       }
 
       setIsFormOpen(false);
@@ -465,16 +476,35 @@ function AdminGalleryContent() {
               className="bg-[#0C1A2E] border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-all shadow-lg flex flex-col justify-between group"
             >
               <div>
-                {/* Image Preview Container */}
-                <div className="relative aspect-[16/10] bg-[#071221] overflow-hidden border-b border-white/10">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.altText || item.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+                {/* Media Preview Container - No Cropping */}
+                <div className="relative aspect-[16/10] bg-[#071221] overflow-hidden border-b border-white/10 flex items-center justify-center">
+                  {/* Subtle blurred ambient backdrop to fill empty space without cropping main asset */}
+                  {!(item.mediaType === "video" || item.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i)) && (
+                    <Image
+                      src={item.imageUrl}
+                      alt=""
+                      fill
+                      className="object-cover blur-md opacity-20 pointer-events-none"
+                    />
+                  )}
+                  {item.mediaType === "video" || item.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i) ? (
+                    <video
+                      src={item.imageUrl}
+                      controls
+                      playsInline
+                      preload="metadata"
+                      className="w-full h-full object-contain relative z-10"
+                    />
+                  ) : (
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.altText || item.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-contain p-1 relative z-10 group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-40 pointer-events-none z-10" />
 
                   {/* Status Badge */}
                   <div className="absolute top-3 left-3">
@@ -489,8 +519,13 @@ function AdminGalleryContent() {
                     </span>
                   </div>
 
-                  {/* Category Badge */}
-                  <div className="absolute top-3 right-3">
+                  {/* Category & Media Badge */}
+                  <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5">
+                    {(item.mediaType === "video" || item.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i)) && (
+                      <span className="text-[10px] font-bold bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <Video className="w-3 h-3" /> Video
+                      </span>
+                    )}
                     <span className="text-[10px] font-medium bg-[#071221]/80 backdrop-blur-md border border-white/10 text-slate-300 px-2 py-0.5 rounded-full">
                       {item.category}
                     </span>
@@ -561,10 +596,24 @@ function AdminGalleryContent() {
 
       {/* CREATE / EDIT MODAL */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleCloseModal}></div>
-          <div className="bg-[#0C1A2E] border border-white/15 rounded-2xl max-w-xl w-full flex flex-col relative z-10 shadow-2xl max-h-[90vh]">
-            <div className="flex items-center justify-between p-6 sm:p-8 pb-4 border-b border-white/10 shrink-0">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
+          data-lenis-prevent="true"
+        >
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/75 backdrop-blur-sm" 
+            onClick={handleCloseModal}
+          />
+          
+          {/* Modal Container with Contained Scroll and Sticky Footer */}
+          <div 
+            className="bg-[#0C1A2E] border border-white/15 rounded-2xl max-w-xl w-full flex flex-col relative z-10 shadow-2xl max-h-[92vh] overflow-hidden"
+            data-lenis-prevent="true"
+            onWheel={(e) => e.stopPropagation()}
+          >
+            {/* 1. STICKY HEADER */}
+            <div className="flex items-center justify-between p-5 sm:p-6 pb-4 border-b border-white/10 shrink-0 bg-[#0C1A2E]">
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-bold text-white">
@@ -581,6 +630,7 @@ function AdminGalleryContent() {
                 </p>
               </div>
               <button
+                type="button"
                 onClick={handleCloseModal}
                 className="text-slate-400 hover:text-white p-1 rounded-lg"
                 title="Close modal"
@@ -589,8 +639,13 @@ function AdminGalleryContent() {
               </button>
             </div>
 
-            <div className="p-6 sm:p-8 pt-4 overflow-y-auto">
-              <form onSubmit={handleFormSubmit} className="space-y-4">
+            {/* 2. SCROLLABLE FORM BODY */}
+            <form 
+              id="gallery-modal-form"
+              onSubmit={handleFormSubmit} 
+              className="flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6 space-y-4"
+              data-lenis-prevent="true"
+            >
               {/* Title */}
               <div>
                 <label
@@ -658,20 +713,41 @@ function AdminGalleryContent() {
                 </select>
               </div>
 
-              {/* Cloudinary Image Asset Upload */}
+              {/* Cloudinary Visual Asset Upload (Supports Image or Video up to 10MB) */}
               <div className="pt-2">
                 <ImageUpload
                   value={formData.imageUrl}
                   publicId={formData.imagePublicId}
-                  onChange={(url, publicId) =>
+                  allowVideo={true}
+                  maxSizeBytes={10 * 1024 * 1024}
+                  onFileSelected={(file) => {
+                    // Auto-populate project title from clean file name if title is empty
+                    setFormData((prev) => {
+                      if (!prev.title.trim()) {
+                        const cleanName = file.name
+                          .replace(/\.[^/.]+$/, "")
+                          .replace(/[-_]/g, " ")
+                          .trim();
+                        const capitalized = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+                        return { ...prev, title: capitalized || "Elevator Project Installation" };
+                      }
+                      return prev;
+                    });
+                  }}
+                  onMediaTypeChange={(type) =>
+                    setFormData((prev) => ({ ...prev, mediaType: type }))
+                  }
+                  onChange={(url, publicId) => {
+                    const isVid = Boolean(url.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || url.includes('/video/upload/'));
                     setFormData((prev) => ({
                       ...prev,
                       imageUrl: url,
                       imagePublicId: publicId,
-                    }))
-                  }
+                      mediaType: isVid ? "video" : (prev.mediaType || "image"),
+                    }));
+                  }}
                   folder="standard_elevators/gallery"
-                  label="Project Visual Asset (Cloudinary Upload)"
+                  label="Project Visual Asset (Image or Video - Max 10MB)"
                 />
               </div>
 
@@ -719,9 +795,18 @@ function AdminGalleryContent() {
                   </select>
                 </div>
               </div>
+            </form>
 
-              {/* Form Buttons */}
-              <div className="pt-6 border-t border-white/10 flex justify-end gap-3">
+            {/* 3. STICKY FOOTER - ALWAYS 100% VISIBLE ON SCREEN */}
+            <div className="p-4 sm:p-5 border-t border-white/10 shrink-0 bg-[#0C1A2E] flex items-center justify-between gap-3 rounded-b-2xl z-20">
+              <div className="text-[11px]">
+                {!formData.imageUrl.trim() ? (
+                  <span className="text-amber-400 font-medium">⚠️ Upload video or image</span>
+                ) : (
+                  <span className="text-emerald-400 font-medium">✓ Ready to publish</span>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={handleCloseModal}
@@ -731,14 +816,14 @@ function AdminGalleryContent() {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSaving || !formData.title.trim() || !formData.imageUrl.trim()}
-                  className="px-5 py-2.5 bg-[#0070F3] hover:bg-[#0060DF] text-white text-xs font-semibold rounded-xl flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  form="gallery-modal-form"
+                  disabled={isSaving || !formData.imageUrl.trim()}
+                  className="px-5 py-2.5 bg-[#0070F3] hover:bg-[#0060DF] text-white text-xs font-semibold rounded-xl flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {isSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>{editingItem ? "Update Project" : "Create Project"}</span>
                 </button>
               </div>
-              </form>
             </div>
           </div>
         </div>

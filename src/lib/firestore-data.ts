@@ -40,12 +40,17 @@ function snapshotToService(docSnap: QueryDocumentSnapshot<DocumentData>): Servic
 
 function snapshotToGallery(docSnap: QueryDocumentSnapshot<DocumentData>): GalleryItem {
   const data = docSnap.data();
+  const isVideo = Boolean(
+    data.mediaType === "video" ||
+    (typeof data.imageUrl === "string" && (data.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || data.imageUrl.includes("/video/upload/")))
+  );
   return {
     id: docSnap.id,
     title: data.title || "",
     category: data.category || "Installation",
     imageUrl: data.imageUrl || "/hero-elevator.jpg",
     imagePublicId: data.imagePublicId || undefined,
+    mediaType: isVideo ? "video" : "image",
     altText: data.altText || data.title || "",
     orderIndex: typeof data.orderIndex === "number" ? data.orderIndex : 0,
     status: data.status === "draft" ? "draft" : "published",
@@ -53,6 +58,15 @@ function snapshotToGallery(docSnap: QueryDocumentSnapshot<DocumentData>): Galler
     updatedAt: data.updatedAt,
     updatedBy: data.updatedBy || undefined,
   };
+}
+
+export function notifyGalleryUpdated(): void {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem("se_gallery_sync_time", Date.now().toString());
+      window.dispatchEvent(new CustomEvent("se_gallery_updated"));
+    } catch {}
+  }
 }
 
 export function sanitizeSlug(input: string): string {
@@ -119,10 +133,11 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
       servicesRef,
       where("status", "==", "published")
     );
-    const snapshot = await withTimeout(getDocs(q), 5000);
+    const snapshot = await withTimeout(getDocs(q), 10000);
 
     if (snapshot.empty) {
       const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
+      // We can cache empty fallback if db is literally empty, but maybe safer not to.
       cachedServices = fallback;
       lastServicesFetchTime = now;
       return fallback;
@@ -137,8 +152,7 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
   } catch (error) {
     console.warn("Firestore published services query timed out/failed, using verified fallback data:", error);
     const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
-    cachedServices = fallback;
-    lastServicesFetchTime = now;
+    // DO NOT cache the fallback on error/timeout, so it can retry later
     return fallback;
   }
 }
@@ -232,6 +246,7 @@ export async function createService(
     updatedAt: serverTimestamp(),
   }), 8000, "Failed to create service. Request timed out.");
 
+  cachedServices = null;
   return docRef.id;
 }
 
@@ -266,6 +281,7 @@ export async function updateService(
   // This allows us to "upsert" fallback data that might have a fake slug-based ID
   // and hasn't actually been seeded into the database yet.
   await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 8000, "Failed to update service. Request timed out.");
+  cachedServices = null;
 }
 
 /**
@@ -274,6 +290,7 @@ export async function updateService(
 export async function deleteService(id: string): Promise<void> {
   const docRef = doc(db, "services", id);
   await withTimeout(deleteDoc(docRef), 8000, "Failed to delete service. Request timed out.");
+  cachedServices = null;
 }
 
 /**
@@ -331,7 +348,7 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
       galleryRef,
       where("status", "==", "published")
     );
-    const snapshot = await withTimeout(getDocs(q), 5000);
+    const snapshot = await withTimeout(getDocs(q), 10000);
 
     if (snapshot.empty) {
       const fallback = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
@@ -349,8 +366,7 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
   } catch (error) {
     console.warn("Firestore published gallery query timed out/failed, using verified fallback data:", error);
     const fallback = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
-    cachedGallery = fallback;
-    lastGalleryFetchTime = now;
+    // DO NOT cache the fallback on error/timeout, so it can retry later
     return fallback;
   }
 }
@@ -394,12 +410,19 @@ export async function createGalleryItem(
     throw new Error("Image URL or path is required.");
   }
 
+  const isVideo = Boolean(
+    data.mediaType === "video" ||
+    data.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) ||
+    data.imageUrl.includes("/video/upload/")
+  );
+
   const galleryRef = collection(db, "gallery");
   const docRef = await withTimeout(addDoc(galleryRef, {
     title: data.title.trim(),
     category: data.category || "Installation",
     imageUrl: data.imageUrl.trim(),
     imagePublicId: data.imagePublicId?.trim() || null,
+    mediaType: isVideo ? "video" : "image",
     altText: data.altText?.trim() || data.title.trim(),
     orderIndex: Number(data.orderIndex) || 0,
     status: data.status === "draft" ? "draft" : "published",
@@ -408,6 +431,8 @@ export async function createGalleryItem(
     updatedAt: serverTimestamp(),
   }), 8000, "Failed to create gallery item. Request timed out.");
 
+  cachedGallery = null;
+  notifyGalleryUpdated();
   return docRef.id;
 }
 
@@ -424,11 +449,21 @@ export async function updateGalleryItem(
     updatedAt: serverTimestamp(),
   };
 
+  if (data.imageUrl && !data.mediaType) {
+    const isVideo = Boolean(
+      data.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) ||
+      data.imageUrl.includes("/video/upload/")
+    );
+    updatePayload.mediaType = isVideo ? "video" : "image";
+  }
+
   Object.keys(updatePayload).forEach(
     (key) => updatePayload[key] === undefined && delete updatePayload[key]
   );
 
   await withTimeout(updateDoc(docRef, updatePayload), 8000, "Failed to update gallery item. Request timed out.");
+  cachedGallery = null;
+  notifyGalleryUpdated();
 }
 
 /**
@@ -437,6 +472,8 @@ export async function updateGalleryItem(
 export async function deleteGalleryItem(id: string): Promise<void> {
   const docRef = doc(db, "gallery", id);
   await withTimeout(deleteDoc(docRef), 8000, "Failed to delete gallery item. Request timed out.");
+  cachedGallery = null;
+  notifyGalleryUpdated();
 }
 
 /**

@@ -22,19 +22,23 @@ function FloatingWhatsApp() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  let serviceContext = "your elevator services";
+  let serviceContext = "your elevator services and turnkey solutions";
   if (pathname === "/gallery") {
     const cat = searchParams.get("category");
     if (cat) serviceContext = `your ${cat} projects`;
     else serviceContext = "your elevator gallery projects";
   } else if (pathname?.startsWith("/services/")) {
     const slug = pathname.split("/").pop();
-    serviceContext = `the ${slug?.replace(/-/g, ' ')} service`;
+    serviceContext = `the ${slug?.replace(/-/g, ' ')} elevator service`;
   } else if (pathname === "/services") {
-    serviceContext = "your elevator services";
+    serviceContext = "your primary elevator solutions";
+  } else if (pathname === "/about") {
+    serviceContext = "your company background and engineering capabilities";
+  } else if (pathname === "/contact") {
+    serviceContext = "getting a customized quote and site survey";
   }
 
-  const waMessage = `Hello Standard Engineering Works, I am interested in ${serviceContext} and would like more information.`;
+  const waMessage = `Hello Standard Engineering Works, I have visited your website and would like to inquire about ${serviceContext}. Please provide more information and a quote.`;
   const waLink = `https://wa.me/919515231555?text=${encodeURIComponent(waMessage)}`;
 
   return (
@@ -42,7 +46,7 @@ function FloatingWhatsApp() {
       href={waLink}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#25D366] hover:bg-[#128C7E] text-white flex items-center justify-center shadow-[0_4px_15px_rgba(37,211,102,0.4)] transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366]"
+      className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#25D366] hover:bg-[#128C7E] text-white flex items-center justify-center shadow-[0_4px_18px_rgba(37,211,102,0.45)] transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] cursor-pointer"
       aria-label="Chat on WhatsApp"
     >
       <WhatsAppIcon className="w-6 h-6 md:w-7 md:h-7" />
@@ -60,39 +64,74 @@ export default function FloatingActions() {
 
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.scrollY > 300) {
+      const scrollY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      if (scrollY > 250) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
       }
     };
 
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
+    
+    // Also attach to Lenis scroll if present
+    let lenisHandler: any = null;
+    const bindLenis = () => {
+      const lenis = (window as any).__lenis;
+      if (lenis && typeof lenis.on === "function" && !lenisHandler) {
+        lenisHandler = () => toggleVisibility();
+        lenis.on("scroll", lenisHandler);
+      }
+    };
+    bindLenis();
+    const lenisTimer = setTimeout(bindLenis, 600);
+
+    return () => {
+      window.removeEventListener("scroll", toggleVisibility);
+      clearTimeout(lenisTimer);
+      const lenis = (window as any).__lenis;
+      if (lenis && typeof lenis.off === "function" && lenisHandler) {
+        lenis.off("scroll", lenisHandler);
+      }
+    };
   }, []);
 
-  const scrollToTop = () => {
+  const scrollToTop = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // 1. Lenis scroll to top immediately
     try {
       const lenis = (window as any).__lenis;
-      if (lenis) {
-        lenis.scrollTo(0, { duration: 1.2, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
-      } else {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
+      if (lenis && typeof lenis.scrollTo === "function") {
+        lenis.scrollTo(0, { immediate: true });
       }
-    } catch (err) {
+    } catch {}
+
+    // 2. Immediate window and document scroll to 0,0
+    try {
       window.scrollTo({
         top: 0,
-        behavior: "smooth",
+        left: 0,
+        behavior: "instant" as ScrollBehavior,
       });
+    } catch {
+      window.scrollTo(0, 0);
+    }
+
+    if (document.documentElement) {
+      document.documentElement.scrollTop = 0;
+    }
+    if (document.body) {
+      document.body.scrollTop = 0;
     }
   };
 
   return (
     <div 
-      className="fixed bottom-5 right-5 md:bottom-8 md:right-8 z-40 flex flex-col items-center w-12 md:w-14"
+      className="fixed bottom-5 right-5 md:bottom-8 md:right-8 z-[99] flex flex-col items-center w-12 md:w-14"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {/* Scroll to Top (Elevator Push Button) - Positioned in the TOP slot */}

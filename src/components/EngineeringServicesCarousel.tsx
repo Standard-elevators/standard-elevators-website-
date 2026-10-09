@@ -216,9 +216,26 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
                     <h3 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
                       {srv.title}
                     </h3>
-                    <p className="text-[#94A3B8] text-sm md:text-lg leading-relaxed mb-4 max-w-xl">
+                    <p className="text-[#94A3B8] text-sm md:text-lg leading-relaxed mb-6 max-w-xl">
                       {srv.desc}
                     </p>
+                    <div className="flex items-center gap-3.5">
+                      <Link
+                        href={`/contact?service=${encodeURIComponent(srv.title)}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#0062FF] to-[#0A78F5] hover:from-[#0052DF] hover:to-[#0062FF] text-white text-sm font-bold shadow-[0_4px_20px_rgba(0,98,255,0.45)] hover:shadow-[0_6px_25px_rgba(0,98,255,0.6)] hover:scale-[1.03] active:scale-95 transition-all duration-300"
+                      >
+                        <span>Request a Quote</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        href={srv.href || "/services"}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-semibold backdrop-blur-md border border-white/20 transition-all hover:scale-[1.02]"
+                      >
+                        <span>Explore Details</span>
+                      </Link>
+                    </div>
                   </div>
                 </motion.div>
 
@@ -314,14 +331,22 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
                        {srv.desc}
                      </p>
                      
-                     <Link href={srv.href || "/services"} className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100/80 group focus:outline-none">
-                       <span className="text-[#0877F9] font-bold text-[13px] uppercase tracking-wider group-active:text-[#0051D4] transition-colors">
-                         Explore Service
-                       </span>
-                       <div className="w-9 h-9 rounded-full bg-[#F0F7FF] flex items-center justify-center text-[#0877F9] group-active:scale-95 transition-transform">
-                         <ArrowRight className="w-4 h-4" />
-                       </div>
-                     </Link>
+                     <div className="mt-auto pt-4 flex items-center gap-2.5 border-t border-slate-100/90">
+                        <Link
+                          href={`/contact?service=${encodeURIComponent(srv.title)}`}
+                          className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#0062FF] to-[#0A78F5] hover:from-[#0052DF] hover:to-[#0062FF] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(0,98,255,0.35)] active:scale-95 transition-all"
+                        >
+                          <span>Request a Quote</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                        <Link
+                          href={srv.href || "/services"}
+                          className="py-3 px-3.5 rounded-xl bg-[#F0F7FF] text-[#0877F9] hover:bg-[#E0EFFF] text-[13px] font-bold flex items-center justify-center transition-colors shrink-0"
+                          aria-label={`Explore ${srv.title}`}
+                        >
+                          <ArrowRight className="w-4 h-4 -rotate-45" />
+                        </Link>
+                      </div>
                   </div>
                 </div>
               );

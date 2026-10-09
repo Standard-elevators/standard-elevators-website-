@@ -96,35 +96,53 @@ export interface CloudinaryUploadResult {
   created_at: string;
 }
 
+export const ALLOWED_IMAGE_MIMES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+export const ALLOWED_VIDEO_MIMES = ["video/mp4", "video/webm", "video/quicktime", "video/x-m4v"];
+export const ALLOWED_ALL_MEDIA_MIMES = [...ALLOWED_IMAGE_MIMES, ...ALLOWED_VIDEO_MIMES];
+
 /**
- * Validate image file on client side before network transmission
+ * Validate media file (image or video) on client side before network transmission
+ * Enforces strict 10MB limit
  */
-export function validateImageFile(
+export function validateMediaFile(
   file: File | Blob,
   maxSizeBytes: number = 10 * 1024 * 1024,
-  allowedMimes: string[] = ["image/jpeg", "image/png", "image/webp", "image/avif"]
-): { valid: boolean; error?: string } {
+  allowedMimes: string[] = ALLOWED_ALL_MEDIA_MIMES
+): { valid: boolean; error?: string; isVideo?: boolean } {
   if (file.size > maxSizeBytes) {
     const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
     const limitMb = (maxSizeBytes / (1024 * 1024)).toFixed(0);
     return {
       valid: false,
-      error: `File size (${sizeMb} MB) exceeds maximum allowed limit of ${limitMb} MB.`,
+      error: `File size (${sizeMb} MB) exceeds maximum allowed limit of ${limitMb} MB. Please upload a file under 10MB.`,
     };
   }
+
+  const isVideo = file.type ? file.type.startsWith("video/") : false;
 
   if (file.type && !allowedMimes.includes(file.type)) {
     return {
       valid: false,
-      error: `Unsupported file format (${file.type}). Allowed formats: JPG, PNG, WebP, AVIF.`,
+      error: `Unsupported file format (${file.type}). Allowed formats: JPG, PNG, WebP, AVIF, and MP4/WebM/MOV videos up to 10MB.`,
     };
   }
 
-  return { valid: true };
+  return { valid: true, isVideo };
 }
 
 /**
- * Upload an image using Server-Signed Authentication when credentials exist,
+ * Backwards compatible alias for validateImageFile
+ */
+export function validateImageFile(
+  file: File | Blob,
+  maxSizeBytes: number = 10 * 1024 * 1024,
+  allowedMimes: string[] = ALLOWED_ALL_MEDIA_MIMES
+): { valid: boolean; error?: string } {
+  return validateMediaFile(file, maxSizeBytes, allowedMimes);
+}
+
+/**
+ * Upload an image or video using Server-Signed Authentication when credentials exist,
  * with fallback to Unsigned Upload preset.
  */
 export async function uploadImageToCloudinary(
@@ -132,13 +150,14 @@ export async function uploadImageToCloudinary(
   options: UploadOptions = {}
 ): Promise<CloudinaryUploadResult> {
   const maxBytes = options.maxFileSizeBytes || 10 * 1024 * 1024;
-  const validation = validateImageFile(file, maxBytes, options.allowedMimeTypes);
+  const validation = validateMediaFile(file, maxBytes, options.allowedMimeTypes || ALLOWED_ALL_MEDIA_MIMES);
   if (!validation.valid) {
     throw new Error(validation.error);
   }
 
   const cloudName = cloudinaryConfig.cloudName;
   const folder = options.folder || "standard_elevators";
+  const resourceType = validation.isVideo ? "video" : "image";
 
   // 1. Attempt Server-Signed Upload if an authenticated ID token is provided
   if (options.idToken) {
@@ -149,14 +168,14 @@ export async function uploadImageToCloudinary(
           Authorization: `Bearer ${options.idToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ folder }),
+        body: JSON.stringify({ folder, resourceType }),
       });
 
       if (signRes.ok) {
         const signData = await signRes.json();
         // Upload using signed credentials from server
         return await uploadWithFormData(
-          `https://api.cloudinary.com/v1_1/${signData.cloudName}/image/upload`,
+          `https://api.cloudinary.com/v1_1/${signData.cloudName}/${resourceType}/upload`,
           {
             file,
             api_key: signData.apiKey,
@@ -181,7 +200,7 @@ export async function uploadImageToCloudinary(
 
   try {
     return await uploadWithFormData(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
       {
         file,
         upload_preset: cloudinaryConfig.uploadPreset,

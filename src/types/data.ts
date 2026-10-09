@@ -20,12 +20,15 @@ export interface ServiceItem {
 
 export type GalleryCategory = "Passenger Lifts" | "Goods Lifts" | "Hospital Lifts" | "MRL Lifts" | "Installation" | "Cabins" | "Doors" | "Components";
 
+export type MediaType = "image" | "video";
+
 export interface GalleryItem {
   id?: string;
   title: string;
   category: GalleryCategory;
   imageUrl: string;
   imagePublicId?: string;
+  mediaType?: MediaType;
   altText?: string;
   orderIndex: number;
   status: PublicationStatus;

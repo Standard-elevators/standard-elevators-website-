@@ -55,8 +55,18 @@ export default function ProjectPortfolio() {
       }
     }
     loadPortfolio();
+
+    const handleSync = () => {
+      loadPortfolio();
+    };
+
+    window.addEventListener("se_gallery_updated", handleSync);
+    window.addEventListener("storage", handleSync);
+
     return () => {
       isMounted = false;
+      window.removeEventListener("se_gallery_updated", handleSync);
+      window.removeEventListener("storage", handleSync);
     };
   }, []);
 
@@ -221,17 +231,29 @@ export default function ProjectPortfolio() {
                     href={`/gallery${featuredItem.category ? `?category=${encodeURIComponent(featuredItem.category)}` : ''}`}
                     className="group relative w-full h-full block rounded-2xl overflow-hidden bg-[#071324] border border-[#102B46]/20 shadow-[0_10px_30px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_45px_rgba(8,119,249,0.18)] hover:-translate-y-1.5 transition-all duration-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9]"
                   >
-                    {/* Background Photograph */}
+                    {/* Media Asset (Video or Clean Image) */}
                     <div className="absolute inset-0 z-0 overflow-hidden">
-                      <Image
-                        src={failedImageIds[featuredItem.id || "featured"] ? "/hero-elevator.jpg" : featuredItem.imageUrl}
-                        alt={featuredItem.altText || featuredItem.title}
-                        fill
-                        priority
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                        onError={() => handleImageError(featuredItem.id || "featured")}
-                        className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                      />
+                      {Boolean(featuredItem.mediaType === "video" || featuredItem.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || featuredItem.imageUrl?.includes("/video/upload/")) ? (
+                        <video
+                          src={featuredItem.imageUrl}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Image
+                          src={failedImageIds[featuredItem.id || "featured"] ? "/hero-elevator.jpg" : featuredItem.imageUrl}
+                          alt={featuredItem.altText || featuredItem.title}
+                          fill
+                          priority
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                          onError={() => handleImageError(featuredItem.id || "featured")}
+                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        />
+                      )}
                     </div>
 
                     {/* Subtle Architectural Gradient Overlay for legibility */}
@@ -277,16 +299,28 @@ export default function ProjectPortfolio() {
                       href={`/gallery${item.category ? `?category=${encodeURIComponent(item.category)}` : ''}`}
                       className="group relative w-full h-full block rounded-2xl overflow-hidden bg-[#071324] border border-[#102B46]/20 shadow-[0_8px_25px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_rgba(8,119,249,0.15)] hover:-translate-y-1.5 transition-all duration-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9]"
                     >
-                      {/* Background Photograph */}
+                      {/* Media Asset (Video or Clean Image) */}
                       <div className="absolute inset-0 z-0 overflow-hidden">
-                        <Image
-                          src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
-                          alt={item.altText || item.title}
-                          fill
-                          sizes="(max-width: 1024px) 50vw, 25vw"
-                          onError={() => handleImageError(uniqueKey)}
-                          className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                        />
+                        {Boolean(item.mediaType === "video" || item.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || item.imageUrl?.includes("/video/upload/")) ? (
+                          <video
+                            src={item.imageUrl}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Image
+                            src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
+                            alt={item.altText || item.title}
+                            fill
+                            sizes="(max-width: 1024px) 50vw, 25vw"
+                            onError={() => handleImageError(uniqueKey)}
+                            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          />
+                        )}
                       </div>
 
                       {/* Gradient Overlay */}
@@ -400,15 +434,27 @@ export default function ProjectPortfolio() {
                       pointerEvents: isActive ? 'auto' : 'none'
                     }}
                   >
-                    <div className="absolute inset-0 z-0">
-                      <Image
-                        src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
-                        alt={item.altText || item.title}
-                        fill
-                        sizes="100vw"
-                        onError={() => handleImageError(uniqueKey)}
-                        className="object-cover object-center"
-                      />
+                    <div className="absolute inset-0 z-0 flex items-center justify-center">
+                      {Boolean(item.mediaType === "video" || item.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || item.imageUrl?.includes("/video/upload/")) ? (
+                        <video
+                          src={item.imageUrl}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Image
+                          src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
+                          alt={item.altText || item.title}
+                          fill
+                          sizes="100vw"
+                          onError={() => handleImageError(uniqueKey)}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                     </div>
                     {/* Gradient for text legibility */}
                     <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#040D1A]/95 via-[#040D1A]/30 to-transparent" />

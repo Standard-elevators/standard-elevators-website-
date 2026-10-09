@@ -6,11 +6,13 @@ import Link from "@/components/TransitionLink";
 import { Menu, X, ChevronDown, ChevronRight, ArrowRight, Phone, Home, User, Settings, Image as ImageIcon, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { DEFAULT_SERVICES, GALLERY_CATEGORIES_MENU, ENGINEERING_SERVICES_DATA, CUSTOMIZATION_DATA } from "@/data/defaultData";
+import { getPublishedServices } from "@/lib/firestore-data";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeMobileDropdown, setActiveMobileDropdown] = useState<string | null>(null);
+  const [dynamicServices, setDynamicServices] = useState<any[]>(DEFAULT_SERVICES);
   
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -23,6 +25,25 @@ export default function Header() {
     setActiveDropdown(null);
     setActiveMobileDropdown(null);
   }, [pathname]);
+
+  // Fetch dynamic services for the mega menu and mobile menu
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchServices() {
+      try {
+        const data = await getPublishedServices();
+        if (isMounted && data && data.length > 0) {
+          setDynamicServices(data);
+        }
+      } catch (err) {
+        console.warn("Header fetch services failed:", err);
+      }
+    }
+    fetchServices();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Body scroll lock and Lenis stop for mobile menu
   useEffect(() => {
@@ -89,7 +110,7 @@ export default function Header() {
   };
 
   // Structured Data for Menus
-  const primarySolutions = DEFAULT_SERVICES.map(s => ({
+  const primarySolutions = dynamicServices.map(s => ({
     name: s.title.split(" (")[0], // Keep it clean for the menu
     href: `/services/${s.slug}`,
     desc: s.description,
@@ -216,7 +237,7 @@ export default function Header() {
           </div>
 
           {/* LEFT: LOGO */}
-          <div className="relative z-10 flex items-center justify-center shrink-0 w-auto lg:w-[23%] py-2 pl-3 md:pl-0">
+          <div className="relative z-10 flex items-center justify-center shrink-0 w-auto lg:w-[23%] py-1 pl-5 sm:pl-6 lg:pl-0">
             <a
               href="/"
               className="flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0062FF] rounded-md transition-opacity hover:opacity-90 relative z-20 cursor-pointer"
@@ -228,7 +249,7 @@ export default function Header() {
                 width={280}
                 height={90}
                 priority
-                className="h-[46px] sm:h-12 lg:h-[58px] w-auto object-contain shrink-0"
+                className="h-[52px] sm:h-[54px] lg:h-[58px] w-auto object-contain shrink-0"
               />
             </a>
           </div>
@@ -291,10 +312,12 @@ export default function Header() {
                                 <div className="grid grid-cols-3 gap-8">
                                   {/* Col 1 */}
                                   <div className="flex flex-col gap-2">
-                                    <h4 className="text-[11px] font-bold text-[#64748B] uppercase tracking-widest px-3 mb-2 flex items-center gap-2">
-                                      <span className="w-2 h-2 rounded-full bg-[#0877F9]"></span>
-                                      Primary Solutions
-                                    </h4>
+                                    <div className="flex items-center gap-2.5 px-3 py-1.5 mb-2 rounded-lg bg-gradient-to-r from-blue-50/90 to-transparent border-l-[3px] border-[#0877F9]">
+                                      <span className="w-2 h-2 rounded-full bg-[#0877F9] shadow-[0_0_8px_rgba(8,119,249,0.7)] shrink-0"></span>
+                                      <h4 className="text-[12px] font-extrabold text-[#0B213F] uppercase tracking-[0.16em]">
+                                        Primary Solutions
+                                      </h4>
+                                    </div>
                                     <div className="flex flex-col gap-1">
                                       {primarySolutions.slice(0, 3).map((sub, idx) => (
                                         <MenuItem key={idx} item={sub} onClick={() => setActiveDropdown(null)} />
@@ -304,10 +327,12 @@ export default function Header() {
                                   
                                   {/* Col 2 */}
                                   <div className="flex flex-col gap-2 relative before:absolute before:-left-4 before:top-0 before:bottom-0 before:w-[1px] before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-                                    <h4 className="text-[11px] font-bold text-[#64748B] uppercase tracking-widest px-3 mb-2 flex items-center gap-2">
-                                      <span className="w-2 h-2 rounded-full bg-[#28B8FF]"></span>
-                                      Engineering Services
-                                    </h4>
+                                    <div className="flex items-center gap-2.5 px-3 py-1.5 mb-2 rounded-lg bg-gradient-to-r from-sky-50/90 to-transparent border-l-[3px] border-[#0062FF]">
+                                      <span className="w-2 h-2 rounded-full bg-[#0062FF] shadow-[0_0_8px_rgba(0,98,255,0.7)] shrink-0"></span>
+                                      <h4 className="text-[12px] font-extrabold text-[#0B213F] uppercase tracking-[0.16em]">
+                                        Engineering Services
+                                      </h4>
+                                    </div>
                                     <div className="flex flex-col gap-1">
                                       {engineeringServices.slice(0, 3).map((sub, idx) => (
                                         <MenuItem key={idx} item={sub} onClick={() => setActiveDropdown(null)} />
@@ -317,10 +342,12 @@ export default function Header() {
 
                                   {/* Col 3 */}
                                   <div className="flex flex-col gap-2 relative before:absolute before:-left-4 before:top-0 before:bottom-0 before:w-[1px] before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-                                    <h4 className="text-[11px] font-bold text-[#64748B] uppercase tracking-widest px-3 mb-2 flex items-center gap-2">
-                                      <span className="w-2 h-2 rounded-full bg-[#0B1F38]"></span>
-                                      Customization
-                                    </h4>
+                                    <div className="flex items-center gap-2.5 px-3 py-1.5 mb-2 rounded-lg bg-gradient-to-r from-slate-100/90 to-transparent border-l-[3px] border-[#0A78F5]">
+                                      <span className="w-2 h-2 rounded-full bg-[#0A78F5] shadow-[0_0_8px_rgba(10,120,245,0.7)] shrink-0"></span>
+                                      <h4 className="text-[12px] font-extrabold text-[#0B213F] uppercase tracking-[0.16em]">
+                                        Customization
+                                      </h4>
+                                    </div>
                                     <div className="flex flex-col gap-1">
                                       {customizationComponents.slice(0, 3).map((sub, idx) => (
                                         <MenuItem key={idx} item={sub} onClick={() => setActiveDropdown(null)} />
@@ -332,10 +359,12 @@ export default function Header() {
                                 /* GALLERY: 2-COLUMN STRUCTURE */
                                 <div className="grid grid-cols-2 gap-x-8 gap-y-2">
                                   <div className="col-span-2 mb-2">
-                                    <h4 className="text-[11px] font-bold text-[#64748B] uppercase tracking-widest px-3 flex items-center gap-2">
-                                      <span className="w-2 h-2 rounded-full bg-[#0877F9]"></span>
-                                      Project Categories
-                                    </h4>
+                                    <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-50/90 to-transparent border-l-[3px] border-[#0877F9]">
+                                      <span className="w-2 h-2 rounded-full bg-[#0877F9] shadow-[0_0_8px_rgba(8,119,249,0.7)] shrink-0"></span>
+                                      <h4 className="text-[12px] font-extrabold text-[#0B213F] uppercase tracking-[0.16em]">
+                                        Project Categories
+                                      </h4>
+                                    </div>
                                   </div>
                                   {GALLERY_CATEGORIES_MENU.map((sub, idx) => (
                                     <MenuItem key={idx} item={sub} onClick={() => setActiveDropdown(null)} />
