@@ -10,27 +10,27 @@ import ImageUpload from "@/components/admin/ImageUpload";
 const DEFAULT_ENGINEERING_SERVICES: EngineeringServiceSetting[] = [
   {
     title: "New Installation",
-    image: "/images/card_installation.jpg",
+    image: "",
     desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
   },
   {
     title: "Modernization",
-    image: "/images/card_modernization.jpg",
+    image: "",
     desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
   },
   {
     title: "Repairs",
-    image: "/images/card_maintenance.jpg",
+    image: "",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
   },
   {
     title: "Maintenance",
-    image: "/images/card_maintenance.jpg",
+    image: "",
     desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
   },
   {
     title: "Aftersales Services",
-    image: "/images/card_installation.jpg",
+    image: "",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
   }
 ];

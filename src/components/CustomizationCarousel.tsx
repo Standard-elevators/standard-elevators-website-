@@ -8,7 +8,7 @@ const DEFAULT_CAROUSEL_DATA = [
   {
     id: 0,
     title: "Cabin Models",
-    image: "/images/card_modernization.jpg",
+    image: "",
     description:
       "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
     items: ["Standard SS", "Premium Glass", "Custom Designs"],
@@ -16,7 +16,7 @@ const DEFAULT_CAROUSEL_DATA = [
   {
     id: 1,
     title: "Door Options",
-    image: "/images/card_installation.jpg",
+    image: "",
     description:
       "High-performance automatic and manual door systems engineered for rapid, safe, and silent operation.",
     items: [
@@ -28,7 +28,7 @@ const DEFAULT_CAROUSEL_DATA = [
   {
     id: 2,
     title: "Control & Safety",
-    image: "/images/card_maintenance.jpg",
+    image: "",
     description:
       "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
     items: [
@@ -40,7 +40,7 @@ const DEFAULT_CAROUSEL_DATA = [
   {
     id: 3,
     title: "Machinery",
-    image: "/images/card_installation.jpg",
+    image: "",
     description:
       "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
     items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"],
@@ -48,7 +48,7 @@ const DEFAULT_CAROUSEL_DATA = [
   {
     id: 4,
     title: "Interiors",
-    image: "/images/futuristic-glass-elevator-blue.png",
+    image: "",
     description:
       "Elevate your space with luxurious flooring, elegant ceilings, and sophisticated custom LED lighting.",
     items: [
@@ -279,15 +279,19 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
                 <div className={`relative w-full h-full rounded-[24px] overflow-hidden bg-white shadow-xl flex flex-col group transition-all duration-300 border ${isActive ? 'border-transparent shadow-[0_20px_50px_-10px_rgba(0,98,255,0.2)]' : 'border-slate-200'}`}>
                   
                   {/* Image Area - top part when active, full height when inactive */}
-                  <div className={`relative w-full overflow-hidden transition-all duration-500 ease-in-out bg-slate-100 ${isActive ? 'h-[65%] md:h-[70%]' : 'h-full'}`}>
-                    <Image
-                      src={card.image}
-                      alt={card.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 400px"
-                      className={`object-cover transition-transform duration-700 ease-out ${isActive ? 'scale-100 group-hover/card:scale-105' : 'scale-110'}`}
-                      draggable={false}
-                    />
+                  <div className={`relative w-full overflow-hidden transition-all duration-500 ease-in-out bg-[#06172B] ${isActive ? 'h-[65%] md:h-[70%]' : 'h-full'}`}>
+                    {card.image ? (
+                      <Image
+                        src={card.image}
+                        alt={card.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 400px"
+                        className={`object-cover transition-transform duration-700 ease-out ${isActive ? 'scale-100 group-hover/card:scale-105' : 'scale-110'}`}
+                        draggable={false}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-[#071221] to-[#0A2342] flex items-center justify-center" />
+                    )}
                   </div>
 
                   {/* Dark overlay for inactive cards */}

@@ -10,35 +10,35 @@ const DEFAULT_ENGINEERING_SERVICES = [
   {
     id: "01",
     title: "New Installation",
-    image: "/images/card_installation.jpg",
+    image: "",
     desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
     href: "/services", 
   },
   {
     id: "02",
     title: "Modernization",
-    image: "/images/card_modernization.jpg",
+    image: "",
     desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
     href: "/services",
   },
   {
     id: "03",
     title: "Repairs",
-    image: "/images/card_maintenance.jpg",
+    image: "",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
     href: "/services",
   },
   {
     id: "04",
     title: "Maintenance",
-    image: "/images/card_maintenance.jpg",
+    image: "",
     desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
     href: "/services",
   },
   {
     id: "05",
     title: "Aftersales Services",
-    image: "/images/card_installation.jpg",
+    image: "",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
   }
 ];
@@ -238,13 +238,17 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
                 }`}
               >
                 {/* Background Image */}
-                <Image
-                  src={srv.image}
-                  alt={srv.title}
-                  fill
-                  sizes={isActive ? "100vw" : "20vw"}
-                  className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.02]"
-                />
+                {srv.image ? (
+                  <Image
+                    src={srv.image}
+                    alt={srv.title}
+                    fill
+                    sizes={isActive ? "100vw" : "20vw"}
+                    className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.02]"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#06172B] via-[#0A2342] to-[#040D1A]" />
+                )}
                 
                 {/* Gradient Overlays */}
                 <div className={`absolute inset-0 transition-opacity duration-700 ${isActive ? 'bg-gradient-to-t from-[#020813] via-[#020813]/60 to-transparent opacity-90' : 'bg-[#020813]/60 group-hover:bg-[#020813]/40'}`} />
@@ -308,14 +312,18 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
                   </h3>
                   
                   {/* Circular Thumbnail */}
-                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 shadow-lg shadow-black/50 relative">
-                    <Image
-                      src={srv.image}
-                      alt={`${srv.title} thumbnail`}
-                      fill
-                      sizes="64px"
-                      className="object-cover"
-                    />
+                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 shadow-lg shadow-black/50 relative bg-[#040D1A]">
+                    {srv.image ? (
+                      <Image
+                        src={srv.image}
+                        alt={`${srv.title} thumbnail`}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-[#06172B] to-[#0A2342]" />
+                    )}
                   </div>
                 </motion.div>
 
@@ -345,13 +353,17 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
                 >
                   {/* Image Area - 55% height */}
                   <div className="relative w-full h-[55%] bg-[#040D1A] overflow-hidden shrink-0">
-                     <Image 
-                       src={srv.image} 
-                       alt={srv.title}
-                       fill
-                       sizes="(max-width: 768px) 100vw, 0vw"
-                       className="object-cover object-center"
-                     />
+                     {srv.image ? (
+                       <Image 
+                         src={srv.image} 
+                         alt={srv.title}
+                         fill
+                         sizes="(max-width: 768px) 100vw, 0vw"
+                         className="object-cover object-center"
+                       />
+                     ) : (
+                       <div className="w-full h-full bg-gradient-to-br from-[#06172B] via-[#0A2342] to-[#040D1A]" />
+                     )}
                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   </div>
                   

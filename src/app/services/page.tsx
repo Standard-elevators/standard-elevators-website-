@@ -148,7 +148,6 @@ export default async function ServicesPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
             {(settings.otherServices?.length > 0 ? settings.otherServices : []).map((srv, idx) => {
-              const bgImage = srv.image || "/images/card_installation.jpg";
               const IconComp = getOtherServiceIcon(srv.title);
               
               return (

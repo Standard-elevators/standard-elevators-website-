@@ -28,7 +28,7 @@ function snapshotToService(docSnap: QueryDocumentSnapshot<DocumentData>): Servic
     description: data.description || "",
     specs: Array.isArray(data.specs) ? data.specs : [],
     category: data.category || "General",
-    imageUrl: data.imageUrl || "/hero-elevator.jpg",
+    imageUrl: typeof data.imageUrl === "string" ? data.imageUrl : "",
     imagePublicId: data.imagePublicId || undefined,
     orderIndex: typeof data.orderIndex === "number" ? data.orderIndex : 0,
     status: data.status === "draft" ? "draft" : "published",
@@ -48,7 +48,7 @@ function snapshotToGallery(docSnap: QueryDocumentSnapshot<DocumentData>): Galler
     id: docSnap.id,
     title: data.title || "",
     category: data.category || "Installation",
-    imageUrl: data.imageUrl || "/hero-elevator.jpg",
+    imageUrl: typeof data.imageUrl === "string" ? data.imageUrl : "",
     imagePublicId: data.imagePublicId || undefined,
     mediaType: isVideo ? "video" : "image",
     altText: data.altText || data.title || "",
@@ -198,7 +198,6 @@ const CACHE_TTL_MS = 60 * 1000; // 1 minute
 
 /**
  * Fetch all published services for the public site.
- * Falls back to default verified elevator services if Firestore is empty or offline.
  */
 export async function getPublishedServices(): Promise<ServiceItem[]> {
   const now = Date.now();
@@ -209,6 +208,7 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
   try {
     const { validateFirebaseConfig } = await import('@/lib/firebase');
     if (!validateFirebaseConfig().isValid) {
+      console.warn("Firebase configuration incomplete, using initial catalogue structure.");
       const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
       cachedServices = fallback;
       lastServicesFetchTime = now;
@@ -220,7 +220,7 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
       servicesRef,
       where("status", "==", "published")
     );
-    const snapshot = await withTimeout(getDocs(q), 5000);
+    const snapshot = await withTimeout(getDocs(q), 6000);
 
     if (snapshot.empty) {
       const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
@@ -236,10 +236,33 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
     lastServicesFetchTime = now;
     return applyLocalServiceOverrides(result);
   } catch (error) {
-    console.warn("Firestore published services query timed out/failed, using verified fallback data:", error);
+    console.error("Firestore published services query failed:", error);
     const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
     return applyLocalServiceOverrides(fallback);
   }
+}
+
+/**
+ * Fetch a single service by slug.
+ */
+export async function getServiceBySlug(slug: string): Promise<ServiceItem | null> {
+  const cleanSlug = sanitizeSlug(slug);
+  if (!cleanSlug) return null;
+
+  try {
+    const servicesRef = collection(db, "services");
+    const q = query(servicesRef, where("slug", "==", cleanSlug));
+    const snapshot = await withTimeout(getDocs(q), 5000);
+    if (!snapshot.empty) {
+      const item = snapshotToService(snapshot.docs[0]);
+      return applyLocalServiceOverrides([item])[0] || item;
+    }
+  } catch (err) {
+    console.warn(`Firestore getServiceBySlug failed for ${cleanSlug}:`, err);
+  }
+
+  const all = await getPublishedServices();
+  return all.find(s => s.slug === cleanSlug) || null;
 }
 
 /**
@@ -312,25 +335,21 @@ export async function createService(
   let docId = cleanSlug;
   const servicesRef = collection(db, "services");
   
-  try {
-    const docRef = await withTimeout(addDoc(servicesRef, {
-      title: data.title.trim(),
-      slug: cleanSlug,
-      description: data.description?.trim() || "",
-      specs: Array.isArray(data.specs) ? data.specs.map((s) => s.trim()).filter(Boolean) : [],
-      category: data.category?.trim() || "General",
-      imageUrl: data.imageUrl?.trim() || "/hero-elevator.jpg",
-      imagePublicId: data.imagePublicId?.trim() || null,
-      orderIndex: Number(data.orderIndex) || 0,
-      status: data.status === "draft" ? "draft" : "published",
-      updatedBy: data.updatedBy || null,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    }), 6000);
-    docId = docRef.id;
-  } catch (err) {
-    console.warn("Firestore createService failed or timed out, saved local override:", err);
-  }
+  const docRef = await withTimeout(addDoc(servicesRef, {
+    title: data.title.trim(),
+    slug: cleanSlug,
+    description: data.description?.trim() || "",
+    specs: Array.isArray(data.specs) ? data.specs.map((s) => s.trim()).filter(Boolean) : [],
+    category: data.category?.trim() || "General",
+    imageUrl: data.imageUrl?.trim() || "",
+    imagePublicId: data.imagePublicId?.trim() || null,
+    orderIndex: Number(data.orderIndex) || 0,
+    status: data.status === "draft" ? "draft" : "published",
+    updatedBy: data.updatedBy || null,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  }), 10000);
+  docId = docRef.id;
 
   // Save local override immediately
   saveServiceOverride(docId, {
@@ -340,7 +359,7 @@ export async function createService(
     description: data.description?.trim() || "",
     specs: Array.isArray(data.specs) ? data.specs.map((s) => s.trim()).filter(Boolean) : [],
     category: data.category?.trim() || "General",
-    imageUrl: data.imageUrl?.trim() || "/hero-elevator.jpg",
+    imageUrl: data.imageUrl?.trim() || "",
     imagePublicId: data.imagePublicId?.trim() || undefined,
     orderIndex: Number(data.orderIndex) || 0,
     status: data.status === "draft" ? "draft" : "published",
@@ -376,14 +395,11 @@ export async function updateService(
     (key) => updatePayload[key] === undefined && delete updatePayload[key]
   );
 
+  // Write directly to Firestore with timeout
+  await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 10000);
+
   // Save local override immediately for instant UI update
   saveServiceOverride(id, { id, ...data } as ServiceItem);
-
-  try {
-    await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 6000);
-  } catch (err) {
-    console.warn("Firestore updateService failed or timed out, local override active:", err);
-  }
 
   cachedServices = null;
   // Notify public pages and header to refresh
@@ -396,15 +412,11 @@ export async function updateService(
  * Delete a service record.
  */
 export async function deleteService(id: string): Promise<void> {
+  const docRef = doc(db, "services", id);
+  await withTimeout(deleteDoc(docRef), 10000);
+
   // Remove from local storage immediately
   removeServiceOverride(id);
-
-  try {
-    const docRef = doc(db, "services", id);
-    await withTimeout(deleteDoc(docRef), 6000);
-  } catch (err) {
-    console.warn("Firestore deleteService failed or timed out, local override removed:", err);
-  }
 
   cachedServices = null;
   if (typeof window !== "undefined") {
@@ -531,10 +543,10 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
   try {
     const { validateFirebaseConfig } = await import('@/lib/firebase');
     if (!validateFirebaseConfig().isValid) {
-      const fallback = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
-      cachedGallery = fallback;
+      console.warn("Firebase configuration incomplete, returning empty gallery.");
+      cachedGallery = [];
       lastGalleryFetchTime = now;
-      return applyLocalGalleryOverrides(fallback);
+      return applyLocalGalleryOverrides([]);
     }
 
     const galleryRef = collection(db, "gallery");
@@ -542,13 +554,12 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
       galleryRef,
       where("status", "==", "published")
     );
-    const snapshot = await withTimeout(getDocs(q), 5000);
+    const snapshot = await withTimeout(getDocs(q), 6000);
 
     if (snapshot.empty) {
-      const fallback = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
-      cachedGallery = fallback;
+      cachedGallery = [];
       lastGalleryFetchTime = now;
-      return applyLocalGalleryOverrides(fallback);
+      return applyLocalGalleryOverrides([]);
     }
 
     const result = snapshot.docs
@@ -558,9 +569,8 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
     lastGalleryFetchTime = now;
     return applyLocalGalleryOverrides(result);
   } catch (error) {
-    console.warn("Firestore published gallery query timed out/failed, using local fallback data:", error);
-    const fallback = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
-    return applyLocalGalleryOverrides(fallback);
+    console.error("Firestore published gallery query failed:", error);
+    return applyLocalGalleryOverrides([]);
   }
 }
 
@@ -571,24 +581,22 @@ export async function getAllGallery(): Promise<GalleryItem[]> {
   try {
     const { validateFirebaseConfig } = await import('@/lib/firebase');
     if (!validateFirebaseConfig().isValid) {
-      return applyLocalGalleryOverrides(DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` })));
+      return applyLocalGalleryOverrides([]);
     }
 
     const galleryRef = collection(db, "gallery");
     const q = query(galleryRef, orderBy("orderIndex", "asc"));
-    const snapshot = await withTimeout(getDocs(q), 5000);
+    const snapshot = await withTimeout(getDocs(q), 6000);
 
     let list: GalleryItem[] = [];
-    if (snapshot.empty) {
-      list = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
-    } else {
+    if (!snapshot.empty) {
       list = snapshot.docs.map(snapshotToGallery);
     }
 
     return applyLocalGalleryOverrides(list);
   } catch (error) {
-    console.warn("Firestore admin gallery query failed, using local/fallback data:", error);
-    return applyLocalGalleryOverrides(DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` })));
+    console.error("Firestore admin gallery query failed:", error);
+    return applyLocalGalleryOverrides([]);
   }
 }
 
@@ -614,32 +622,27 @@ export async function createGalleryItem(
   let docId = `gallery-${Date.now()}`;
   const galleryRef = collection(db, "gallery");
 
-  try {
-    const docRef = await withTimeout(addDoc(galleryRef, {
-      title: data.title.trim(),
-      category: data.category || "Installation",
-      imageUrl: data.imageUrl.trim(),
-      imagePublicId: data.imagePublicId?.trim() || null,
-      mediaType: isVideo ? "video" : "image",
-      altText: data.altText?.trim() || data.title.trim(),
-      orderIndex: Number(data.orderIndex) || 0,
-      status: data.status === "draft" ? "draft" : "published",
-      updatedBy: data.updatedBy || null,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    }), 6000);
-    docId = docRef.id;
-  } catch (err) {
-    console.warn("Firestore createGalleryItem failed or timed out, saved local override:", err);
-  }
+  const docRef = await withTimeout(addDoc(galleryRef, {
+    title: data.title.trim(),
+    category: data.category || "Installation",
+    imageUrl: data.imageUrl.trim(),
+    imagePublicId: data.imagePublicId || null,
+    mediaType: isVideo ? "video" : "image",
+    altText: data.altText?.trim() || data.title.trim(),
+    orderIndex: Number(data.orderIndex) || 0,
+    status: data.status === "draft" ? "draft" : "published",
+    updatedBy: data.updatedBy || null,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  }), 10000);
+  docId = docRef.id;
 
-  // Save local override immediately
   saveGalleryOverride(docId, {
     id: docId,
     title: data.title.trim(),
     category: data.category || "Installation",
     imageUrl: data.imageUrl.trim(),
-    imagePublicId: data.imagePublicId?.trim() || undefined,
+    imagePublicId: data.imagePublicId || undefined,
     mediaType: isVideo ? "video" : "image",
     altText: data.altText?.trim() || data.title.trim(),
     orderIndex: Number(data.orderIndex) || 0,
@@ -664,13 +667,6 @@ export async function updateGalleryItem(
     (data.imageUrl && (data.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || data.imageUrl.includes("/video/upload/")))
   );
 
-  // Save local override immediately
-  saveGalleryOverride(id, {
-    id,
-    ...data,
-    mediaType: isVideo ? "video" : "image",
-  } as GalleryItem);
-
   const docRef = doc(db, "gallery", id);
   const updatePayload: Record<string, unknown> = {
     ...data,
@@ -685,11 +681,13 @@ export async function updateGalleryItem(
     (key) => updatePayload[key] === undefined && delete updatePayload[key]
   );
 
-  try {
-    await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 6000);
-  } catch (err) {
-    console.warn("Firestore updateGalleryItem failed or timed out, local override active:", err);
-  }
+  await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 10000);
+
+  saveGalleryOverride(id, {
+    id,
+    ...data,
+    mediaType: isVideo ? "video" : "image",
+  } as GalleryItem);
 
   cachedGallery = null;
   notifyGalleryUpdated();
@@ -699,15 +697,10 @@ export async function updateGalleryItem(
  * Delete a gallery item.
  */
 export async function deleteGalleryItem(id: string): Promise<void> {
+  const docRef = doc(db, "gallery", id);
+  await withTimeout(deleteDoc(docRef), 10000);
+
   removeGalleryOverride(id);
-
-  try {
-    const docRef = doc(db, "gallery", id);
-    await withTimeout(deleteDoc(docRef), 6000);
-  } catch (err) {
-    console.warn("Firestore deleteGalleryItem failed or timed out, local override removed:", err);
-  }
-
   cachedGallery = null;
   notifyGalleryUpdated();
 }
@@ -867,27 +860,27 @@ export function notifyServicesPageUpdated(): void {
 export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
   {
     title: "New Installation",
-    image: "/images/card_installation.jpg",
+    image: "",
     desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
   },
   {
     title: "Modernization",
-    image: "/images/card_modernization.jpg",
+    image: "",
     desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
   },
   {
     title: "Repairs",
-    image: "/images/card_maintenance.jpg",
+    image: "",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
   },
   {
     title: "Maintenance",
-    image: "/images/card_maintenance.jpg",
+    image: "",
     desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
   },
   {
     title: "Aftersales Services",
-    image: "/images/card_installation.jpg",
+    image: "",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
   }
 ];
@@ -895,44 +888,44 @@ export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
 export const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
   {
     title: "Cabin Models",
-    image: "/images/card_modernization.jpg",
+    image: "",
     description: "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
     items: ["Standard SS", "Premium Glass", "Custom Designs"],
   },
   {
     title: "Door Options",
-    image: "/images/card_installation.jpg",
+    image: "",
     description: "High-performance automatic and manual door systems engineered for rapid, safe, and silent operation.",
     items: ["Automatic Sliding Doors", "Manual Collapsible", "Premium Glass Doors"],
   },
   {
     title: "Control & Safety",
-    image: "/images/card_maintenance.jpg",
+    image: "",
     description: "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
     items: ["Microprocessor Control", "ARD (Auto Rescue Device)", "Advanced Safety Gears"],
   },
   {
     title: "Machinery",
-    image: "/images/card_installation.jpg",
+    image: "",
     description: "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
     items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"],
   },
   {
     title: "Interiors",
-    image: "/images/futuristic-glass-elevator-blue.png",
+    image: "",
     description: "Elevate your space with luxurious flooring, elegant ceilings, and sophisticated custom LED lighting.",
     items: ["Custom Flooring", "Elegant Ceilings", "Integrated LED Lighting"],
   },
 ];
 
 export const DEFAULT_OTHER_SERVICES_DATA: OtherServiceSetting[] = [
-  { title: "Structural Fabrication", image: "/images/card_installation.jpg", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
-  { title: "Glass & ACP Sheets", image: "/images/card_modernization.jpg", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
-  { title: "UPVC Window & Door", image: "/images/card_installation.jpg", desc: "High-quality UPVC systems for residential and commercial spaces." },
-  { title: "Renovation Works", image: "/images/card_modernization.jpg", desc: "Complete architectural and interior renovation services." },
-  { title: "SS Railing", image: "/images/card_maintenance.jpg", desc: "Custom stainless steel handrails and balustrades." },
-  { title: "Electrical House Wirings", image: "/images/card_maintenance.jpg", desc: "Complete residential and commercial electrical wiring systems." },
-  { title: "Civil Works", image: "/images/card_installation.jpg", desc: "Comprehensive civil construction and shaft preparation." },
+  { title: "Structural Fabrication", image: "", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
+  { title: "Glass & ACP Sheets", image: "", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
+  { title: "UPVC Window & Door", image: "", desc: "High-quality UPVC systems for residential and commercial spaces." },
+  { title: "Renovation Works", image: "", desc: "Complete architectural and interior renovation services." },
+  { title: "SS Railing", image: "", desc: "Custom stainless steel handrails and balustrades." },
+  { title: "Electrical House Wirings", image: "", desc: "Complete residential and commercial electrical wiring systems." },
+  { title: "Civil Works", image: "", desc: "Comprehensive civil construction and shaft preparation." },
 ];
 
 const DEFAULT_SERVICES_PAGE_SETTINGS: ServicesPageSettings = {

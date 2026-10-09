@@ -48,7 +48,7 @@ interface GalleryFormData {
 const DEFAULT_GALLERY_FORM: GalleryFormData = {
   title: "",
   category: "Installation",
-  imageUrl: "/hero-elevator.jpg",
+  imageUrl: "",
   imagePublicId: undefined,
   mediaType: "image",
   altText: "",
@@ -150,7 +150,7 @@ function AdminGalleryContent() {
     const initial: GalleryFormData = {
       title: "",
       category: "Installation",
-      imageUrl: "/hero-elevator.jpg",
+      imageUrl: "",
       imagePublicId: undefined,
       mediaType: "image",
       altText: "",

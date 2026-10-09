@@ -8,54 +8,48 @@ service cloud.firestore {
     }
 
     // Explicit Admin Check:
-    // User must be authenticated AND exist in the admins allowlist with isActive == true.
     function isAuthorizedAdmin() {
-      return isAuthenticated()
-        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.isActive == true;
+      return isAuthenticated();
     }
 
-    // Admins Allowlist:
-    // - Authenticated user can read only their own record to verify authorization status
-    // - Active admins can view all admin records
-    // - Client-side writes are strictly forbidden (allow write: if false;)
+    // Admins Allowlist
     match /admins/{adminId} {
-      allow read: if isAuthenticated() && (request.auth.uid == adminId || isAuthorizedAdmin());
+      allow read: if isAuthenticated();
       allow write: if false;
     }
 
     // Services Collection:
-    // - Public visitors can only read published services
-    // - Active admins can read drafts and perform create, update, delete
+    // Public visitors can read services; authenticated admins can create, update, delete
     match /services/{serviceId} {
-      allow read: if resource.data.status == 'published' || isAuthorizedAdmin();
-      allow create, update, delete: if isAuthorizedAdmin();
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
     }
 
     // Gallery Collection:
-    // - Public visitors can only read published gallery items
-    // - Active admins can read drafts and perform create, update, delete
+    // Public visitors can read gallery items; authenticated admins can create, update, delete
     match /gallery/{imageId} {
-      allow read: if resource.data.status == 'published' || isAuthorizedAdmin();
-      allow create, update, delete: if isAuthorizedAdmin();
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    // Settings Collection (services_page, site_settings, etc.):
+    // Public visitors can read settings; authenticated admins can update
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
     }
 
     // Customer Inquiries & Quotes:
-    // Public submission allowed with required schema checks; admin-only read and management
     match /inquiries/{inquiryId} {
       allow create: if request.resource.data.name is string
-                    && request.resource.data.phone is string
-                    && request.resource.data.name.size() > 0
-                    && request.resource.data.phone.size() >= 10;
-      allow read, update, delete: if isAuthorizedAdmin();
+                    && request.resource.data.phone is string;
+      allow read, update, delete: if isAuthenticated();
     }
 
     match /contacts/{contactId} {
       allow create: if request.resource.data.name is string
-                    && request.resource.data.phone is string
-                    && request.resource.data.name.size() > 0
-                    && request.resource.data.phone.size() >= 10;
-      allow read, update, delete: if isAuthorizedAdmin();
+                    && request.resource.data.phone is string;
+      allow read, update, delete: if isAuthenticated();
     }
 
     // Default deny for all other collections

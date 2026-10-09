@@ -8,13 +8,13 @@ import { getServicesPageSettings, updateServicesPageSettings, OtherServiceSettin
 import ImageUpload from "@/components/admin/ImageUpload";
 
 const DEFAULT_OTHER_SERVICES: OtherServiceSetting[] = [
-  { title: "Structural Fabrication", image: "/images/card_installation.jpg", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
-  { title: "Glass & ACP Sheets", image: "/images/card_modernization.jpg", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
-  { title: "UPVC Window & Door", image: "/images/card_installation.jpg", desc: "High-quality UPVC systems for residential and commercial spaces." },
-  { title: "Renovation Works", image: "/images/card_modernization.jpg", desc: "Complete architectural and interior renovation services." },
-  { title: "SS Railing", image: "/images/card_maintenance.jpg", desc: "Custom stainless steel handrails and balustrades." },
-  { title: "Electrical House Wirings", image: "/images/card_maintenance.jpg", desc: "Complete residential and commercial electrical wiring systems." },
-  { title: "Civil Works", image: "/images/card_installation.jpg", desc: "Comprehensive civil construction and shaft preparation." },
+  { title: "Structural Fabrication", image: "", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
+  { title: "Glass & ACP Sheets", image: "", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
+  { title: "UPVC Window & Door", image: "", desc: "High-quality UPVC systems for residential and commercial spaces." },
+  { title: "Renovation Works", image: "", desc: "Complete architectural and interior renovation services." },
+  { title: "SS Railing", image: "", desc: "Custom stainless steel handrails and balustrades." },
+  { title: "Electrical House Wirings", image: "", desc: "Complete residential and commercial electrical wiring systems." },
+  { title: "Civil Works", image: "", desc: "Comprehensive civil construction and shaft preparation." },
 ];
 
 export default function OtherServicesAdminPage() {

@@ -189,7 +189,7 @@ export default function ImageUpload({
               else if (val) onMediaTypeChange?.("image");
               onChange(val, undefined);
             }}
-            placeholder="https://res.cloudinary.com/... or /hero-elevator.jpg"
+            placeholder="https://res.cloudinary.com/... or media path"
             className="w-full px-3.5 py-2.5 bg-[#071221] border border-white/10 rounded-xl text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
           />
           <span className="text-[10px] text-slate-500 block">

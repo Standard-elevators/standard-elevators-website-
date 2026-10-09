@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "@/components/TransitionLink";
-import { Menu, X, ChevronDown, ChevronRight, ArrowRight, Phone, Home, User, Settings, Image as ImageIcon, Mail } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, ArrowRight, Phone, Home, User, Settings, Image as ImageIcon, Mail, Layers } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
   getPublishedServices,
@@ -186,7 +186,7 @@ export default function Header() {
       name: s.title.split(" (")[0],
       href: `/services/${s.slug}`,
       desc: s.description,
-      image: s.imageUrl || "/hero-elevator.jpg"
+      image: s.imageUrl || ""
     }));
   }, [dynamicServices]);
 
@@ -196,7 +196,7 @@ export default function Header() {
       name: s.title,
       href: `/services#engineering-services`, 
       desc: s.desc,
-      image: s.image || "/images/card_installation.jpg"
+      image: s.image || ""
     }));
   }, [dynamicEngineering]);
 
@@ -206,7 +206,7 @@ export default function Header() {
       name: s.title,
       href: `/services#customization`,
       desc: s.description || "Premium architectural components and finishes",
-      image: s.image || "/images/card_modernization.jpg"
+      image: s.image || ""
     }));
   }, [dynamicCustomization]);
 
@@ -220,12 +220,11 @@ export default function Header() {
     ];
     return categories.map(cat => {
       const match = dynamicGallery.find(g => g.category?.toLowerCase() === cat.name.toLowerCase() && g.imageUrl);
-      const fallbackImg = GALLERY_CATEGORIES_MENU.find(m => m.name.toLowerCase() === cat.name.toLowerCase())?.image || "/hero-elevator.jpg";
       return {
         name: cat.name,
         href: `/gallery?category=${encodeURIComponent(cat.name)}#gallery-grid`,
         desc: cat.desc,
-        image: match?.imageUrl || fallbackImg
+        image: match?.imageUrl || ""
       };
     });
   }, [dynamicGallery]);
@@ -277,12 +276,18 @@ export default function Header() {
         }`}
       >
         <div className={`relative w-14 h-11 rounded-[10px] overflow-hidden shrink-0 border shadow-[0_2px_8px_rgba(0,0,0,0.06)] group-hover:shadow-[0_4px_12px_rgba(8,119,249,0.15)] transition-all ${isActive ? 'border-[#0877F9]/40' : 'border-slate-200'}`}>
-          <Image
-            src={item.image}
-            alt={item.name}
-            fill
-            className={`object-cover transition-transform duration-500 ease-out ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
-          />
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt={item.name}
+              fill
+              className={`object-cover transition-transform duration-500 ease-out ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#06172B] to-[#0A2342] flex items-center justify-center">
+              <Layers className="w-4 h-4 text-[#38BDF8]/60" />
+            </div>
+          )}
         </div>
         <div className="flex flex-col flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-1">
@@ -662,7 +667,13 @@ export default function Header() {
                                 {primarySolutions.slice(0, 5).map((service, idx) => (
                                   <Link key={idx} href={service.href} onClick={() => setIsMobileMenuOpen(false)} className="bg-white p-3 rounded-xl flex items-center gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
                                     <div className="w-12 h-12 relative rounded-lg overflow-hidden shrink-0 border border-slate-100">
-                                      <Image src={service.image} alt={service.name} fill className="object-cover" />
+                                      {service.image ? (
+                                        <Image src={service.image} alt={service.name} fill className="object-cover" />
+                                      ) : (
+                                        <div className="w-full h-full bg-gradient-to-br from-[#06172B] to-[#0A2342] flex items-center justify-center">
+                                          <Layers className="w-4 h-4 text-[#38BDF8]/60" />
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="flex flex-col flex-1 min-w-0 justify-center">
                                       <span className="text-[#102A43] font-bold text-[14px] leading-tight mb-0.5">{service.name}</span>
@@ -681,7 +692,13 @@ export default function Header() {
                                 {galleryMenu.map((sub, idx) => (
                                   <Link key={idx} href={sub.href} onClick={() => setIsMobileMenuOpen(false)} className="bg-white p-3 rounded-xl flex items-center gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
                                     <div className="w-12 h-12 relative rounded-lg overflow-hidden shrink-0 border border-slate-100">
-                                      <Image src={sub.image} alt={sub.name} fill className="object-cover" />
+                                      {sub.image ? (
+                                        <Image src={sub.image} alt={sub.name} fill className="object-cover" />
+                                      ) : (
+                                        <div className="w-full h-full bg-gradient-to-br from-[#06172B] to-[#0A2342] flex items-center justify-center">
+                                          <Layers className="w-4 h-4 text-[#38BDF8]/60" />
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="flex flex-col flex-1 min-w-0 justify-center">
                                       <span className="text-[#102A43] font-bold text-[14px] leading-tight mb-0.5">{sub.name}</span>

@@ -10,31 +10,31 @@ import ImageUpload from "@/components/admin/ImageUpload";
 const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
   {
     title: "Cabin Models",
-    image: "/images/card_modernization.jpg",
+    image: "",
     description: "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
     items: ["Standard SS", "Premium Glass", "Custom Designs"],
   },
   {
     title: "Door Options",
-    image: "/images/card_installation.jpg",
+    image: "",
     description: "High-performance automatic and manual door systems engineered for rapid, safe, and silent operation.",
     items: ["Automatic Sliding Doors", "Manual Collapsible", "Premium Glass Doors"],
   },
   {
     title: "Control & Safety",
-    image: "/images/card_maintenance.jpg",
+    image: "",
     description: "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
     items: ["Microprocessor Control", "ARD (Auto Rescue Device)", "Advanced Safety Gears"],
   },
   {
     title: "Machinery",
-    image: "/images/card_installation.jpg",
+    image: "",
     description: "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
     items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"],
   },
   {
     title: "Interiors",
-    image: "/images/futuristic-glass-elevator-blue.png",
+    image: "",
     description: "Elevate your space with luxurious flooring, elegant ceilings, and sophisticated custom LED lighting.",
     items: ["Custom Flooring", "Elegant Ceilings", "Integrated LED Lighting"],
   },

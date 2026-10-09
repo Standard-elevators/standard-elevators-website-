@@ -197,13 +197,21 @@ export default function PrimarySolutionsCarousel({ services: initialServices }: 
               className="w-[300px] sm:w-[330px] md:w-auto shrink-0 group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-[0_4px_20px_rgba(10,35,66,0.06)] hover:shadow-[0_20px_40px_rgba(8,119,249,0.12)] hover:border-[#0877F9]/30 transition-all duration-500"
             >
               <div className="relative w-full aspect-[16/10] bg-[#06172B] overflow-hidden">
-                <Image
-                  src={service.imageUrl || "/hero-elevator.jpg"}
-                  alt={service.title}
-                  fill
-                  sizes="(max-width: 768px) 85vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
-                />
+                {service.imageUrl ? (
+                  <Image
+                    src={service.imageUrl}
+                    alt={service.title}
+                    fill
+                    sizes="(max-width: 768px) 85vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#06172B] via-[#0A2342] to-[#08172B] flex items-center justify-center">
+                    <div className="text-[#38BDF8]/20 scale-150 transform pointer-events-none">
+                      {icon}
+                    </div>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A2342]/90 via-[#0A2342]/20 to-transparent" />
                 
                 {/* Category Pill Badge - Top Left with clean padding and no collision */}

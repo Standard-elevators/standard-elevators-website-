@@ -233,9 +233,9 @@ export default function ProjectPortfolio() {
                           preload="metadata"
                           className="w-full h-full object-cover"
                         />
-                      ) : (
+                      ) : featuredItem.imageUrl && !failedImageIds[featuredItem.id || "featured"] ? (
                         <Image
-                          src={failedImageIds[featuredItem.id || "featured"] ? "/hero-elevator.jpg" : featuredItem.imageUrl}
+                          src={featuredItem.imageUrl}
                           alt={featuredItem.altText || featuredItem.title}
                           fill
                           priority
@@ -243,6 +243,8 @@ export default function ProjectPortfolio() {
                           onError={() => handleImageError(featuredItem.id || "featured")}
                           className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                         />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#06172B] via-[#0A2342] to-[#040D1A]" />
                       )}
                     </div>
 
@@ -301,15 +303,17 @@ export default function ProjectPortfolio() {
                             preload="metadata"
                             className="w-full h-full object-cover"
                           />
-                        ) : (
+                        ) : item.imageUrl && !failedImageIds[uniqueKey] ? (
                           <Image
-                            src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
+                            src={item.imageUrl}
                             alt={item.altText || item.title}
                             fill
                             sizes="(max-width: 1024px) 50vw, 25vw"
                             onError={() => handleImageError(uniqueKey)}
                             className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                           />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-[#06172B] via-[#0A2342] to-[#040D1A]" />
                         )}
                       </div>
 
@@ -435,15 +439,17 @@ export default function ProjectPortfolio() {
                           preload="metadata"
                           className="w-full h-full object-cover"
                         />
-                      ) : (
+                      ) : item.imageUrl && !failedImageIds[uniqueKey] ? (
                         <Image
-                          src={failedImageIds[uniqueKey] ? "/hero-elevator.jpg" : item.imageUrl}
+                          src={item.imageUrl}
                           alt={item.altText || item.title}
                           fill
                           sizes="100vw"
                           onError={() => handleImageError(uniqueKey)}
                           className="w-full h-full object-cover"
                         />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#06172B] via-[#0A2342] to-[#040D1A]" />
                       )}
                     </div>
                     {/* Gradient for text legibility */}
