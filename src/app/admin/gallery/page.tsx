@@ -10,6 +10,7 @@ import {
   updateGalleryItem,
   deleteGalleryItem,
   seedInitialGallery,
+  notifyGalleryUpdated,
 } from "@/lib/firestore-data";
 import { GalleryItem, GalleryCategory, PublicationStatus, MediaType } from "@/types/data";
 import ImageUpload from "@/components/admin/ImageUpload";
@@ -23,13 +24,10 @@ import {
   Trash2,
   Edit3,
   ExternalLink,
-  Eye,
-  EyeOff,
   AlertCircle,
   CheckCircle2,
   Loader2,
   X,
-  Sparkles,
   Search,
   Filter,
 } from "lucide-react";
@@ -76,6 +74,13 @@ function AdminGalleryContent() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
+
+  // Auto-dismiss success after 4s
+  useEffect(() => {
+    if (!successMessage) return;
+    const t = setTimeout(() => setSuccessMessage(null), 4000);
+    return () => clearTimeout(t);
+  }, [successMessage]);
 
   // Check if form has unsaved modifications
   const isDirty = useMemo(() => {
@@ -251,13 +256,16 @@ function AdminGalleryContent() {
   };
 
   const handleDelete = async (id: string) => {
-    setIsSaving(true);
     setActionError(null);
+    // Optimistic: remove from UI instantly
+    const target = items.find((i) => i.id === id);
+    setItems((prev) => prev.filter((i) => i.id !== id));
+    setDeleteConfirmId(null);
+
     try {
-      const target = items.find((i) => i.id === id);
       await deleteGalleryItem(id);
 
-      // Clean up Cloudinary asset if an image was uploaded
+      // Clean up Cloudinary asset
       if (target?.imagePublicId && user) {
         user.getIdToken().then(idToken => {
           deleteCloudinaryAsset(target.imagePublicId!, idToken).catch(() => {});
@@ -265,12 +273,12 @@ function AdminGalleryContent() {
       }
 
       setSuccessMessage("Gallery project deleted successfully.");
-      setDeleteConfirmId(null);
-      await loadGallery();
+      // Notify public gallery pages
+      notifyGalleryUpdated();
     } catch (err) {
+      // Rollback on failure
+      setItems((prev) => target ? [...prev, target].sort((a, b) => a.orderIndex - b.orderIndex) : prev);
       setActionError((err as Error).message || "Failed to delete gallery item.");
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -557,18 +565,7 @@ function AdminGalleryContent() {
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  {/* Status Toggle */}
-                  <button
-                    onClick={() => handleToggleStatus(item)}
-                    title={item.status === "published" ? "Unpublish to draft" : "Publish to live site"}
-                    className="p-1.5 bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg transition-colors"
-                  >
-                    {item.status === "published" ? (
-                      <Eye className="w-3.5 h-3.5 text-emerald-400" />
-                    ) : (
-                      <EyeOff className="w-3.5 h-3.5 text-amber-400" />
-                    )}
-                  </button>
+                  {/* Eye toggle - REMOVED */}
 
                   {/* Edit */}
                   <button

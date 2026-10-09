@@ -22,14 +22,11 @@ import {
   Trash2,
   Edit3,
   ExternalLink,
-  Eye,
-  EyeOff,
   AlertCircle,
   AlertTriangle,
   CheckCircle2,
   Loader2,
   X,
-  Sparkles,
   Search,
 } from "lucide-react";
 
@@ -65,6 +62,13 @@ function AdminServicesContent() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
+
+  // Auto-dismiss success after 4s
+  useEffect(() => {
+    if (!successMessage) return;
+    const t = setTimeout(() => setSuccessMessage(null), 4000);
+    return () => clearTimeout(t);
+  }, [successMessage]);
 
   // Modal states
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -265,10 +269,13 @@ function AdminServicesContent() {
   };
 
   const handleDelete = async (id: string) => {
-    setIsSaving(true);
     setActionError(null);
+    // Optimistic: remove from UI instantly
+    const target = services.find((s) => s.id === id);
+    setServices((prev) => prev.filter((s) => s.id !== id));
+    setDeleteConfirmId(null);
+
     try {
-      const target = services.find((s) => s.id === id);
       await deleteService(id);
 
       // Clean up Cloudinary asset if an image was uploaded
@@ -282,12 +289,10 @@ function AdminServicesContent() {
       }
 
       setSuccessMessage("Elevator service deleted successfully.");
-      setDeleteConfirmId(null);
-      await loadServices();
     } catch (err) {
+      // Rollback on failure
+      setServices((prev) => target ? [...prev, target].sort((a, b) => a.orderIndex - b.orderIndex) : prev);
       setActionError((err as Error).message || "Failed to delete service.");
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -368,20 +373,6 @@ function AdminServicesContent() {
 
         <div className="flex flex-wrap items-center gap-3">
           <button
-            onClick={handleSeedDefaults}
-            disabled={isSeeding || isLoading}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 text-xs font-semibold rounded-xl transition-all disabled:opacity-50"
-            title="Seed verified company catalog into Firestore"
-          >
-            {isSeeding ? (
-              <Loader2 className="w-4 h-4 animate-spin text-[#0070F3]" />
-            ) : (
-              <Sparkles className="w-4 h-4 text-[#38BDF8]" />
-            )}
-            <span>Sync Default Catalog</span>
-          </button>
-
-          <button
             onClick={openCreateModal}
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#0062FF] to-[#0088FF] hover:from-[#0052DF] hover:to-[#007AE6] text-white text-xs font-semibold rounded-xl shadow-[0_4px_14px_rgba(0,102,255,0.4)] transition-all active:scale-[0.98]"
           >
@@ -406,10 +397,10 @@ function AdminServicesContent() {
       )}
 
       {successMessage && (
-        <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center justify-between">
+        <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span>{successMessage}</span>
+            <span className="font-medium">{successMessage}</span>
           </div>
           <button onClick={() => setSuccessMessage(null)} className="text-emerald-400 hover:text-white">
             <X className="w-4 h-4" />
@@ -547,18 +538,7 @@ function AdminServicesContent() {
                   <span className="text-xs font-bold text-white">#{service.orderIndex}</span>
                 </div>
 
-                {/* Quick Toggle Status */}
-                <button
-                  onClick={() => handleToggleStatus(service)}
-                  title={service.status === "published" ? "Unpublish to draft" : "Publish to live site"}
-                  className="p-2 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl border border-white/5 transition-colors text-xs flex items-center gap-1"
-                >
-                  {service.status === "published" ? (
-                    <Eye className="w-4 h-4 text-emerald-400" />
-                  ) : (
-                    <EyeOff className="w-4 h-4 text-amber-400" />
-                  )}
-                </button>
+                {/* Quick Toggle Status - REMOVED (eye icon) */}
 
                 {/* Public Preview Link */}
                 <Link

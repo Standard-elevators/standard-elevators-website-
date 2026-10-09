@@ -63,6 +63,8 @@ export default function LeadershipAdminPage() {
     
     try {
       let finalImageUrl = selectedImage || "/images/owner/owner-placeholder.svg";
+      let finalPublicId: string | undefined = undefined;
+
       if (fileToUpload) {
         const idToken = user ? await user.getIdToken() : undefined;
         const uploadRes = await uploadImageToCloudinary(fileToUpload, {
@@ -70,15 +72,27 @@ export default function LeadershipAdminPage() {
           idToken,
         });
         finalImageUrl = uploadRes.secure_url;
+        finalPublicId = uploadRes.public_id;
       }
       
-      await updateFounderData({ name: founderName, imageUrl: finalImageUrl });
+      await updateFounderData({
+        name: founderName,
+        imageUrl: finalImageUrl,
+        ...(finalPublicId ? { imagePublicId: finalPublicId } : {}),
+      });
 
-      setStatus({ type: "success", msg: "Leadership profile updated successfully!" });
+      setStatus({ type: "success", msg: "Leadership profile updated successfully! Changes are live on the website." });
       setFileToUpload(null);
-    } catch (err) {
+      setImageKey(Date.now());
+
+      // Auto-dismiss success after 5s
+      setTimeout(() => setStatus({ type: null, msg: "" }), 5000);
+    } catch (err: any) {
       console.error(err);
-      setStatus({ type: "error", msg: "Failed to update profile. Please try again." });
+      const msg = err?.message?.includes("timed out")
+        ? "Connection timed out. Please check your internet connection and try again."
+        : "Failed to update profile. Please try again.";
+      setStatus({ type: "error", msg });
     } finally {
       setIsUploading(false);
     }
@@ -162,9 +176,9 @@ export default function LeadershipAdminPage() {
               <div className="mt-auto pt-6 border-t border-white/10">
                 <button
                   onClick={handleSave}
-                  disabled={isUploading || (!fileToUpload && !founderName)}
+                  disabled={isUploading || !founderName.trim()}
                   className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold transition-all shadow-lg ${
-                    isUploading || (!fileToUpload && !founderName)
+                    isUploading || !founderName.trim()
                       ? "bg-slate-700 text-slate-400 cursor-not-allowed"
                       : "bg-gradient-to-r from-[#0062FF] to-[#0088FF] hover:from-[#0052DF] hover:to-[#007AE6] text-white hover:shadow-[0_0_20px_rgba(0,98,255,0.4)] active:scale-95"
                   }`}

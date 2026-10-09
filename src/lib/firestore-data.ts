@@ -81,7 +81,7 @@ export function sanitizeSlug(input: string): string {
 /**
  * Wraps a promise with a timeout to prevent indefinite hanging (e.g. offline Firebase).
  */
-export function withTimeout<T>(promise: Promise<T>, ms: number = 8000, fallbackMessage: string = "Request timed out"): Promise<T> {
+export function withTimeout<T>(promise: Promise<T>, ms: number = 15000, fallbackMessage: string = "Request timed out"): Promise<T> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       reject(new Error(fallbackMessage));
@@ -170,7 +170,7 @@ export async function getAllServices(): Promise<ServiceItem[]> {
 
     const servicesRef = collection(db, "services");
     const q = query(servicesRef, orderBy("orderIndex", "asc"));
-    const snapshot = await withTimeout(getDocs(q), 2500);
+    const snapshot = await withTimeout(getDocs(q), 12000);
 
     if (snapshot.empty) {
       return DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
@@ -201,7 +201,7 @@ export async function isServiceSlugUnique(slug: string, excludeId?: string): Pro
   const cleanSlug = sanitizeSlug(slug);
   const servicesRef = collection(db, "services");
   const q = query(servicesRef, where("slug", "==", cleanSlug));
-  const snapshot = await getDocs(q);
+  const snapshot = await withTimeout(getDocs(q), 10000, "Slug check timed out");
 
   if (snapshot.empty) return true;
   if (excludeId && snapshot.docs.length === 1 && snapshot.docs[0].id === excludeId) {
@@ -280,8 +280,12 @@ export async function updateService(
   // We use setDoc with { merge: true } instead of updateDoc
   // This allows us to "upsert" fallback data that might have a fake slug-based ID
   // and hasn't actually been seeded into the database yet.
-  await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 8000, "Failed to update service. Request timed out.");
+  await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 20000, "Failed to update service. Request timed out.");
   cachedServices = null;
+  // Notify public pages to refresh
+  if (typeof window !== "undefined") {
+    try { window.dispatchEvent(new CustomEvent("se_services_updated")); } catch {}
+  }
 }
 
 /**
@@ -289,7 +293,7 @@ export async function updateService(
  */
 export async function deleteService(id: string): Promise<void> {
   const docRef = doc(db, "services", id);
-  await withTimeout(deleteDoc(docRef), 8000, "Failed to delete service. Request timed out.");
+  await withTimeout(deleteDoc(docRef), 20000, "Failed to delete service. Request timed out.");
   cachedServices = null;
 }
 
@@ -516,9 +520,14 @@ export async function getFounderData(): Promise<{ name: string; imageUrl: string
   return { name: "Sandeep Goud", imageUrl: "/images/team/founder.jpg" };
 }
 
-export async function updateFounderData(data: { name: string; imageUrl: string; imagePublicId?: string }): Promise<void> {
+export async function updateFounderData(data: { name?: string; imageUrl?: string; imagePublicId?: string }): Promise<void> {
   const docRef = doc(db, "settings", "founder");
-  await withTimeout(setDoc(docRef, data, { merge: true }), 8000, "Failed to update founder data.");
+  // Remove undefined keys before saving
+  const payload: Record<string, unknown> = {};
+  if (data.name !== undefined) payload.name = data.name;
+  if (data.imageUrl !== undefined) payload.imageUrl = data.imageUrl;
+  if (data.imagePublicId !== undefined) payload.imagePublicId = data.imagePublicId;
+  await withTimeout(setDoc(docRef, payload, { merge: true }), 20000, "Failed to update founder data.");
 }
 
 export interface InquirySubmission {
