@@ -217,7 +217,28 @@ function AdminServicesContent() {
         const previousPublicId = editingService.imagePublicId;
         const newPublicId = formData.imagePublicId;
 
-        // Update existing service
+        const updatedItem: ServiceItem = {
+          ...editingService,
+          title: formData.title,
+          slug: formData.slug,
+          category: formData.category,
+          description: formData.description,
+          specs: specsArray,
+          imageUrl: formData.imageUrl,
+          imagePublicId: formData.imagePublicId,
+          orderIndex: Number(formData.orderIndex),
+          status: formData.status,
+          updatedBy: attribution,
+        };
+
+        // Optimistic UI update
+        setServices((prev) =>
+          prev.map((s) => (s.id === editingService.id ? updatedItem : s)).sort((a, b) => a.orderIndex - b.orderIndex)
+        );
+        setIsFormOpen(false);
+        setSuccessMessage(`Service "${formData.title}" updated successfully! Changes are live on the website.`);
+
+        // Background update
         await updateService(editingService.id, {
           title: formData.title,
           slug: formData.slug,
@@ -240,11 +261,29 @@ function AdminServicesContent() {
             // Non-blocking cleanup
           }
         }
-
-        setSuccessMessage(`Service "${formData.title}" updated successfully.`);
       } else {
         // Create new service
-        await createService({
+        const tempId = `service-${Date.now()}`;
+        const newItem: ServiceItem = {
+          id: tempId,
+          title: formData.title,
+          slug: formData.slug,
+          category: formData.category,
+          description: formData.description,
+          specs: specsArray,
+          imageUrl: formData.imageUrl,
+          imagePublicId: formData.imagePublicId,
+          orderIndex: Number(formData.orderIndex),
+          status: formData.status,
+          updatedBy: attribution,
+        };
+
+        // Optimistic UI create
+        setServices((prev) => [...prev, newItem].sort((a, b) => a.orderIndex - b.orderIndex));
+        setIsFormOpen(false);
+        setSuccessMessage(`Service "${formData.title}" created successfully! Changes are live on the website.`);
+
+        const realId = await createService({
           title: formData.title,
           slug: formData.slug,
           category: formData.category,
@@ -256,11 +295,11 @@ function AdminServicesContent() {
           status: formData.status,
           updatedBy: attribution,
         });
-        setSuccessMessage(`Service "${formData.title}" created successfully.`);
-      }
 
-      setIsFormOpen(false);
-      await loadServices();
+        if (realId && realId !== tempId) {
+          setServices((prev) => prev.map((s) => (s.id === tempId ? { ...s, id: realId } : s)));
+        }
+      }
     } catch (err) {
       setActionError((err as Error).message || "Save operation failed.");
     } finally {

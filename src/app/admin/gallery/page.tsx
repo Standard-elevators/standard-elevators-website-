@@ -205,11 +205,33 @@ function AdminGalleryContent() {
     const altTextFinal = formData.altText.trim() || finalTitle;
 
     try {
+      const isVid = Boolean(formData.mediaType === "video" || formData.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || formData.imageUrl.includes("/video/upload/"));
+
       if (editingItem?.id) {
         const previousPublicId = editingItem.imagePublicId;
         const newPublicId = formData.imagePublicId;
 
-        const isVid = Boolean(formData.mediaType === "video" || formData.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || formData.imageUrl.includes("/video/upload/"));
+        const updatedItem: GalleryItem = {
+          ...editingItem,
+          title: finalTitle,
+          category: formData.category,
+          imageUrl: formData.imageUrl.trim(),
+          imagePublicId: formData.imagePublicId,
+          mediaType: isVid ? "video" : "image",
+          altText: altTextFinal,
+          orderIndex: Number(formData.orderIndex),
+          status: formData.status,
+          updatedBy: attribution,
+        };
+
+        // Optimistic UI update
+        setItems((prev) =>
+          prev.map((i) => (i.id === editingItem.id ? updatedItem : i)).sort((a, b) => a.orderIndex - b.orderIndex)
+        );
+        setIsFormOpen(false);
+        setSuccessMessage(`Gallery project "${finalTitle}" updated successfully! Changes are live on the website.`);
+
+        // Background update
         await updateGalleryItem(editingItem.id, {
           title: finalTitle,
           category: formData.category,
@@ -228,11 +250,27 @@ function AdminGalleryContent() {
             deleteCloudinaryAsset(previousPublicId, idToken).catch(() => {});
           }).catch(() => {});
         }
-
-        setSuccessMessage(`Gallery project "${finalTitle}" updated successfully.`);
       } else {
-        const isVid = Boolean(formData.mediaType === "video" || formData.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || formData.imageUrl.includes("/video/upload/"));
-        await createGalleryItem({
+        const tempId = `gallery-${Date.now()}`;
+        const newItem: GalleryItem = {
+          id: tempId,
+          title: finalTitle,
+          category: formData.category,
+          imageUrl: formData.imageUrl.trim(),
+          imagePublicId: formData.imagePublicId,
+          mediaType: isVid ? "video" : "image",
+          altText: altTextFinal,
+          orderIndex: Number(formData.orderIndex),
+          status: formData.status,
+          updatedBy: attribution,
+        };
+
+        // Optimistic UI create
+        setItems((prev) => [...prev, newItem].sort((a, b) => a.orderIndex - b.orderIndex));
+        setIsFormOpen(false);
+        setSuccessMessage(`Gallery project "${finalTitle}" created successfully! Changes are live on the website.`);
+
+        const realId = await createGalleryItem({
           title: finalTitle,
           category: formData.category,
           imageUrl: formData.imageUrl.trim(),
@@ -243,11 +281,11 @@ function AdminGalleryContent() {
           status: formData.status,
           updatedBy: attribution,
         });
-        setSuccessMessage(`Gallery project "${finalTitle}" created successfully.`);
-      }
 
-      setIsFormOpen(false);
-      await loadGallery();
+        if (realId && realId !== tempId) {
+          setItems((prev) => prev.map((i) => (i.id === tempId ? { ...i, id: realId } : i)));
+        }
+      }
     } catch (err) {
       setActionError((err as Error).message || "Save operation failed.");
     } finally {

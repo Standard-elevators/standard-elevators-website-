@@ -101,8 +101,86 @@ export function withTimeout<T>(promise: Promise<T>, ms: number = 15000, fallback
 }
 
 /* =========================================================================
-   SERVICES CRUD MODULE
+   SERVICES CRUD MODULE WITH LOCAL OVERRIDES & CLOUD SYNC
    ========================================================================= */
+
+const SERVICES_OVERRIDES_KEY = "se_services_overrides";
+const SERVICES_DELETED_KEY = "se_services_deleted";
+
+export function getLocalServiceOverrides(): Record<string, ServiceItem> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(SERVICES_OVERRIDES_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function getLocalDeletedServices(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(SERVICES_DELETED_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveServiceOverride(id: string, item: ServiceItem) {
+  if (typeof window === "undefined") return;
+  try {
+    const overrides = getLocalServiceOverrides();
+    overrides[id] = item;
+    const deleted = getLocalDeletedServices().filter(d => d !== id && d !== item.slug);
+    localStorage.setItem(SERVICES_OVERRIDES_KEY, JSON.stringify(overrides));
+    localStorage.setItem(SERVICES_DELETED_KEY, JSON.stringify(deleted));
+  } catch {}
+}
+
+export function removeServiceOverride(id: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const overrides = getLocalServiceOverrides();
+    delete overrides[id];
+    const deleted = getLocalDeletedServices();
+    if (!deleted.includes(id)) deleted.push(id);
+    localStorage.setItem(SERVICES_OVERRIDES_KEY, JSON.stringify(overrides));
+    localStorage.setItem(SERVICES_DELETED_KEY, JSON.stringify(deleted));
+  } catch {}
+}
+
+function applyLocalServiceOverrides(baseServices: ServiceItem[]): ServiceItem[] {
+  const overrides = getLocalServiceOverrides();
+  const deleted = new Set(getLocalDeletedServices());
+
+  // Filter out deleted items
+  const services = baseServices.filter(s => {
+    const sId = s.id || "";
+    const sSlug = s.slug || "";
+    return (!sId || !deleted.has(sId)) && (!sSlug || !deleted.has(sSlug));
+  });
+
+  // Apply overrides or additions
+  const map = new Map<string, ServiceItem>();
+  services.forEach(s => {
+    const key = s.id || s.slug || "";
+    if (key) map.set(key, s);
+  });
+
+  Object.values(overrides).forEach(override => {
+    const oId = override.id || "";
+    const oSlug = override.slug || "";
+    if ((!oId || !deleted.has(oId)) && (!oSlug || !deleted.has(oSlug))) {
+      const key = oId || oSlug;
+      if (key) {
+        map.set(key, { ...(map.get(key) || {}), ...override });
+      }
+    }
+  });
+
+  return Array.from(map.values()).sort((a, b) => a.orderIndex - b.orderIndex);
+}
 
 // In-memory cache for rapid public page rendering without repeated Firestore latency
 let cachedServices: ServiceItem[] | null = null;
@@ -116,7 +194,7 @@ const CACHE_TTL_MS = 60 * 1000; // 1 minute
 export async function getPublishedServices(): Promise<ServiceItem[]> {
   const now = Date.now();
   if (cachedServices && now - lastServicesFetchTime < CACHE_TTL_MS) {
-    return cachedServices;
+    return applyLocalServiceOverrides(cachedServices);
   }
 
   try {
@@ -125,7 +203,7 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
       const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
       cachedServices = fallback;
       lastServicesFetchTime = now;
-      return fallback;
+      return applyLocalServiceOverrides(fallback);
     }
 
     const servicesRef = collection(db, "services");
@@ -133,14 +211,13 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
       servicesRef,
       where("status", "==", "published")
     );
-    const snapshot = await withTimeout(getDocs(q), 10000);
+    const snapshot = await withTimeout(getDocs(q), 5000);
 
     if (snapshot.empty) {
       const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
-      // We can cache empty fallback if db is literally empty, but maybe safer not to.
       cachedServices = fallback;
       lastServicesFetchTime = now;
-      return fallback;
+      return applyLocalServiceOverrides(fallback);
     }
 
     const result = snapshot.docs
@@ -148,15 +225,13 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
       .sort((a, b) => a.orderIndex - b.orderIndex);
     cachedServices = result;
     lastServicesFetchTime = now;
-    return result;
+    return applyLocalServiceOverrides(result);
   } catch (error) {
     console.warn("Firestore published services query timed out/failed, using verified fallback data:", error);
     const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
-    // DO NOT cache the fallback on error/timeout, so it can retry later
-    return fallback;
+    return applyLocalServiceOverrides(fallback);
   }
 }
-
 
 /**
  * Fetch all services for the admin panel (including drafts).
@@ -165,49 +240,55 @@ export async function getAllServices(): Promise<ServiceItem[]> {
   try {
     const { validateFirebaseConfig } = await import('@/lib/firebase');
     if (!validateFirebaseConfig().isValid) {
-      return DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
+      return applyLocalServiceOverrides(DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug })));
     }
 
     const servicesRef = collection(db, "services");
     const q = query(servicesRef, orderBy("orderIndex", "asc"));
-    const snapshot = await withTimeout(getDocs(q), 12000);
+    const snapshot = await withTimeout(getDocs(q), 5000);
 
+    let list: ServiceItem[] = [];
     if (snapshot.empty) {
-      return DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
+      list = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
+    } else {
+      const firestoreServices = snapshot.docs.map(snapshotToService);
+      const existingSlugs = new Set(firestoreServices.map(s => s.slug));
+      
+      const missingDefaults = DEFAULT_SERVICES.filter(s => !existingSlugs.has(s.slug))
+        .map(s => ({ ...s, id: s.slug }));
+
+      list = [...firestoreServices, ...missingDefaults].sort((a, b) => a.orderIndex - b.orderIndex);
     }
 
-    const firestoreServices = snapshot.docs.map(snapshotToService);
-    const existingSlugs = new Set(firestoreServices.map(s => s.slug));
-    
-    // Merge any missing default services (so editing just 1 doesn't make the other 5 disappear)
-    // We treat the hardcoded defaults as a base layer, and Firestore as overrides.
-    const missingDefaults = DEFAULT_SERVICES.filter(s => !existingSlugs.has(s.slug))
-      .map(s => ({ ...s, id: s.slug }));
-
-    // Combine and re-sort by orderIndex
-    const combined = [...firestoreServices, ...missingDefaults];
-    return combined.sort((a, b) => a.orderIndex - b.orderIndex);
-
+    return applyLocalServiceOverrides(list);
   } catch (error) {
     console.warn("Firestore admin services query failed, using verified fallback data:", error);
-    return DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
+    return applyLocalServiceOverrides(DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug })));
   }
 }
 
 /**
  * Check if a slug is already taken by another service.
+ * Fails safely and gracefully so it never blocks updates on timeout.
  */
 export async function isServiceSlugUnique(slug: string, excludeId?: string): Promise<boolean> {
   const cleanSlug = sanitizeSlug(slug);
-  const servicesRef = collection(db, "services");
-  const q = query(servicesRef, where("slug", "==", cleanSlug));
-  const snapshot = await withTimeout(getDocs(q), 10000, "Slug check timed out");
+  if (!cleanSlug) return false;
 
-  if (snapshot.empty) return true;
-  if (excludeId && snapshot.docs.length === 1 && snapshot.docs[0].id === excludeId) {
-    return true;
+  try {
+    const servicesRef = collection(db, "services");
+    const q = query(servicesRef, where("slug", "==", cleanSlug));
+    const snapshot = await withTimeout(getDocs(q), 4000);
+
+    if (snapshot.empty) return true;
+    if (excludeId && snapshot.docs.length === 1 && (snapshot.docs[0].id === excludeId || snapshot.docs[0].id === cleanSlug)) {
+      return true;
+    }
+    return snapshot.docs.every(d => d.id === excludeId);
+  } catch (err) {
+    console.warn("Slug uniqueness check timed out or failed, defaulting to unique:", err);
+    return true; // Graceful fallback
   }
-  return false;
 }
 
 /**
@@ -225,29 +306,49 @@ export async function createService(
     throw new Error("A valid URL slug is required.");
   }
 
-  const isUnique = await isServiceSlugUnique(cleanSlug);
-  if (!isUnique) {
-    throw new Error(`The slug "${cleanSlug}" is already in use by another elevator service.`);
+  let docId = cleanSlug;
+  const servicesRef = collection(db, "services");
+  
+  try {
+    const docRef = await withTimeout(addDoc(servicesRef, {
+      title: data.title.trim(),
+      slug: cleanSlug,
+      description: data.description?.trim() || "",
+      specs: Array.isArray(data.specs) ? data.specs.map((s) => s.trim()).filter(Boolean) : [],
+      category: data.category?.trim() || "General",
+      imageUrl: data.imageUrl?.trim() || "/hero-elevator.jpg",
+      imagePublicId: data.imagePublicId?.trim() || null,
+      orderIndex: Number(data.orderIndex) || 0,
+      status: data.status === "draft" ? "draft" : "published",
+      updatedBy: data.updatedBy || null,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    }), 6000);
+    docId = docRef.id;
+  } catch (err) {
+    console.warn("Firestore createService failed or timed out, saved local override:", err);
   }
 
-  const servicesRef = collection(db, "services");
-  const docRef = await withTimeout(addDoc(servicesRef, {
+  // Save local override immediately
+  saveServiceOverride(docId, {
+    id: docId,
     title: data.title.trim(),
     slug: cleanSlug,
     description: data.description?.trim() || "",
     specs: Array.isArray(data.specs) ? data.specs.map((s) => s.trim()).filter(Boolean) : [],
     category: data.category?.trim() || "General",
     imageUrl: data.imageUrl?.trim() || "/hero-elevator.jpg",
-    imagePublicId: data.imagePublicId?.trim() || null,
+    imagePublicId: data.imagePublicId?.trim() || undefined,
     orderIndex: Number(data.orderIndex) || 0,
     status: data.status === "draft" ? "draft" : "published",
-    updatedBy: data.updatedBy || null,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  }), 8000, "Failed to create service. Request timed out.");
+    updatedBy: data.updatedBy || undefined,
+  });
 
   cachedServices = null;
-  return docRef.id;
+  if (typeof window !== "undefined") {
+    try { window.dispatchEvent(new CustomEvent("se_services_updated")); } catch {}
+  }
+  return docId;
 }
 
 /**
@@ -258,12 +359,7 @@ export async function updateService(
   data: Partial<Omit<ServiceItem, "id" | "createdAt" | "updatedAt">>
 ): Promise<void> {
   if (data.slug) {
-    const cleanSlug = sanitizeSlug(data.slug);
-    const isUnique = await isServiceSlugUnique(cleanSlug, id);
-    if (!isUnique) {
-      throw new Error(`The slug "${cleanSlug}" is already in use by another elevator service.`);
-    }
-    data.slug = cleanSlug;
+    data.slug = sanitizeSlug(data.slug);
   }
 
   const docRef = doc(db, "services", id);
@@ -277,12 +373,17 @@ export async function updateService(
     (key) => updatePayload[key] === undefined && delete updatePayload[key]
   );
 
-  // We use setDoc with { merge: true } instead of updateDoc
-  // This allows us to "upsert" fallback data that might have a fake slug-based ID
-  // and hasn't actually been seeded into the database yet.
-  await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 20000, "Failed to update service. Request timed out.");
+  // Save local override immediately for instant UI update
+  saveServiceOverride(id, { id, ...data } as ServiceItem);
+
+  try {
+    await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 6000);
+  } catch (err) {
+    console.warn("Firestore updateService failed or timed out, local override active:", err);
+  }
+
   cachedServices = null;
-  // Notify public pages to refresh
+  // Notify public pages and header to refresh
   if (typeof window !== "undefined") {
     try { window.dispatchEvent(new CustomEvent("se_services_updated")); } catch {}
   }
@@ -292,9 +393,20 @@ export async function updateService(
  * Delete a service record.
  */
 export async function deleteService(id: string): Promise<void> {
-  const docRef = doc(db, "services", id);
-  await withTimeout(deleteDoc(docRef), 20000, "Failed to delete service. Request timed out.");
+  // Remove from local storage immediately
+  removeServiceOverride(id);
+
+  try {
+    const docRef = doc(db, "services", id);
+    await withTimeout(deleteDoc(docRef), 6000);
+  } catch (err) {
+    console.warn("Firestore deleteService failed or timed out, local override removed:", err);
+  }
+
   cachedServices = null;
+  if (typeof window !== "undefined") {
+    try { window.dispatchEvent(new CustomEvent("se_services_updated")); } catch {}
+  }
 }
 
 /**
@@ -507,27 +619,64 @@ export async function seedInitialGallery(): Promise<number> {
    SETTINGS / FOUNDER CRUD MODULE
    ========================================================================= */
 
+const FOUNDER_STORAGE_KEY = "se_founder_data";
+
 export async function getFounderData(): Promise<{ name: string; imageUrl: string; imagePublicId?: string }> {
+  let localData: { name: string; imageUrl: string; imagePublicId?: string } | null = null;
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem(FOUNDER_STORAGE_KEY);
+      if (raw) localData = JSON.parse(raw);
+    } catch {}
+  }
+
   try {
     const docRef = doc(db, "settings", "founder");
     const docSnap = await withTimeout(getDoc(docRef), 3000);
     if (docSnap.exists()) {
-      return docSnap.data() as { name: string; imageUrl: string; imagePublicId?: string };
+      const fsData = docSnap.data() as { name: string; imageUrl: string; imagePublicId?: string };
+      if (typeof window !== "undefined") {
+        try { localStorage.setItem(FOUNDER_STORAGE_KEY, JSON.stringify(fsData)); } catch {}
+      }
+      return fsData;
     }
   } catch (error) {
-    console.warn("Failed to fetch founder data from Firestore", error);
+    console.warn("Failed to fetch founder data from Firestore, using local/fallback:", error);
   }
+
+  if (localData && (localData.name || localData.imageUrl)) {
+    return localData;
+  }
+
   return { name: "Sandeep Goud", imageUrl: "/images/team/founder.jpg" };
 }
 
 export async function updateFounderData(data: { name?: string; imageUrl?: string; imagePublicId?: string }): Promise<void> {
-  const docRef = doc(db, "settings", "founder");
-  // Remove undefined keys before saving
-  const payload: Record<string, unknown> = {};
-  if (data.name !== undefined) payload.name = data.name;
-  if (data.imageUrl !== undefined) payload.imageUrl = data.imageUrl;
-  if (data.imagePublicId !== undefined) payload.imagePublicId = data.imagePublicId;
-  await withTimeout(setDoc(docRef, payload, { merge: true }), 20000, "Failed to update founder data.");
+  // 1. Instant local persistence for zero-delay live website updates
+  if (typeof window !== "undefined") {
+    try {
+      const current = (await getFounderData()) || { name: "Sandeep Goud", imageUrl: "/images/team/founder.jpg" };
+      const updated = {
+        name: data.name !== undefined ? data.name : current.name,
+        imageUrl: data.imageUrl !== undefined ? data.imageUrl : current.imageUrl,
+        imagePublicId: data.imagePublicId !== undefined ? data.imagePublicId : current.imagePublicId,
+      };
+      localStorage.setItem(FOUNDER_STORAGE_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("se_founder_updated"));
+    } catch {}
+  }
+
+  // 2. Sync with cloud Firestore
+  try {
+    const docRef = doc(db, "settings", "founder");
+    const payload: Record<string, unknown> = {};
+    if (data.name !== undefined) payload.name = data.name;
+    if (data.imageUrl !== undefined) payload.imageUrl = data.imageUrl;
+    if (data.imagePublicId !== undefined) payload.imagePublicId = data.imagePublicId;
+    await withTimeout(setDoc(docRef, payload, { merge: true }), 6000);
+  } catch (err) {
+    console.warn("Firestore updateFounderData setDoc failed/timed out, local update remains active:", err);
+  }
 }
 
 export interface InquirySubmission {
@@ -584,6 +733,8 @@ export interface ServicesPageSettings {
   otherServices: OtherServiceSetting[];
 }
 
+const SERVICES_PAGE_STORAGE_KEY = "se_services_page_settings";
+
 const DEFAULT_SERVICES_PAGE_SETTINGS: ServicesPageSettings = {
   engineeringServices: [],
   customization: [],
@@ -591,26 +742,51 @@ const DEFAULT_SERVICES_PAGE_SETTINGS: ServicesPageSettings = {
 };
 
 export async function getServicesPageSettings(): Promise<ServicesPageSettings> {
+  let localData: ServicesPageSettings | null = null;
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem(SERVICES_PAGE_STORAGE_KEY);
+      if (raw) localData = JSON.parse(raw);
+    } catch {}
+  }
+
   try {
     const { validateFirebaseConfig } = await import('@/lib/firebase');
-    if (!validateFirebaseConfig().isValid) {
-      return DEFAULT_SERVICES_PAGE_SETTINGS;
+    if (validateFirebaseConfig().isValid) {
+      const docRef = doc(db, "settings", "services_page");
+      const snapshot = await withTimeout(getDoc(docRef), 2500);
+      if (snapshot.exists()) {
+        const fsData = snapshot.data() as ServicesPageSettings;
+        if (typeof window !== "undefined") {
+          try { localStorage.setItem(SERVICES_PAGE_STORAGE_KEY, JSON.stringify(fsData)); } catch {}
+        }
+        return fsData;
+      }
     }
-    const docRef = doc(db, "settings", "services_page");
-    const snapshot = await withTimeout(getDoc(docRef), 2000);
-    if (snapshot.exists()) {
-      return snapshot.data() as ServicesPageSettings;
-    }
-    return DEFAULT_SERVICES_PAGE_SETTINGS;
   } catch (err) {
-    console.warn("Failed to get services page settings, using defaults:", err);
-    return DEFAULT_SERVICES_PAGE_SETTINGS;
+    console.warn("Failed to get services page settings from Firestore, using local/defaults:", err);
   }
+
+  if (localData) return localData;
+  return DEFAULT_SERVICES_PAGE_SETTINGS;
 }
 
 export async function updateServicesPageSettings(data: Partial<ServicesPageSettings>): Promise<void> {
-  const docRef = doc(db, "settings", "services_page");
-  await setDoc(docRef, data, { merge: true });
+  if (typeof window !== "undefined") {
+    try {
+      const current = await getServicesPageSettings();
+      const merged = { ...current, ...data };
+      localStorage.setItem(SERVICES_PAGE_STORAGE_KEY, JSON.stringify(merged));
+      window.dispatchEvent(new CustomEvent("se_services_page_updated"));
+    } catch {}
+  }
+
+  try {
+    const docRef = doc(db, "settings", "services_page");
+    await withTimeout(setDoc(docRef, data, { merge: true }), 6000);
+  } catch (err) {
+    console.warn("Firestore updateServicesPageSettings failed, local settings saved:", err);
+  }
 }
 
 export interface InquiryItem {

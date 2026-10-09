@@ -11,12 +11,21 @@ export default function FounderLeadership() {
   const [founderName, setFounderName] = useState("Founder");
 
   React.useEffect(() => {
-    getFounderData().then((data) => {
-      if (data) {
-        setFounderName(data.name || "Founder");
-        if (data.imageUrl) setOwnerImgSrc(data.imageUrl);
-      }
-    });
+    const fetchFounder = () => {
+      getFounderData().then((data) => {
+        if (data) {
+          setFounderName(data.name || "Founder");
+          if (data.imageUrl) setOwnerImgSrc(data.imageUrl);
+        }
+      });
+    };
+
+    fetchFounder();
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("se_founder_updated", fetchFounder);
+      return () => window.removeEventListener("se_founder_updated", fetchFounder);
+    }
   }, []);
 
   return (

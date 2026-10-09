@@ -40,6 +40,15 @@ export default function Header() {
       }
     }
     fetchServices();
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("se_services_updated", fetchServices);
+      return () => {
+        isMounted = false;
+        window.removeEventListener("se_services_updated", fetchServices);
+      };
+    }
+
     return () => {
       isMounted = false;
     };
