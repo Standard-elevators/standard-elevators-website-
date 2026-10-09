@@ -101,31 +101,24 @@ export default function FloatingActions() {
       e.preventDefault();
       e.stopPropagation();
     }
-    
-    // 1. Lenis scroll to top immediately
+
+    // Use Lenis smooth scroll if available (animated, not instant)
     try {
       const lenis = (window as any).__lenis;
       if (lenis && typeof lenis.scrollTo === "function") {
-        lenis.scrollTo(0, { immediate: true });
+        lenis.scrollTo(0, {
+          duration: 1.4,
+          easing: (t: number) => 1 - Math.pow(1 - t, 4), // ease-out quartic
+        });
+        return; // Lenis handles it — no need for native fallback
       }
     } catch {}
 
-    // 2. Immediate window and document scroll to 0,0
+    // Fallback: native smooth scroll
     try {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "instant" as ScrollBehavior,
-      });
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     } catch {
       window.scrollTo(0, 0);
-    }
-
-    if (document.documentElement) {
-      document.documentElement.scrollTop = 0;
-    }
-    if (document.body) {
-      document.body.scrollTop = 0;
     }
   };
 
