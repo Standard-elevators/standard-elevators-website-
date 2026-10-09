@@ -11,6 +11,9 @@ import ProjectPortfolio from "@/components/ProjectPortfolio";
 import FinalCTA from "@/components/FinalCTA";
 import { constructMetadata, getWebSiteSchema } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = constructMetadata({
   title: "Standard Engineering Works Elevators | Smooth, Smart, Spacious",
   description:

@@ -9,11 +9,8 @@ import { DEFAULT_GALLERY } from "@/data/defaultData";
 import { GalleryItem } from "@/types/data";
 
 export default function ProjectPortfolio() {
-  // Pre-seed with verified gallery dataset for instant SSR rendering without layout shift
-  const [items, setItems] = useState<GalleryItem[]>(() =>
-    DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }))
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
   // Mobile Carousel state
@@ -33,22 +30,15 @@ export default function ProjectPortfolio() {
     let isMounted = true;
     async function loadPortfolio() {
       try {
-        setItems((prev) => {
-          if (prev.length === 0) setIsLoading(true);
-          return prev;
-        });
         const data = await getPublishedGallery();
-        if (isMounted && data && data.length > 0) {
+        if (isMounted && data) {
           const sorted = [...data].sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
           setItems(sorted);
         }
       } catch (err) {
-        console.warn("Portfolio fetch failed, using verified fallback data:", err);
+        console.warn("Portfolio fetch failed:", err);
         if (isMounted) {
-          setItems((prev) => {
-            if (prev.length === 0) setHasError(true);
-            return prev;
-          });
+          setHasError(true);
         }
       } finally {
         if (isMounted) setIsLoading(false);

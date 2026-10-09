@@ -11,6 +11,9 @@ import {
 import { getPublishedServices, getServicesPageSettings } from "@/lib/firestore-data";
 import { constructMetadata, getBreadcrumbSchema } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = constructMetadata({
   title: "Elevator Solutions & Services | Standard Engineering Works Elevators",
   description:
@@ -28,16 +31,16 @@ function getServiceIcon(slug: string, category?: string) {
   return <Layers className="w-6 h-6" />;
 }
 
-// Data for Other Engineering Services
-const OTHER_SERVICES = [
-  { title: "Structural Fabrication", icon: <Hammer className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1541888086225-f641713cb094?q=80&w=800&auto=format&fit=crop", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
-  { title: "Glass & ACP Sheets", icon: <Maximize className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1507676184212-d0330a15233c?q=80&w=800&auto=format&fit=crop", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
-  { title: "UPVC Window & Door", icon: <Frame className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop", desc: "High-quality UPVC systems for residential and commercial spaces." },
-  { title: "Renovation Works", icon: <PaintRoller className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=800&auto=format&fit=crop", desc: "Complete architectural and interior renovation services." },
-  { title: "SS Railing", icon: <Layers className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1600607688969-a5bfcd64bd28?q=80&w=800&auto=format&fit=crop", desc: "Custom stainless steel handrails and balustrades." },
-  { title: "Electrical House Wirings", icon: <Zap className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=800&auto=format&fit=crop", desc: "Complete residential and commercial electrical wiring systems." },
-  { title: "Civil Works", icon: <Building2 className="w-5 h-5" />, image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop", desc: "Comprehensive civil construction and shaft preparation." },
-];
+function getOtherServiceIcon(title: string) {
+  const t = title.toLowerCase();
+  if (t.includes("fabrication")) return <Hammer className="w-5 h-5" />;
+  if (t.includes("glass") || t.includes("acp")) return <Maximize className="w-5 h-5" />;
+  if (t.includes("window") || t.includes("door") || t.includes("upvc")) return <Frame className="w-5 h-5" />;
+  if (t.includes("renovation")) return <PaintRoller className="w-5 h-5" />;
+  if (t.includes("ss") || t.includes("railing")) return <Layers className="w-5 h-5" />;
+  if (t.includes("electrical") || t.includes("wiring")) return <Zap className="w-5 h-5" />;
+  return <Building2 className="w-5 h-5" />;
+}
 
 export default async function ServicesPage() {
   const [services, settings] = await Promise.all([
@@ -144,14 +147,14 @@ export default async function ServicesPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-            {(settings.otherServices?.length > 0 ? settings.otherServices : OTHER_SERVICES).map((srv, idx) => {
-              const bgImage = (srv as any).image || OTHER_SERVICES[idx % OTHER_SERVICES.length].image;
-              const IconComp = (srv as any).icon || OTHER_SERVICES[idx % OTHER_SERVICES.length].icon;
+            {(settings.otherServices?.length > 0 ? settings.otherServices : []).map((srv, idx) => {
+              const bgImage = srv.image || "/images/card_installation.jpg";
+              const IconComp = getOtherServiceIcon(srv.title);
               
               return (
                 <div key={idx} className="group relative h-[140px] md:h-[280px] rounded-2xl md:rounded-2xl bg-white md:bg-transparent overflow-hidden border border-[#CBD5E1] md:border-none shadow-xs md:shadow-[0_10px_25px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_rgba(0,98,255,0.25)] transition-all duration-500 cursor-pointer flex flex-col items-center justify-center md:block">
                   
-                  {/* MOBILE VIEW: White Card Style */}
+                  {/* MOBILE VIEW: Clean Card Style */}
                   <div className="md:hidden flex flex-col items-center text-center p-4">
                     <div className="w-12 h-12 rounded-full bg-[#E5F3FF] flex items-center justify-center text-[#0A78F5] mb-3">
                       {IconComp}
@@ -162,13 +165,17 @@ export default async function ServicesPage() {
                   </div>
 
                   {/* DESKTOP VIEW: Image Background Style */}
-                  <div className="hidden md:block absolute inset-0">
-                    <Image 
-                      src={bgImage} 
-                      alt={srv.title} 
-                      fill 
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" 
-                    />
+                  <div className="hidden md:block absolute inset-0 bg-[#0B1F38]">
+                    {srv.image ? (
+                      <Image 
+                        src={srv.image} 
+                        alt={srv.title} 
+                        fill 
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" 
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#0B1F38] via-[#0A2342] to-[#051329]" />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F38]/95 via-[#0B1F38]/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
                     
                     <div className="absolute inset-0 p-5 flex flex-col justify-end">

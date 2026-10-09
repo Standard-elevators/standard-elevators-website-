@@ -2,6 +2,9 @@ import { Metadata } from "next";
 import { constructMetadata, getBreadcrumbSchema } from "@/lib/seo";
 import AboutView from "@/components/about/AboutView";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = constructMetadata({
   title: "About Us | Standard Engineering Works Elevators",
   description:

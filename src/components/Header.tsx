@@ -1,18 +1,30 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "@/components/TransitionLink";
 import { Menu, X, ChevronDown, ChevronRight, ArrowRight, Phone, Home, User, Settings, Image as ImageIcon, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { DEFAULT_SERVICES, GALLERY_CATEGORIES_MENU, ENGINEERING_SERVICES_DATA, CUSTOMIZATION_DATA } from "@/data/defaultData";
-import { getPublishedServices } from "@/lib/firestore-data";
+import {
+  getPublishedServices,
+  getServicesPageSettings,
+  getPublishedGallery,
+  EngineeringServiceSetting,
+  CustomizationSetting,
+  DEFAULT_ENGINEERING_SERVICES_DATA,
+  DEFAULT_CUSTOMIZATION_DATA,
+} from "@/lib/firestore-data";
+import { DEFAULT_SERVICES, GALLERY_CATEGORIES_MENU } from "@/data/defaultData";
+import { ServiceItem, GalleryItem } from "@/types/data";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeMobileDropdown, setActiveMobileDropdown] = useState<string | null>(null);
-  const [dynamicServices, setDynamicServices] = useState<any[]>(DEFAULT_SERVICES);
+  const [dynamicServices, setDynamicServices] = useState<ServiceItem[]>([]);
+  const [dynamicEngineering, setDynamicEngineering] = useState<EngineeringServiceSetting[]>([]);
+  const [dynamicCustomization, setDynamicCustomization] = useState<CustomizationSetting[]>([]);
+  const [dynamicGallery, setDynamicGallery] = useState<GalleryItem[]>([]);
   
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -20,32 +32,47 @@ export default function Header() {
 
   // Close menus on route change
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileMenuOpen(false);
     setActiveDropdown(null);
     setActiveMobileDropdown(null);
   }, [pathname]);
 
-  // Fetch dynamic services for the mega menu and mobile menu
+  // Fetch dynamic content for the mega menu and mobile menu
   useEffect(() => {
     let isMounted = true;
-    async function fetchServices() {
+    
+    async function fetchAllMenuData() {
       try {
-        const data = await getPublishedServices();
-        if (isMounted && data && data.length > 0) {
-          setDynamicServices(data);
+        const [servicesData, pageSettings, galleryData] = await Promise.all([
+          getPublishedServices(),
+          getServicesPageSettings(),
+          getPublishedGallery(),
+        ]);
+        if (isMounted) {
+          if (servicesData && servicesData.length > 0) setDynamicServices(servicesData);
+          if (pageSettings?.engineeringServices?.length > 0) setDynamicEngineering(pageSettings.engineeringServices);
+          if (pageSettings?.customization?.length > 0) setDynamicCustomization(pageSettings.customization);
+          if (galleryData && galleryData.length > 0) setDynamicGallery(galleryData);
         }
       } catch (err) {
-        console.warn("Header fetch services failed:", err);
+        console.warn("Header fetch all menu data failed:", err);
       }
     }
-    fetchServices();
+
+    fetchAllMenuData();
 
     if (typeof window !== "undefined") {
-      window.addEventListener("se_services_updated", fetchServices);
+      const handleSync = () => fetchAllMenuData();
+      window.addEventListener("se_services_updated", handleSync);
+      window.addEventListener("se_services_page_updated", handleSync);
+      window.addEventListener("se_gallery_updated", handleSync);
+      window.addEventListener("storage", handleSync);
       return () => {
         isMounted = false;
-        window.removeEventListener("se_services_updated", fetchServices);
+        window.removeEventListener("se_services_updated", handleSync);
+        window.removeEventListener("se_services_page_updated", handleSync);
+        window.removeEventListener("se_gallery_updated", handleSync);
+        window.removeEventListener("storage", handleSync);
       };
     }
 
@@ -118,27 +145,56 @@ export default function Header() {
     }, 150); // 150ms delay prevents flickering when moving cursor from header to dropdown
   };
 
-  // Structured Data for Menus
-  const primarySolutions = dynamicServices.map(s => ({
-    name: s.title.split(" (")[0], // Keep it clean for the menu
-    href: `/services/${s.slug}`,
-    desc: s.description,
-    image: s.imageUrl
-  }));
+  // Structured Data for Menus (live dynamic data from admin uploads)
+  const primarySolutions = useMemo(() => {
+    const list = dynamicServices.length > 0 ? dynamicServices : DEFAULT_SERVICES;
+    return list.map(s => ({
+      name: s.title.split(" (")[0],
+      href: `/services/${s.slug}`,
+      desc: s.description,
+      image: s.imageUrl || "/images/3d_commercial.jpg"
+    }));
+  }, [dynamicServices]);
 
-  const engineeringServices = ENGINEERING_SERVICES_DATA.map(s => ({
-    name: s.title,
-    href: `/services#engineering-services`, 
-    desc: s.desc,
-    image: s.image
-  }));
+  const engineeringServices = useMemo(() => {
+    const list = dynamicEngineering.length > 0 ? dynamicEngineering : DEFAULT_ENGINEERING_SERVICES_DATA;
+    return list.map(s => ({
+      name: s.title,
+      href: `/services#engineering-services`, 
+      desc: s.desc,
+      image: s.image || "/images/card_installation.jpg"
+    }));
+  }, [dynamicEngineering]);
 
-  const customizationComponents = CUSTOMIZATION_DATA.map(s => ({
-    name: s.title,
-    href: `/services#customization`,
-    desc: s.desc,
-    image: s.image
-  }));
+  const customizationComponents = useMemo(() => {
+    const list = dynamicCustomization.length > 0 ? dynamicCustomization : DEFAULT_CUSTOMIZATION_DATA;
+    return list.map(s => ({
+      name: s.title,
+      href: `/services#customization`,
+      desc: s.description || "Premium architectural components and finishes",
+      image: s.image || "/images/3d_apartments.jpg"
+    }));
+  }, [dynamicCustomization]);
+
+  const galleryMenu = useMemo(() => {
+    const categories = [
+      { name: "Passenger Lifts", desc: "Premium passenger elevator installations" },
+      { name: "Installation", desc: "Site preparations and shaft structural work" },
+      { name: "Cabins", desc: "Premium elevator cabins and custom interiors" },
+      { name: "Doors", desc: "Automatic, manual, and swing door designs" },
+      { name: "Components", desc: "Microprocessor control panels and machinery" },
+    ];
+    return categories.map(cat => {
+      const match = dynamicGallery.find(g => g.category?.toLowerCase() === cat.name.toLowerCase() && g.imageUrl);
+      const fallbackImg = GALLERY_CATEGORIES_MENU.find(m => m.name.toLowerCase() === cat.name.toLowerCase())?.image || "/hero-elevator.jpg";
+      return {
+        name: cat.name,
+        href: `/gallery?category=${encodeURIComponent(cat.name)}#gallery-grid`,
+        desc: cat.desc,
+        image: match?.imageUrl || fallbackImg
+      };
+    });
+  }, [dynamicGallery]);
 
   const navLinks = [
     { name: "Home", href: "/", icon: Home },
@@ -375,7 +431,7 @@ export default function Header() {
                                       </h4>
                                     </div>
                                   </div>
-                                  {GALLERY_CATEGORIES_MENU.map((sub, idx) => (
+                                  {galleryMenu.map((sub, idx) => (
                                     <MenuItem key={idx} item={sub} onClick={() => setActiveDropdown(null)} />
                                   ))}
                                 </div>
@@ -588,14 +644,14 @@ export default function Header() {
                                   <span>All gallery</span>
                                   <ArrowRight className="w-4 h-4 -rotate-45" />
                                 </Link>
-                                {GALLERY_CATEGORIES_MENU.map((sub, idx) => (
+                                {galleryMenu.map((sub, idx) => (
                                   <Link key={idx} href={sub.href} onClick={() => setIsMobileMenuOpen(false)} className="bg-white p-3 rounded-xl flex items-center gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
                                     <div className="w-12 h-12 relative rounded-lg overflow-hidden shrink-0 border border-slate-100">
-                                      <Image src={sub.image!} alt={sub.name} fill className="object-cover" />
+                                      <Image src={sub.image} alt={sub.name} fill className="object-cover" />
                                     </div>
                                     <div className="flex flex-col flex-1 min-w-0 justify-center">
                                       <span className="text-[#102A43] font-bold text-[14px] leading-tight mb-0.5">{sub.name}</span>
-                                      <span className="text-[#64748B] text-[12px] truncate">Explore {sub.name.toLowerCase()} projects</span>
+                                      <span className="text-[#64748B] text-[12px] truncate">{sub.desc}</span>
                                     </div>
                                     <ChevronRight className="w-4 h-4 text-[#102A43] shrink-0" />
                                   </Link>

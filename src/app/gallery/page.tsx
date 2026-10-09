@@ -13,12 +13,6 @@ type GalleryCategoryFilter = "All" | "Passenger Lifts" | "Goods Lifts" | "Hospit
 
 const CATEGORIES: GalleryCategoryFilter[] = ["All", "Passenger Lifts", "Goods Lifts", "Hospital Lifts", "MRL Lifts", "Installation", "Cabins", "Doors", "Components"];
 
-// Pre-seeded verified gallery dataset so page renders immediately with 0ms delay
-const INITIAL_GALLERY_ITEMS: GalleryItem[] = DEFAULT_GALLERY.map((g, idx) => ({
-  ...g,
-  id: `default-g-${idx + 1}`,
-}));
-
 function GalleryContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
@@ -28,8 +22,8 @@ function GalleryContent() {
     : "All";
 
   const [activeCategory, setActiveCategory] = useState<GalleryCategoryFilter>(initialCategory);
-  const [items, setItems] = useState<GalleryItem[]>(INITIAL_GALLERY_ITEMS);
-  const isLoading = false;
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (categoryParam && CATEGORIES.includes(categoryParam as GalleryCategoryFilter)) {
@@ -48,11 +42,13 @@ function GalleryContent() {
     async function loadData() {
       try {
         const data = await getPublishedGallery();
-        if (isMounted && data && data.length > 0) {
+        if (isMounted && data) {
           setItems(data);
         }
       } catch (err) {
-        console.warn("Background gallery update skipped, using verified default set:", err);
+        console.warn("Gallery fetch failed:", err);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
     }
     loadData();

@@ -59,7 +59,10 @@ const DEFAULT_CAROUSEL_DATA = [
   },
 ];
 
+import { getServicesPageSettings, DEFAULT_CUSTOMIZATION_DATA } from "@/lib/firestore-data";
+
 export default function CustomizationCarousel({ initialData }: { initialData?: any[] }) {
+  const [data, setData] = useState<any[]>(initialData && initialData.length > 0 ? initialData : DEFAULT_CUSTOMIZATION_DATA);
   const [activeIndex, setActiveIndex] = useState(0);
   const [interactionState, setInteractionState] = useState(0);
   const touchStartRef = useRef<number | null>(null);
@@ -68,7 +71,42 @@ export default function CustomizationCarousel({ initialData }: { initialData?: a
   
   const interact = () => setInteractionState(c => c + 1);
 
-  const data = initialData && initialData.length > 0 ? initialData : DEFAULT_CAROUSEL_DATA;
+  useEffect(() => {
+    if (initialData && initialData.length > 0) {
+      setData(initialData);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      try {
+        const settings = await getServicesPageSettings();
+        if (isMounted && settings?.customization && settings.customization.length > 0) {
+          setData(settings.customization);
+        }
+      } catch (err) {
+        console.warn("CustomizationCarousel load failed:", err);
+      }
+    }
+
+    loadData();
+
+    if (typeof window !== "undefined") {
+      const handleSync = () => loadData();
+      window.addEventListener("se_services_page_updated", handleSync);
+      window.addEventListener("storage", handleSync);
+      return () => {
+        isMounted = false;
+        window.removeEventListener("se_services_page_updated", handleSync);
+        window.removeEventListener("storage", handleSync);
+      };
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const length = data.length;
 
   const nextSlide = useCallback(() => {

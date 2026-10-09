@@ -251,13 +251,7 @@ export async function getAllServices(): Promise<ServiceItem[]> {
     if (snapshot.empty) {
       list = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
     } else {
-      const firestoreServices = snapshot.docs.map(snapshotToService);
-      const existingSlugs = new Set(firestoreServices.map(s => s.slug));
-      
-      const missingDefaults = DEFAULT_SERVICES.filter(s => !existingSlugs.has(s.slug))
-        .map(s => ({ ...s, id: s.slug }));
-
-      list = [...firestoreServices, ...missingDefaults].sort((a, b) => a.orderIndex - b.orderIndex);
+      list = snapshot.docs.map(snapshotToService);
     }
 
     return applyLocalServiceOverrides(list);
@@ -433,8 +427,83 @@ export async function seedInitialServices(): Promise<number> {
 }
 
 /* =========================================================================
-   GALLERY CRUD MODULE
+   GALLERY CRUD MODULE WITH LOCAL OVERRIDES & CLOUD SYNC
    ========================================================================= */
+
+const GALLERY_OVERRIDES_KEY = "se_gallery_overrides";
+const GALLERY_DELETED_KEY = "se_gallery_deleted";
+
+export function getLocalGalleryOverrides(): Record<string, GalleryItem> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(GALLERY_OVERRIDES_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function getLocalDeletedGallery(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(GALLERY_DELETED_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveGalleryOverride(id: string, item: GalleryItem) {
+  if (typeof window === "undefined") return;
+  try {
+    const overrides = getLocalGalleryOverrides();
+    overrides[id] = item;
+    const deleted = getLocalDeletedGallery().filter(d => d !== id);
+    localStorage.setItem(GALLERY_OVERRIDES_KEY, JSON.stringify(overrides));
+    localStorage.setItem(GALLERY_DELETED_KEY, JSON.stringify(deleted));
+  } catch {}
+}
+
+export function removeGalleryOverride(id: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const overrides = getLocalGalleryOverrides();
+    delete overrides[id];
+    const deleted = getLocalDeletedGallery();
+    if (!deleted.includes(id)) deleted.push(id);
+    localStorage.setItem(GALLERY_OVERRIDES_KEY, JSON.stringify(overrides));
+    localStorage.setItem(GALLERY_DELETED_KEY, JSON.stringify(deleted));
+  } catch {}
+}
+
+function applyLocalGalleryOverrides(baseItems: GalleryItem[]): GalleryItem[] {
+  const overrides = getLocalGalleryOverrides();
+  const deleted = new Set(getLocalDeletedGallery());
+
+  // Filter out deleted items
+  const items = baseItems.filter(item => {
+    const id = item.id || "";
+    return !id || !deleted.has(id);
+  });
+
+  const map = new Map<string, GalleryItem>();
+  items.forEach(item => {
+    const key = item.id || item.title;
+    if (key) map.set(key, item);
+  });
+
+  Object.values(overrides).forEach(override => {
+    const id = override.id || "";
+    if (!id || !deleted.has(id)) {
+      const key = id || override.title;
+      if (key) {
+        map.set(key, { ...(map.get(key) || {}), ...override });
+      }
+    }
+  });
+
+  return Array.from(map.values()).sort((a, b) => a.orderIndex - b.orderIndex);
+}
 
 // In-memory cache for rapid public gallery rendering without repeated Firestore latency
 let cachedGallery: GalleryItem[] | null = null;
@@ -447,7 +516,7 @@ let lastGalleryFetchTime = 0;
 export async function getPublishedGallery(): Promise<GalleryItem[]> {
   const now = Date.now();
   if (cachedGallery && now - lastGalleryFetchTime < CACHE_TTL_MS) {
-    return cachedGallery;
+    return applyLocalGalleryOverrides(cachedGallery);
   }
 
   try {
@@ -456,7 +525,7 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
       const fallback = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
       cachedGallery = fallback;
       lastGalleryFetchTime = now;
-      return fallback;
+      return applyLocalGalleryOverrides(fallback);
     }
 
     const galleryRef = collection(db, "gallery");
@@ -464,13 +533,13 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
       galleryRef,
       where("status", "==", "published")
     );
-    const snapshot = await withTimeout(getDocs(q), 10000);
+    const snapshot = await withTimeout(getDocs(q), 5000);
 
     if (snapshot.empty) {
       const fallback = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
       cachedGallery = fallback;
       lastGalleryFetchTime = now;
-      return fallback;
+      return applyLocalGalleryOverrides(fallback);
     }
 
     const result = snapshot.docs
@@ -478,15 +547,13 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
       .sort((a, b) => a.orderIndex - b.orderIndex);
     cachedGallery = result;
     lastGalleryFetchTime = now;
-    return result;
+    return applyLocalGalleryOverrides(result);
   } catch (error) {
-    console.warn("Firestore published gallery query timed out/failed, using verified fallback data:", error);
+    console.warn("Firestore published gallery query timed out/failed, using local fallback data:", error);
     const fallback = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
-    // DO NOT cache the fallback on error/timeout, so it can retry later
-    return fallback;
+    return applyLocalGalleryOverrides(fallback);
   }
 }
-
 
 /**
  * Fetch all gallery items for the admin panel (including drafts).
@@ -495,21 +562,24 @@ export async function getAllGallery(): Promise<GalleryItem[]> {
   try {
     const { validateFirebaseConfig } = await import('@/lib/firebase');
     if (!validateFirebaseConfig().isValid) {
-      return DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
+      return applyLocalGalleryOverrides(DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` })));
     }
 
     const galleryRef = collection(db, "gallery");
     const q = query(galleryRef, orderBy("orderIndex", "asc"));
-    const snapshot = await withTimeout(getDocs(q), 2500);
+    const snapshot = await withTimeout(getDocs(q), 5000);
 
+    let list: GalleryItem[] = [];
     if (snapshot.empty) {
-      return DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
+      list = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
+    } else {
+      list = snapshot.docs.map(snapshotToGallery);
     }
 
-    return snapshot.docs.map(snapshotToGallery);
+    return applyLocalGalleryOverrides(list);
   } catch (error) {
-    console.warn("Firestore admin gallery query failed, using verified fallback data:", error);
-    return DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
+    console.warn("Firestore admin gallery query failed, using local/fallback data:", error);
+    return applyLocalGalleryOverrides(DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` })));
   }
 }
 
@@ -532,24 +602,45 @@ export async function createGalleryItem(
     data.imageUrl.includes("/video/upload/")
   );
 
+  let docId = `gallery-${Date.now()}`;
   const galleryRef = collection(db, "gallery");
-  const docRef = await withTimeout(addDoc(galleryRef, {
+
+  try {
+    const docRef = await withTimeout(addDoc(galleryRef, {
+      title: data.title.trim(),
+      category: data.category || "Installation",
+      imageUrl: data.imageUrl.trim(),
+      imagePublicId: data.imagePublicId?.trim() || null,
+      mediaType: isVideo ? "video" : "image",
+      altText: data.altText?.trim() || data.title.trim(),
+      orderIndex: Number(data.orderIndex) || 0,
+      status: data.status === "draft" ? "draft" : "published",
+      updatedBy: data.updatedBy || null,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    }), 6000);
+    docId = docRef.id;
+  } catch (err) {
+    console.warn("Firestore createGalleryItem failed or timed out, saved local override:", err);
+  }
+
+  // Save local override immediately
+  saveGalleryOverride(docId, {
+    id: docId,
     title: data.title.trim(),
     category: data.category || "Installation",
     imageUrl: data.imageUrl.trim(),
-    imagePublicId: data.imagePublicId?.trim() || null,
+    imagePublicId: data.imagePublicId?.trim() || undefined,
     mediaType: isVideo ? "video" : "image",
     altText: data.altText?.trim() || data.title.trim(),
     orderIndex: Number(data.orderIndex) || 0,
     status: data.status === "draft" ? "draft" : "published",
-    updatedBy: data.updatedBy || null,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  }), 8000, "Failed to create gallery item. Request timed out.");
+    updatedBy: data.updatedBy || undefined,
+  });
 
   cachedGallery = null;
   notifyGalleryUpdated();
-  return docRef.id;
+  return docId;
 }
 
 /**
@@ -559,6 +650,18 @@ export async function updateGalleryItem(
   id: string,
   data: Partial<Omit<GalleryItem, "id" | "createdAt" | "updatedAt">>
 ): Promise<void> {
+  const isVideo = Boolean(
+    data.mediaType === "video" ||
+    (data.imageUrl && (data.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || data.imageUrl.includes("/video/upload/")))
+  );
+
+  // Save local override immediately
+  saveGalleryOverride(id, {
+    id,
+    ...data,
+    mediaType: isVideo ? "video" : "image",
+  } as GalleryItem);
+
   const docRef = doc(db, "gallery", id);
   const updatePayload: Record<string, unknown> = {
     ...data,
@@ -566,10 +669,6 @@ export async function updateGalleryItem(
   };
 
   if (data.imageUrl && !data.mediaType) {
-    const isVideo = Boolean(
-      data.imageUrl.match(/\.(mp4|webm|mov|m4v)($|\?)/i) ||
-      data.imageUrl.includes("/video/upload/")
-    );
     updatePayload.mediaType = isVideo ? "video" : "image";
   }
 
@@ -577,7 +676,12 @@ export async function updateGalleryItem(
     (key) => updatePayload[key] === undefined && delete updatePayload[key]
   );
 
-  await withTimeout(updateDoc(docRef, updatePayload), 8000, "Failed to update gallery item. Request timed out.");
+  try {
+    await withTimeout(setDoc(docRef, updatePayload, { merge: true }), 6000);
+  } catch (err) {
+    console.warn("Firestore updateGalleryItem failed or timed out, local override active:", err);
+  }
+
   cachedGallery = null;
   notifyGalleryUpdated();
 }
@@ -586,8 +690,15 @@ export async function updateGalleryItem(
  * Delete a gallery item.
  */
 export async function deleteGalleryItem(id: string): Promise<void> {
-  const docRef = doc(db, "gallery", id);
-  await withTimeout(deleteDoc(docRef), 8000, "Failed to delete gallery item. Request timed out.");
+  removeGalleryOverride(id);
+
+  try {
+    const docRef = doc(db, "gallery", id);
+    await withTimeout(deleteDoc(docRef), 6000);
+  } catch (err) {
+    console.warn("Firestore deleteGalleryItem failed or timed out, local override removed:", err);
+  }
+
   cachedGallery = null;
   notifyGalleryUpdated();
 }
@@ -735,10 +846,90 @@ export interface ServicesPageSettings {
 
 const SERVICES_PAGE_STORAGE_KEY = "se_services_page_settings";
 
+export function notifyServicesPageUpdated(): void {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem("se_services_page_sync_time", Date.now().toString());
+      window.dispatchEvent(new CustomEvent("se_services_page_updated"));
+    } catch {}
+  }
+}
+
+export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
+  {
+    title: "New Installation",
+    image: "/images/card_installation.jpg",
+    desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
+  },
+  {
+    title: "Modernization",
+    image: "/images/card_modernization.jpg",
+    desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
+  },
+  {
+    title: "Repairs",
+    image: "/images/3d_service.jpg",
+    desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
+  },
+  {
+    title: "Maintenance",
+    image: "/images/card_maintenance.jpg",
+    desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
+  },
+  {
+    title: "Aftersales Services",
+    image: "/images/3d_apartments.jpg",
+    desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
+  }
+];
+
+export const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
+  {
+    title: "Cabin Models",
+    image: "/images/3d_apartments.jpg",
+    description: "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
+    items: ["Standard SS", "Premium Glass", "Custom Designs"],
+  },
+  {
+    title: "Door Options",
+    image: "/images/card_installation.jpg",
+    description: "High-performance automatic and manual door systems engineered for rapid, safe, and silent operation.",
+    items: ["Automatic Sliding Doors", "Manual Collapsible", "Premium Glass Doors"],
+  },
+  {
+    title: "Control & Safety",
+    image: "/images/3d_service.jpg",
+    description: "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
+    items: ["Microprocessor Control", "ARD (Auto Rescue Device)", "Advanced Safety Gears"],
+  },
+  {
+    title: "Machinery",
+    image: "/images/3d_industrial.jpg",
+    description: "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
+    items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"],
+  },
+  {
+    title: "Interiors",
+    image: "/images/futuristic-glass-elevator-blue.png",
+    description: "Elevate your space with luxurious flooring, elegant ceilings, and sophisticated custom LED lighting.",
+    items: ["Custom Flooring", "Elegant Ceilings", "Integrated LED Lighting"],
+  },
+];
+
+export const DEFAULT_OTHER_SERVICES_DATA: OtherServiceSetting[] = [
+  { title: "Structural Fabrication", image: "/images/card_installation.jpg", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
+  { title: "Glass & ACP Sheets", image: "/images/card_modernization.jpg", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
+  { title: "UPVC Window & Door", image: "/images/3d_apartments.jpg", desc: "High-quality UPVC systems for residential and commercial spaces." },
+  { title: "Renovation Works", image: "/images/3d_service.jpg", desc: "Complete architectural and interior renovation services." },
+  { title: "SS Railing", image: "/images/card_maintenance.jpg", desc: "Custom stainless steel handrails and balustrades." },
+  { title: "Electrical House Wirings", image: "/images/3d_industrial.jpg", desc: "Complete residential and commercial electrical wiring systems." },
+  { title: "Civil Works", image: "/images/card_installation.jpg", desc: "Comprehensive civil construction and shaft preparation." },
+];
+
 const DEFAULT_SERVICES_PAGE_SETTINGS: ServicesPageSettings = {
-  engineeringServices: [],
-  customization: [],
-  otherServices: [],
+  engineeringServices: DEFAULT_ENGINEERING_SERVICES_DATA,
+  customization: DEFAULT_CUSTOMIZATION_DATA,
+  otherServices: DEFAULT_OTHER_SERVICES_DATA,
 };
 
 export async function getServicesPageSettings(): Promise<ServicesPageSettings> {
@@ -757,17 +948,28 @@ export async function getServicesPageSettings(): Promise<ServicesPageSettings> {
       const snapshot = await withTimeout(getDoc(docRef), 2500);
       if (snapshot.exists()) {
         const fsData = snapshot.data() as ServicesPageSettings;
+        const merged: ServicesPageSettings = {
+          engineeringServices: fsData.engineeringServices?.length ? fsData.engineeringServices : (localData?.engineeringServices || DEFAULT_ENGINEERING_SERVICES_DATA),
+          customization: fsData.customization?.length ? fsData.customization : (localData?.customization || DEFAULT_CUSTOMIZATION_DATA),
+          otherServices: fsData.otherServices?.length ? fsData.otherServices : (localData?.otherServices || DEFAULT_OTHER_SERVICES_DATA),
+        };
         if (typeof window !== "undefined") {
-          try { localStorage.setItem(SERVICES_PAGE_STORAGE_KEY, JSON.stringify(fsData)); } catch {}
+          try { localStorage.setItem(SERVICES_PAGE_STORAGE_KEY, JSON.stringify(merged)); } catch {}
         }
-        return fsData;
+        return merged;
       }
     }
   } catch (err) {
     console.warn("Failed to get services page settings from Firestore, using local/defaults:", err);
   }
 
-  if (localData) return localData;
+  if (localData && (localData.engineeringServices?.length || localData.customization?.length || localData.otherServices?.length)) {
+    return {
+      engineeringServices: localData.engineeringServices?.length ? localData.engineeringServices : DEFAULT_ENGINEERING_SERVICES_DATA,
+      customization: localData.customization?.length ? localData.customization : DEFAULT_CUSTOMIZATION_DATA,
+      otherServices: localData.otherServices?.length ? localData.otherServices : DEFAULT_OTHER_SERVICES_DATA,
+    };
+  }
   return DEFAULT_SERVICES_PAGE_SETTINGS;
 }
 
@@ -777,7 +979,7 @@ export async function updateServicesPageSettings(data: Partial<ServicesPageSetti
       const current = await getServicesPageSettings();
       const merged = { ...current, ...data };
       localStorage.setItem(SERVICES_PAGE_STORAGE_KEY, JSON.stringify(merged));
-      window.dispatchEvent(new CustomEvent("se_services_page_updated"));
+      notifyServicesPageUpdated();
     } catch {}
   }
 

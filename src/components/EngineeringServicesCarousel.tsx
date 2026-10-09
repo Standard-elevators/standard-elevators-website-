@@ -40,11 +40,13 @@ const DEFAULT_ENGINEERING_SERVICES = [
     title: "Aftersales Services",
     image: "/images/3d_apartments.jpg",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
-    href: "/services",
   }
 ];
 
+import { getServicesPageSettings, DEFAULT_ENGINEERING_SERVICES_DATA } from "@/lib/firestore-data";
+
 export default function EngineeringServicesCarousel({ initialData, showViewAllButton }: { initialData?: any[], showViewAllButton?: boolean }) {
+  const [services, setServices] = useState<any[]>(initialData && initialData.length > 0 ? initialData : DEFAULT_ENGINEERING_SERVICES_DATA);
   const [activeIndex, setActiveIndex] = useState(0);
   const [interactionState, setInteractionState] = useState(0);
   
@@ -54,7 +56,42 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
 
   const interact = () => setInteractionState((c) => c + 1);
 
-  const services = initialData && initialData.length > 0 ? initialData : DEFAULT_ENGINEERING_SERVICES;
+  useEffect(() => {
+    if (initialData && initialData.length > 0) {
+      setServices(initialData);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      try {
+        const data = await getServicesPageSettings();
+        if (isMounted && data?.engineeringServices && data.engineeringServices.length > 0) {
+          setServices(data.engineeringServices);
+        }
+      } catch (err) {
+        console.warn("EngineeringServicesCarousel load failed:", err);
+      }
+    }
+
+    loadData();
+
+    if (typeof window !== "undefined") {
+      const handleSync = () => loadData();
+      window.addEventListener("se_services_page_updated", handleSync);
+      window.addEventListener("storage", handleSync);
+      return () => {
+        isMounted = false;
+        window.removeEventListener("se_services_page_updated", handleSync);
+        window.removeEventListener("storage", handleSync);
+      };
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const length = services.length;
 
   const nextSlide = useCallback(() => {

@@ -19,6 +19,9 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Cog, Maximize, Activity, LayoutGri
 import { getPublishedServices } from "@/lib/firestore-data";
 import { constructMetadata, getBreadcrumbSchema, getServiceSchema } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

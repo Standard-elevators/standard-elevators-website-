@@ -16,10 +16,49 @@ function getServiceIcon(slug: string, category?: string) {
   return <Layers className="w-6 h-6" />;
 }
 
-export default function PrimarySolutionsCarousel({ services }: { services: any[] }) {
+import { getPublishedServices } from "@/lib/firestore-data";
+
+export default function PrimarySolutionsCarousel({ services: initialServices }: { services?: any[] }) {
+  const [services, setServices] = useState<any[]>(initialServices && initialServices.length > 0 ? initialServices : []);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (initialServices && initialServices.length > 0) {
+      setServices(initialServices);
+    }
+  }, [initialServices]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadServices() {
+      try {
+        const data = await getPublishedServices();
+        if (isMounted && data && data.length > 0) {
+          setServices(data);
+        }
+      } catch (err) {
+        console.warn("PrimarySolutionsCarousel load failed:", err);
+      }
+    }
+
+    loadServices();
+
+    if (typeof window !== "undefined") {
+      const handleSync = () => loadServices();
+      window.addEventListener("se_services_updated", handleSync);
+      window.addEventListener("storage", handleSync);
+      return () => {
+        isMounted = false;
+        window.removeEventListener("se_services_updated", handleSync);
+        window.removeEventListener("storage", handleSync);
+      };
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const scrollToIndex = useCallback((index: number) => {
     if (!containerRef.current) return;
