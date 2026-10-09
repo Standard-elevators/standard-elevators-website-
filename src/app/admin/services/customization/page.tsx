@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import AdminGuard from "@/components/admin/AdminGuard";
-import { ArrowLeft, PackagePlus, Plus, Trash2, Save, Loader2, X } from "lucide-react";
+import { ArrowLeft, PackagePlus, Plus, Trash2, Save, Loader2, X, CheckCircle2, AlertCircle } from "lucide-react";
 import { getServicesPageSettings, updateServicesPageSettings, CustomizationSetting } from "@/lib/firestore-data";
 import ImageUpload from "@/components/admin/ImageUpload";
 
 const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
   {
     title: "Cabin Models",
-    image: "/images/3d_apartments.jpg",
+    image: "/images/card_modernization.jpg",
     description: "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
     items: ["Standard SS", "Premium Glass", "Custom Designs"],
   },
@@ -22,13 +22,13 @@ const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
   },
   {
     title: "Control & Safety",
-    image: "/images/3d_service.jpg",
+    image: "/images/card_maintenance.jpg",
     description: "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
     items: ["Microprocessor Control", "ARD (Auto Rescue Device)", "Advanced Safety Gears"],
   },
   {
     title: "Machinery",
-    image: "/images/3d_industrial.jpg",
+    image: "/images/card_installation.jpg",
     description: "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
     items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"],
   },
@@ -44,6 +44,15 @@ export default function CustomizationAdminPage() {
   const [items, setItems] = useState<CustomizationSetting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Auto dismiss toast after 4s
+  useEffect(() => {
+    if (!successMessage) return;
+    const timer = setTimeout(() => setSuccessMessage(null), 4000);
+    return () => clearTimeout(timer);
+  }, [successMessage]);
 
   useEffect(() => {
     getServicesPageSettings().then(data => {
@@ -88,11 +97,13 @@ export default function CustomizationAdminPage() {
 
   const handleSave = async () => {
     setIsSaving(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
     try {
       await updateServicesPageSettings({ customization: items });
-      alert("Customization components saved successfully!");
+      setSuccessMessage("Customization components saved successfully! Changes are live on the website.");
     } catch (e) {
-      alert("Failed to save.");
+      setErrorMessage("Failed to save customization components. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -101,6 +112,35 @@ export default function CustomizationAdminPage() {
   return (
     <AdminGuard>
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 w-full">
+        {/* Floating In-App Toast Notifications */}
+        {successMessage && (
+          <div className="fixed top-6 right-6 z-50 max-w-md animate-in slide-in-from-top-4 fade-in duration-300">
+            <div className="bg-[#051E14] border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-start gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="flex-1 text-xs sm:text-sm font-medium leading-snug">
+                {successMessage}
+              </div>
+              <button onClick={() => setSuccessMessage(null)} className="text-emerald-400/60 hover:text-emerald-300 p-0.5">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="fixed top-6 right-6 z-50 max-w-md animate-in slide-in-from-top-4 fade-in duration-300">
+            <div className="bg-[#240C0C] border border-rose-500/40 text-rose-300 px-4 py-3 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+              <div className="flex-1 text-xs sm:text-sm font-medium leading-snug">
+                {errorMessage}
+              </div>
+              <button onClick={() => setErrorMessage(null)} className="text-rose-400/60 hover:text-rose-300 p-0.5">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="mb-6 flex items-center justify-between">
           <Link href="/admin/services" className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" />

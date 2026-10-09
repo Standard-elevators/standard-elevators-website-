@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import AdminGuard from "@/components/admin/AdminGuard";
-import { ArrowLeft, Settings, Plus, Trash2, Save, Loader2, GripVertical } from "lucide-react";
+import { ArrowLeft, Settings, Plus, Trash2, Save, Loader2, GripVertical, CheckCircle2, AlertCircle, X } from "lucide-react";
 import { getServicesPageSettings, updateServicesPageSettings, EngineeringServiceSetting } from "@/lib/firestore-data";
 import ImageUpload from "@/components/admin/ImageUpload";
 
@@ -20,7 +20,7 @@ const DEFAULT_ENGINEERING_SERVICES: EngineeringServiceSetting[] = [
   },
   {
     title: "Repairs",
-    image: "/images/3d_service.jpg",
+    image: "/images/card_maintenance.jpg",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
   },
   {
@@ -30,7 +30,7 @@ const DEFAULT_ENGINEERING_SERVICES: EngineeringServiceSetting[] = [
   },
   {
     title: "Aftersales Services",
-    image: "/images/3d_apartments.jpg",
+    image: "/images/card_installation.jpg",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
   }
 ];
@@ -39,6 +39,15 @@ export default function EngineeringAdminPage() {
   const [items, setItems] = useState<EngineeringServiceSetting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Auto dismiss success toast after 4s
+  useEffect(() => {
+    if (!successMessage) return;
+    const timer = setTimeout(() => setSuccessMessage(null), 4000);
+    return () => clearTimeout(timer);
+  }, [successMessage]);
 
   useEffect(() => {
     getServicesPageSettings().then(data => {
@@ -65,11 +74,13 @@ export default function EngineeringAdminPage() {
 
   const handleSave = async () => {
     setIsSaving(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
     try {
       await updateServicesPageSettings({ engineeringServices: items });
-      alert("Engineering Services saved successfully!");
+      setSuccessMessage("Engineering Services saved successfully! Changes are live on the website.");
     } catch (e) {
-      alert("Failed to save.");
+      setErrorMessage("Failed to save changes. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -78,6 +89,35 @@ export default function EngineeringAdminPage() {
   return (
     <AdminGuard>
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 w-full">
+        {/* Floating In-App Toast Notifications */}
+        {successMessage && (
+          <div className="fixed top-6 right-6 z-50 max-w-md animate-in slide-in-from-top-4 fade-in duration-300">
+            <div className="bg-[#051E14] border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-start gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="flex-1 text-xs sm:text-sm font-medium leading-snug">
+                {successMessage}
+              </div>
+              <button onClick={() => setSuccessMessage(null)} className="text-emerald-400/60 hover:text-emerald-300 p-0.5">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="fixed top-6 right-6 z-50 max-w-md animate-in slide-in-from-top-4 fade-in duration-300">
+            <div className="bg-[#240C0C] border border-rose-500/40 text-rose-300 px-4 py-3 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+              <div className="flex-1 text-xs sm:text-sm font-medium leading-snug">
+                {errorMessage}
+              </div>
+              <button onClick={() => setErrorMessage(null)} className="text-rose-400/60 hover:text-rose-300 p-0.5">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="mb-6 flex items-center justify-between">
           <Link href="/admin/services" className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" />

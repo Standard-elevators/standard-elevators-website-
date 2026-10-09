@@ -9,22 +9,56 @@ import {
   getPublishedServices,
   getServicesPageSettings,
   getPublishedGallery,
+  applyLocalServiceOverrides,
+  applyLocalGalleryOverrides,
   EngineeringServiceSetting,
   CustomizationSetting,
   DEFAULT_ENGINEERING_SERVICES_DATA,
   DEFAULT_CUSTOMIZATION_DATA,
 } from "@/lib/firestore-data";
-import { DEFAULT_SERVICES, GALLERY_CATEGORIES_MENU } from "@/data/defaultData";
+import { DEFAULT_SERVICES, DEFAULT_GALLERY, GALLERY_CATEGORIES_MENU } from "@/data/defaultData";
 import { ServiceItem, GalleryItem } from "@/types/data";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeMobileDropdown, setActiveMobileDropdown] = useState<string | null>(null);
-  const [dynamicServices, setDynamicServices] = useState<ServiceItem[]>([]);
-  const [dynamicEngineering, setDynamicEngineering] = useState<EngineeringServiceSetting[]>([]);
-  const [dynamicCustomization, setDynamicCustomization] = useState<CustomizationSetting[]>([]);
-  const [dynamicGallery, setDynamicGallery] = useState<GalleryItem[]>([]);
+  const [dynamicServices, setDynamicServices] = useState<ServiceItem[]>(() => {
+    if (typeof window !== "undefined") {
+      return applyLocalServiceOverrides(DEFAULT_SERVICES.map(s => ({ ...s, id: s.slug })));
+    }
+    return [];
+  });
+  const [dynamicEngineering, setDynamicEngineering] = useState<EngineeringServiceSetting[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("se_services_page_settings");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.engineeringServices?.length > 0) return parsed.engineeringServices;
+        }
+      } catch {}
+    }
+    return DEFAULT_ENGINEERING_SERVICES_DATA;
+  });
+  const [dynamicCustomization, setDynamicCustomization] = useState<CustomizationSetting[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("se_services_page_settings");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.customization?.length > 0) return parsed.customization;
+        }
+      } catch {}
+    }
+    return DEFAULT_CUSTOMIZATION_DATA;
+  });
+  const [dynamicGallery, setDynamicGallery] = useState<GalleryItem[]>(() => {
+    if (typeof window !== "undefined") {
+      return applyLocalGalleryOverrides(DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` })));
+    }
+    return [];
+  });
   
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -152,7 +186,7 @@ export default function Header() {
       name: s.title.split(" (")[0],
       href: `/services/${s.slug}`,
       desc: s.description,
-      image: s.imageUrl || "/images/3d_commercial.jpg"
+      image: s.imageUrl || "/hero-elevator.jpg"
     }));
   }, [dynamicServices]);
 
@@ -172,7 +206,7 @@ export default function Header() {
       name: s.title,
       href: `/services#customization`,
       desc: s.description || "Premium architectural components and finishes",
-      image: s.image || "/images/3d_apartments.jpg"
+      image: s.image || "/images/card_modernization.jpg"
     }));
   }, [dynamicCustomization]);
 

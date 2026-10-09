@@ -30,7 +30,7 @@ export default function SafetyArchitecture() {
       title: "Phase Failure Monitor",
       code: "Electrical Protection",
       icon: Layers,
-      image: "/images/3d_service.jpg",
+      image: "/images/card_maintenance.jpg",
       description: "Intelligent electrical controller prevents motor operation under phase reversal, phase loss, or electrical imbalance."
     }
   ];

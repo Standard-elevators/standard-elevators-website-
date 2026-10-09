@@ -13,7 +13,7 @@ export const DEFAULT_SERVICES: Omit<ServiceItem, "id">[] = [
       "Up to 15 stops",
     ],
     category: "Commercial & Residential",
-    imageUrl: "/images/3d_commercial.jpg",
+    imageUrl: "/hero-elevator.jpg",
     orderIndex: 1,
     status: "published",
   },
@@ -29,7 +29,7 @@ export const DEFAULT_SERVICES: Omit<ServiceItem, "id">[] = [
       "Up to 10 stops",
     ],
     category: "Residential & Commercial",
-    imageUrl: "/images/3d_apartments.jpg",
+    imageUrl: "/images/card_modernization.jpg",
     orderIndex: 2,
     status: "published",
   },
@@ -45,7 +45,7 @@ export const DEFAULT_SERVICES: Omit<ServiceItem, "id">[] = [
       "Electric & Hydraulic",
     ],
     category: "Industrial & Freight",
-    imageUrl: "/images/3d_industrial.jpg",
+    imageUrl: "/images/card_installation.jpg",
     orderIndex: 3,
     status: "published",
   },
@@ -61,7 +61,7 @@ export const DEFAULT_SERVICES: Omit<ServiceItem, "id">[] = [
       "Gearless & Geared",
     ],
     category: "Healthcare",
-    imageUrl: "/images/3d_healthcare_v2.jpg",
+    imageUrl: "/images/card_maintenance.jpg",
     orderIndex: 4,
     status: "published",
   },
@@ -101,14 +101,14 @@ export const DEFAULT_GALLERY: Omit<GalleryItem, "id">[] = [
   {
     title: "Automatic Center-Opening Glass Doors",
     category: "Doors",
-    imageUrl: "/images/3d_apartments.jpg",
+    imageUrl: "/images/card_modernization.jpg",
     orderIndex: 3,
     status: "published",
   },
   {
     title: "Hospital Stretcher Bed Lift System",
     category: "Installation",
-    imageUrl: "/images/3d_healthcare_v2.jpg",
+    imageUrl: "/images/card_maintenance.jpg",
     orderIndex: 4,
     status: "published",
   },
@@ -129,21 +129,21 @@ export const DEFAULT_GALLERY: Omit<GalleryItem, "id">[] = [
   {
     title: "Designer Elevator Ceiling & Fixtures",
     category: "Cabins",
-    imageUrl: "/images/3d_residential.jpg",
+    imageUrl: "/images/card_modernization.jpg",
     orderIndex: 7,
     status: "published",
   },
   {
     title: "Heavy Duty Freight & Goods Lift Platform",
     category: "Installation",
-    imageUrl: "/images/3d_industrial.jpg",
+    imageUrl: "/images/card_installation.jpg",
     orderIndex: 8,
     status: "published",
   },
   {
     title: "Stainless Steel Telescopic Auto Door",
     category: "Doors",
-    imageUrl: "/images/3d_commercial.jpg",
+    imageUrl: "/hero-elevator.jpg",
     orderIndex: 9,
     status: "published",
   },
@@ -165,7 +165,7 @@ export const ENGINEERING_SERVICES_DATA = [
   {
     title: "Repairs",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
-    image: "/images/3d_service.jpg",
+    image: "/images/card_maintenance.jpg",
     slug: "repairs",
   },
   {
@@ -177,22 +177,22 @@ export const ENGINEERING_SERVICES_DATA = [
   {
     title: "Aftersales Services",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
-    image: "/images/3d_apartments.jpg",
+    image: "/images/card_installation.jpg",
     slug: "aftersales-services",
   }
 ];
 
 export const CUSTOMIZATION_DATA = [
   { title: "Cabin Models", image: "/images/card_modernization.jpg", desc: "Standard SS, Premium Glass, and Custom Designs.", slug: "cabin-models" },
-  { title: "Door Options", image: "/images/3d_commercial.jpg", desc: "Collapsible, Imperforated, Swing, and Auto Doors.", slug: "door-options" },
+  { title: "Door Options", image: "/images/card_installation.jpg", desc: "Collapsible, Imperforated, Swing, and Auto Doors.", slug: "door-options" },
   { title: "Control & Safety", image: "/images/card_maintenance.jpg", desc: "Micro Processor Control, ARD, and Safety Gears.", slug: "control-safety" },
   { title: "Machinery", image: "/images/card_installation.jpg", desc: "Geared, Gearless, and Hydraulic Drives.", slug: "machinery" },
-  { title: "Interiors", image: "/images/3d_residential.jpg", desc: "Flooring, Ceiling Designs, Handles, and Lighting.", slug: "interiors" },
+  { title: "Interiors", image: "/images/card_modernization.jpg", desc: "Flooring, Ceiling Designs, Handles, and Lighting.", slug: "interiors" },
 ];
 
 export const GALLERY_CATEGORIES_MENU = [
   { name: "Installation", href: "/gallery?category=Installation#gallery-grid", desc: "Site preparations and shaft structural work", image: "/hero-elevator.jpg" },
   { name: "Cabins", href: "/gallery?category=Cabins#gallery-grid", desc: "Premium elevator cabins and custom interiors", image: "/images/card_modernization.jpg" },
-  { name: "Doors", href: "/gallery?category=Doors#gallery-grid", desc: "Automatic, manual, and swing door designs", image: "/images/3d_apartments.jpg" },
+  { name: "Doors", href: "/gallery?category=Doors#gallery-grid", desc: "Automatic, manual, and swing door designs", image: "/images/card_modernization.jpg" },
   { name: "Components", href: "/gallery?category=Components#gallery-grid", desc: "Microprocessor control panels and machinery", image: "/images/card_maintenance.jpg" },
 ];

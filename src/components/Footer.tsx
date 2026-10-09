@@ -69,7 +69,7 @@ export default function Footer() {
         }}
       >
         <Image 
-          src="/images/3d_commercial.jpg" 
+          src="/hero-elevator.jpg" 
           alt="Premium Elevator Architecture" 
           fill 
           className="object-cover opacity-90"
@@ -222,7 +222,7 @@ export default function Footer() {
         {/* Background Image (Mobile Only) */}
         <div className="absolute inset-0 z-0 block lg:hidden">
           <Image 
-            src="/images/3d_commercial.jpg" 
+            src="/hero-elevator.jpg" 
             alt="Premium Elevator Architecture" 
             fill 
             className="object-cover object-center opacity-[0.55]"

@@ -24,7 +24,7 @@ const DEFAULT_ENGINEERING_SERVICES = [
   {
     id: "03",
     title: "Repairs",
-    image: "/images/3d_service.jpg",
+    image: "/images/card_maintenance.jpg",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
     href: "/services",
   },
@@ -38,7 +38,7 @@ const DEFAULT_ENGINEERING_SERVICES = [
   {
     id: "05",
     title: "Aftersales Services",
-    image: "/images/3d_apartments.jpg",
+    image: "/images/card_installation.jpg",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
   }
 ];
@@ -46,7 +46,18 @@ const DEFAULT_ENGINEERING_SERVICES = [
 import { getServicesPageSettings, DEFAULT_ENGINEERING_SERVICES_DATA } from "@/lib/firestore-data";
 
 export default function EngineeringServicesCarousel({ initialData, showViewAllButton }: { initialData?: any[], showViewAllButton?: boolean }) {
-  const [services, setServices] = useState<any[]>(initialData && initialData.length > 0 ? initialData : DEFAULT_ENGINEERING_SERVICES_DATA);
+  const [services, setServices] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("se_services_page_settings");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.engineeringServices?.length > 0) return parsed.engineeringServices;
+        }
+      } catch {}
+    }
+    return initialData && initialData.length > 0 ? initialData : DEFAULT_ENGINEERING_SERVICES_DATA;
+  });
   const [activeIndex, setActiveIndex] = useState(0);
   const [interactionState, setInteractionState] = useState(0);
   

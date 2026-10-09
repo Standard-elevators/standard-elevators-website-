@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, ImageIcon, Loader2, ChevronLeft, ChevronRight, X, Play, Video } from "lucide-react";
-import { getPublishedGallery } from "@/lib/firestore-data";
+import { getPublishedGallery, applyLocalGalleryOverrides } from "@/lib/firestore-data";
 import { DEFAULT_GALLERY } from "@/data/defaultData";
 import { GalleryItem } from "@/types/data";
 
@@ -22,8 +22,14 @@ function GalleryContent() {
     : "All";
 
   const [activeCategory, setActiveCategory] = useState<GalleryCategoryFilter>(initialCategory);
-  const [items, setItems] = useState<GalleryItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [items, setItems] = useState<GalleryItem[]>(() => {
+    const base = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
+    if (typeof window !== "undefined") {
+      return applyLocalGalleryOverrides(base);
+    }
+    return base;
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (categoryParam && CATEGORIES.includes(categoryParam as GalleryCategoryFilter)) {

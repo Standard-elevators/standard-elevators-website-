@@ -132,6 +132,9 @@ export function saveServiceOverride(id: string, item: ServiceItem) {
   try {
     const overrides = getLocalServiceOverrides();
     overrides[id] = item;
+    if (item.slug && item.slug !== id) {
+      overrides[item.slug] = item;
+    }
     const deleted = getLocalDeletedServices().filter(d => d !== id && d !== item.slug);
     localStorage.setItem(SERVICES_OVERRIDES_KEY, JSON.stringify(overrides));
     localStorage.setItem(SERVICES_DELETED_KEY, JSON.stringify(deleted));
@@ -142,15 +145,20 @@ export function removeServiceOverride(id: string) {
   if (typeof window === "undefined") return;
   try {
     const overrides = getLocalServiceOverrides();
+    const item = overrides[id];
     delete overrides[id];
+    if (item?.slug && overrides[item.slug]) {
+      delete overrides[item.slug];
+    }
     const deleted = getLocalDeletedServices();
     if (!deleted.includes(id)) deleted.push(id);
+    if (item?.slug && !deleted.includes(item.slug)) deleted.push(item.slug);
     localStorage.setItem(SERVICES_OVERRIDES_KEY, JSON.stringify(overrides));
     localStorage.setItem(SERVICES_DELETED_KEY, JSON.stringify(deleted));
   } catch {}
 }
 
-function applyLocalServiceOverrides(baseServices: ServiceItem[]): ServiceItem[] {
+export function applyLocalServiceOverrides(baseServices: ServiceItem[]): ServiceItem[] {
   const overrides = getLocalServiceOverrides();
   const deleted = new Set(getLocalDeletedServices());
 
@@ -164,7 +172,7 @@ function applyLocalServiceOverrides(baseServices: ServiceItem[]): ServiceItem[] 
   // Apply overrides or additions
   const map = new Map<string, ServiceItem>();
   services.forEach(s => {
-    const key = s.id || s.slug || "";
+    const key = s.slug || s.id || "";
     if (key) map.set(key, s);
   });
 
@@ -172,9 +180,10 @@ function applyLocalServiceOverrides(baseServices: ServiceItem[]): ServiceItem[] 
     const oId = override.id || "";
     const oSlug = override.slug || "";
     if ((!oId || !deleted.has(oId)) && (!oSlug || !deleted.has(oSlug))) {
-      const key = oId || oSlug;
+      const key = oSlug || oId;
       if (key) {
-        map.set(key, { ...(map.get(key) || {}), ...override });
+        const existing = map.get(key) || {};
+        map.set(key, { ...existing, ...override });
       }
     }
   });
@@ -476,7 +485,7 @@ export function removeGalleryOverride(id: string) {
   } catch {}
 }
 
-function applyLocalGalleryOverrides(baseItems: GalleryItem[]): GalleryItem[] {
+export function applyLocalGalleryOverrides(baseItems: GalleryItem[]): GalleryItem[] {
   const overrides = getLocalGalleryOverrides();
   const deleted = new Set(getLocalDeletedGallery());
 
@@ -868,7 +877,7 @@ export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
   },
   {
     title: "Repairs",
-    image: "/images/3d_service.jpg",
+    image: "/images/card_maintenance.jpg",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
   },
   {
@@ -878,7 +887,7 @@ export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
   },
   {
     title: "Aftersales Services",
-    image: "/images/3d_apartments.jpg",
+    image: "/images/card_installation.jpg",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
   }
 ];
@@ -886,7 +895,7 @@ export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
 export const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
   {
     title: "Cabin Models",
-    image: "/images/3d_apartments.jpg",
+    image: "/images/card_modernization.jpg",
     description: "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
     items: ["Standard SS", "Premium Glass", "Custom Designs"],
   },
@@ -898,13 +907,13 @@ export const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
   },
   {
     title: "Control & Safety",
-    image: "/images/3d_service.jpg",
+    image: "/images/card_maintenance.jpg",
     description: "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
     items: ["Microprocessor Control", "ARD (Auto Rescue Device)", "Advanced Safety Gears"],
   },
   {
     title: "Machinery",
-    image: "/images/3d_industrial.jpg",
+    image: "/images/card_installation.jpg",
     description: "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
     items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"],
   },
@@ -919,10 +928,10 @@ export const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
 export const DEFAULT_OTHER_SERVICES_DATA: OtherServiceSetting[] = [
   { title: "Structural Fabrication", image: "/images/card_installation.jpg", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
   { title: "Glass & ACP Sheets", image: "/images/card_modernization.jpg", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
-  { title: "UPVC Window & Door", image: "/images/3d_apartments.jpg", desc: "High-quality UPVC systems for residential and commercial spaces." },
-  { title: "Renovation Works", image: "/images/3d_service.jpg", desc: "Complete architectural and interior renovation services." },
+  { title: "UPVC Window & Door", image: "/images/card_installation.jpg", desc: "High-quality UPVC systems for residential and commercial spaces." },
+  { title: "Renovation Works", image: "/images/card_modernization.jpg", desc: "Complete architectural and interior renovation services." },
   { title: "SS Railing", image: "/images/card_maintenance.jpg", desc: "Custom stainless steel handrails and balustrades." },
-  { title: "Electrical House Wirings", image: "/images/3d_industrial.jpg", desc: "Complete residential and commercial electrical wiring systems." },
+  { title: "Electrical House Wirings", image: "/images/card_maintenance.jpg", desc: "Complete residential and commercial electrical wiring systems." },
   { title: "Civil Works", image: "/images/card_installation.jpg", desc: "Comprehensive civil construction and shaft preparation." },
 ];
 

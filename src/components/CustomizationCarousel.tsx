@@ -8,7 +8,7 @@ const DEFAULT_CAROUSEL_DATA = [
   {
     id: 0,
     title: "Cabin Models",
-    image: "/images/3d_apartments.jpg",
+    image: "/images/card_modernization.jpg",
     description:
       "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
     items: ["Standard SS", "Premium Glass", "Custom Designs"],
@@ -28,7 +28,7 @@ const DEFAULT_CAROUSEL_DATA = [
   {
     id: 2,
     title: "Control & Safety",
-    image: "/images/3d_service.jpg",
+    image: "/images/card_maintenance.jpg",
     description:
       "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
     items: [
@@ -40,7 +40,7 @@ const DEFAULT_CAROUSEL_DATA = [
   {
     id: 3,
     title: "Machinery",
-    image: "/images/3d_industrial.jpg",
+    image: "/images/card_installation.jpg",
     description:
       "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
     items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"],
@@ -62,7 +62,18 @@ const DEFAULT_CAROUSEL_DATA = [
 import { getServicesPageSettings, DEFAULT_CUSTOMIZATION_DATA } from "@/lib/firestore-data";
 
 export default function CustomizationCarousel({ initialData }: { initialData?: any[] }) {
-  const [data, setData] = useState<any[]>(initialData && initialData.length > 0 ? initialData : DEFAULT_CUSTOMIZATION_DATA);
+  const [data, setData] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("se_services_page_settings");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.customization?.length > 0) return parsed.customization;
+        }
+      } catch {}
+    }
+    return initialData && initialData.length > 0 ? initialData : DEFAULT_CUSTOMIZATION_DATA;
+  });
   const [activeIndex, setActiveIndex] = useState(0);
   const [interactionState, setInteractionState] = useState(0);
   const touchStartRef = useRef<number | null>(null);

@@ -16,17 +16,28 @@ function getServiceIcon(slug: string, category?: string) {
   return <Layers className="w-6 h-6" />;
 }
 
-import { getPublishedServices } from "@/lib/firestore-data";
+import { getPublishedServices, applyLocalServiceOverrides } from "@/lib/firestore-data";
+import { DEFAULT_SERVICES } from "@/data/defaultData";
 
 export default function PrimarySolutionsCarousel({ services: initialServices }: { services?: any[] }) {
-  const [services, setServices] = useState<any[]>(initialServices && initialServices.length > 0 ? initialServices : []);
+  const [services, setServices] = useState<any[]>(() => {
+    const base = initialServices && initialServices.length > 0 ? initialServices : DEFAULT_SERVICES.map(s => ({ ...s, id: s.slug }));
+    if (typeof window !== "undefined") {
+      return applyLocalServiceOverrides(base);
+    }
+    return base;
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     if (initialServices && initialServices.length > 0) {
-      setServices(initialServices);
+      if (typeof window !== "undefined") {
+        setServices(applyLocalServiceOverrides(initialServices));
+      } else {
+        setServices(initialServices);
+      }
     }
   }, [initialServices]);
 

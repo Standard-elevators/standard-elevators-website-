@@ -11,7 +11,7 @@ const CATEGORIES = [
     title: "RESIDENTIAL",
     subtitle: "Private Villas & Bungalows",
     icon: <Home size={28} color="#38bdf8" strokeWidth={1.5} />,
-    image: "/images/3d_residential.jpg",
+    image: "/images/card_installation.jpg",
     link: "/contact?service=MRL+Lifts&type=Residential",
   },
   {
@@ -19,7 +19,7 @@ const CATEGORIES = [
     title: "APARTMENTS & RWAS",
     subtitle: "Residential Societies",
     icon: <Building2 size={28} color="#38bdf8" strokeWidth={1.5} />,
-    image: "/images/3d_apartments.jpg",
+    image: "/images/card_modernization.jpg",
     link: "/contact?service=Passenger+Lifts&type=Apartment",
   },
   {
@@ -27,7 +27,7 @@ const CATEGORIES = [
     title: "COMMERCIAL",
     subtitle: "Offices & Shopping Complexes",
     icon: <Briefcase size={28} color="#38bdf8" strokeWidth={1.5} />,
-    image: "/images/3d_commercial.jpg",
+    image: "/hero-elevator.jpg",
     link: "/contact?service=Passenger+Lifts&type=Commercial",
   },
   {
@@ -35,7 +35,7 @@ const CATEGORIES = [
     title: "HEALTHCARE",
     subtitle: "Hospitals & Stretcher Lifts",
     icon: <Plus size={32} color="#38bdf8" strokeWidth={2} />,
-    image: "/images/3d_healthcare_v2.jpg",
+    image: "/images/card_maintenance.jpg",
     link: "/contact?service=Hospital+Lifts&type=Healthcare",
   },
   {
@@ -43,7 +43,7 @@ const CATEGORIES = [
     title: "INDUSTRIAL",
     subtitle: "Goods & Cargo Freight",
     icon: <Settings size={28} color="#38bdf8" strokeWidth={1.5} />,
-    image: "/images/3d_industrial.jpg",
+    image: "/images/card_installation.jpg",
     link: "/contact?service=Goods+Lifts&type=Industrial",
   },
   {
