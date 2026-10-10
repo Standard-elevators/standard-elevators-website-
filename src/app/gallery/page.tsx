@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, ImageIcon, Loader2, ChevronLeft, ChevronRight, X, Play, Video } from "lucide-react";
+import { ArrowRight, ImageIcon, Loader2, ChevronLeft, ChevronRight, X, Play } from "lucide-react";
 import { getPublishedGallery, applyLocalGalleryOverrides } from "@/lib/firestore-data";
 import { DEFAULT_GALLERY } from "@/data/defaultData";
 import { GalleryItem } from "@/types/data";
@@ -16,12 +16,17 @@ const CATEGORIES: GalleryCategoryFilter[] = ["All", "Passenger Lifts", "Goods Li
 function GalleryContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
-  
-  const initialCategory = CATEGORIES.includes(categoryParam as GalleryCategoryFilter) 
-    ? (categoryParam as GalleryCategoryFilter) 
-    : "All";
 
-  const [activeCategory, setActiveCategory] = useState<GalleryCategoryFilter>(initialCategory);
+  const [selectedCategory, setSelectedCategory] = useState<GalleryCategoryFilter | null>(null);
+
+  const activeCategory: GalleryCategoryFilter = selectedCategory ?? (
+    categoryParam && CATEGORIES.includes(categoryParam as GalleryCategoryFilter)
+      ? (categoryParam as GalleryCategoryFilter)
+      : "All"
+  );
+
+  const setActiveCategory = (cat: GalleryCategoryFilter) => setSelectedCategory(cat);
+
   const [items, setItems] = useState<GalleryItem[]>(() => {
     const base = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
     if (typeof window !== "undefined") {
@@ -30,12 +35,6 @@ function GalleryContent() {
     return base;
   });
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (categoryParam && CATEGORIES.includes(categoryParam as GalleryCategoryFilter)) {
-      setActiveCategory(categoryParam as GalleryCategoryFilter);
-    }
-  }, [categoryParam]);
 
   // Lightbox state
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -75,7 +74,7 @@ function GalleryContent() {
 
   const filteredItems = activeCategory === "All"
     ? items
-    : items.filter((item) => item.category === activeCategory);
+    : items.filter((item) => (item.category || "").trim().toLowerCase() === activeCategory.trim().toLowerCase());
 
   const selectedItem = selectedIndex !== null ? filteredItems[selectedIndex] : null;
 

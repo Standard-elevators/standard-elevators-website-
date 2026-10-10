@@ -16,7 +16,7 @@ import {
   DEFAULT_ENGINEERING_SERVICES_DATA,
   DEFAULT_CUSTOMIZATION_DATA,
 } from "@/lib/firestore-data";
-import { DEFAULT_SERVICES, DEFAULT_GALLERY, GALLERY_CATEGORIES_MENU } from "@/data/defaultData";
+import { DEFAULT_SERVICES, DEFAULT_GALLERY } from "@/data/defaultData";
 import { ServiceItem, GalleryItem } from "@/types/data";
 
 export default function Header() {
@@ -66,9 +66,12 @@ export default function Header() {
 
   // Close menus on route change
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-    setActiveDropdown(null);
-    setActiveMobileDropdown(null);
+    const timer = setTimeout(() => {
+      setIsMobileMenuOpen(false);
+      setActiveDropdown(null);
+      setActiveMobileDropdown(null);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   // Fetch dynamic content for the mega menu and mobile menu
@@ -213,6 +216,9 @@ export default function Header() {
   const galleryMenu = useMemo(() => {
     const categories = [
       { name: "Passenger Lifts", desc: "Premium passenger elevator installations" },
+      { name: "Goods Lifts", desc: "Heavy-duty cargo and freight installations" },
+      { name: "Hospital Lifts", desc: "Stretcher and medical elevator systems" },
+      { name: "MRL Lifts", desc: "Machine room less gearless elevators" },
       { name: "Installation", desc: "Site preparations and shaft structural work" },
       { name: "Cabins", desc: "Premium elevator cabins and custom interiors" },
       { name: "Doors", desc: "Automatic, manual, and swing door designs" },
@@ -342,7 +348,7 @@ export default function Header() {
 
           {/* LEFT: LOGO */}
           <div className="relative z-10 flex items-center justify-center shrink-0 w-auto lg:w-[23%] py-1 pl-5 sm:pl-6 lg:pl-0">
-            <a
+            <Link
               href="/"
               className="flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0062FF] rounded-md transition-opacity hover:opacity-90 relative z-20 cursor-pointer"
               aria-label="Standard Engineering Works Elevators Home"
@@ -355,7 +361,7 @@ export default function Header() {
                 priority
                 className="h-[52px] sm:h-[54px] lg:h-[58px] w-auto object-contain shrink-0"
               />
-            </a>
+            </Link>
           </div>
 
           {/* MIDDLE: DESKTOP NAVIGATION */}

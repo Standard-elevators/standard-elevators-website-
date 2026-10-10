@@ -30,9 +30,23 @@ import {
   X,
   Search,
   Filter,
+  Check,
 } from "lucide-react";
 
 const CATEGORIES: GalleryCategory[] = ["Passenger Lifts", "Goods Lifts", "Hospital Lifts", "MRL Lifts", "Installation", "Cabins", "Doors", "Components"];
+
+function detectCategoryFromText(text: string): GalleryCategory | null {
+  const lower = text.toLowerCase();
+  if (lower.includes("good") || lower.includes("cargo") || lower.includes("freight")) return "Goods Lifts";
+  if (lower.includes("passenger") || lower.includes("dynamo")) return "Passenger Lifts";
+  if (lower.includes("hospital") || lower.includes("stretcher") || lower.includes("bed lift")) return "Hospital Lifts";
+  if (lower.includes("mrl") || lower.includes("machine room less") || lower.includes("gearless")) return "MRL Lifts";
+  if (lower.includes("cabin") || lower.includes("interior") || lower.includes("ceiling") || lower.includes("flooring")) return "Cabins";
+  if (lower.includes("door") || lower.includes("telescopic") || lower.includes("collapsible") || lower.includes("swing")) return "Doors";
+  if (lower.includes("component") || lower.includes("controller") || lower.includes("panel") || lower.includes("motor") || lower.includes("traction")) return "Components";
+  if (lower.includes("install") || lower.includes("erection") || lower.includes("shaft") || lower.includes("civil")) return "Installation";
+  return null;
+}
 
 interface GalleryFormData {
   title: string;
@@ -74,6 +88,7 @@ function AdminGalleryContent() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
+  const [hasManuallySelectedCategory, setHasManuallySelectedCategory] = useState(false);
 
   // Auto-dismiss success after 4s
   useEffect(() => {
@@ -131,7 +146,7 @@ function AdminGalleryContent() {
 
   // Lock body scroll and stop Lenis when modal is open
   useEffect(() => {
-    const lenis = (window as any).__lenis;
+    const lenis = (window as unknown as { __lenis?: { stop?: () => void; start?: () => void } }).__lenis;
     if (isFormOpen || deleteConfirmId !== null) {
       document.body.style.overflow = "hidden";
       if (lenis && typeof lenis.stop === "function") lenis.stop();
@@ -147,9 +162,18 @@ function AdminGalleryContent() {
 
   const openCreateModal = () => {
     setEditingItem(null);
+    setHasManuallySelectedCategory(false);
+
+    // Auto-select category if admin filtered by a specific category
+    let initialCat: GalleryCategory = "Goods Lifts";
+    if (categoryFilter !== "all" && CATEGORIES.includes(categoryFilter as GalleryCategory)) {
+      initialCat = categoryFilter as GalleryCategory;
+      setHasManuallySelectedCategory(true);
+    }
+
     const initial: GalleryFormData = {
       title: "",
-      category: "Installation",
+      category: initialCat,
       imageUrl: "",
       imagePublicId: undefined,
       mediaType: "image",
@@ -165,6 +189,7 @@ function AdminGalleryContent() {
 
   const openEditModal = (item: GalleryItem) => {
     setEditingItem(item);
+    setHasManuallySelectedCategory(true);
     const isVid = Boolean(item.mediaType === "video" || item.imageUrl?.match(/\.(mp4|webm|mov|m4v)($|\?)/i) || item.imageUrl?.includes("/video/upload/"));
     const initial: GalleryFormData = {
       title: item.title,
@@ -180,6 +205,23 @@ function AdminGalleryContent() {
     setFormData(initial);
     setActionError(null);
     setIsFormOpen(true);
+  };
+
+  const handleQuickChangeCategory = async (item: GalleryItem, newCategory: GalleryCategory) => {
+    if (!item.id || item.category === newCategory) return;
+    const oldCategory = item.category;
+    setItems((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, category: newCategory } : i))
+    );
+    setSuccessMessage(`Moved "${item.title}" to ${newCategory} category.`);
+    try {
+      await updateGalleryItem(item.id, { category: newCategory });
+    } catch (err) {
+      setItems((prev) =>
+        prev.map((i) => (i.id === item.id ? { ...i, category: oldCategory } : i))
+      );
+      setActionError((err as Error).message || "Failed to update category.");
+    }
   };
 
   const handleCloseModal = () => {
@@ -358,7 +400,7 @@ function AdminGalleryContent() {
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.altText && item.altText.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory =
-      categoryFilter === "all" ? true : item.category === categoryFilter;
+      categoryFilter === "all" ? true : (item.category || "").trim().toLowerCase() === categoryFilter.trim().toLowerCase();
     const matchesStatus =
       statusFilter === "all" ? true : item.status === statusFilter;
     return matchesSearch && matchesCategory && matchesStatus;
@@ -597,12 +639,27 @@ function AdminGalleryContent() {
               </div>
 
               {/* Action Bar */}
-              <div className="px-4 sm:px-5 py-3.5 bg-[#071221]/50 border-t border-white/5 flex items-center justify-between text-xs">
-                <div className="text-slate-500 text-[11px] font-medium">
-                  Index #{item.orderIndex}
+              <div className="px-4 sm:px-5 py-3.5 bg-[#071221]/50 border-t border-white/5 flex items-center justify-between text-xs gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="text-slate-500 text-[11px] font-medium shrink-0">
+                    #{item.orderIndex}
+                  </div>
+                  {/* Instant Category Changer */}
+                  <select
+                    value={item.category}
+                    onChange={(e) => handleQuickChangeCategory(item, e.target.value as GalleryCategory)}
+                    title="Change category directly"
+                    className="bg-[#0C1A2E] border border-white/10 hover:border-[#0070F3]/50 text-[#38BDF8] text-[11px] font-semibold rounded-lg px-2 py-1 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#0070F3]"
+                  >
+                    {CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 shrink-0">
                   {/* Eye toggle - REMOVED */}
 
                   {/* Edit */}
@@ -694,8 +751,20 @@ function AdminGalleryContent() {
                   type="text"
                   required
                   value={formData.title}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-                  placeholder="e.g. MRL Glass Elevator Installation"
+                  onChange={(e) => {
+                    const newTitle = e.target.value;
+                    setFormData((prev) => {
+                      const next = { ...prev, title: newTitle };
+                      if (!hasManuallySelectedCategory && newTitle.trim()) {
+                        const detected = detectCategoryFromText(newTitle);
+                        if (detected) {
+                          next.category = detected;
+                        }
+                      }
+                      return next;
+                    });
+                  }}
+                  placeholder="e.g. Goods Lifts (CARVI & CARGO1)"
                   className="w-full px-3.5 py-2.5 bg-[#071221] border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
                 />
               </div>
@@ -713,7 +782,7 @@ function AdminGalleryContent() {
                   type="text"
                   value={formData.altText}
                   onChange={(e) => setFormData((prev) => ({ ...prev, altText: e.target.value }))}
-                  placeholder="e.g. Completed gearless passenger elevator inside Hyderabad apartment atrium"
+                  placeholder="e.g. Completed heavy-duty freight elevator installation"
                   className="w-full px-3.5 py-2.5 bg-[#071221] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
                 />
                 <span className="text-[11px] text-slate-500 mt-1 block">
@@ -723,22 +792,60 @@ function AdminGalleryContent() {
 
               {/* Category */}
               <div>
-                <label
-                  htmlFor="gallery-category-select"
-                  className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5"
-                >
-                  Category *
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="gallery-category-select"
+                    className="block text-xs font-semibold uppercase tracking-wider text-slate-300"
+                  >
+                    Category *
+                  </label>
+                  <span className="text-[11px] font-bold text-[#38BDF8] bg-[#0070F3]/20 px-2.5 py-0.5 rounded-full border border-[#0070F3]/30">
+                    Selected: {formData.category}
+                  </span>
+                </div>
+
+                {/* Interactive Category Pill Buttons for Instant, Mistake-Proof Selection */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+                  {CATEGORIES.map((cat) => {
+                    const isSelected = formData.category === cat;
+                    return (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({ ...prev, category: cat }));
+                          setHasManuallySelectedCategory(true);
+                        }}
+                        className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all text-left flex items-center justify-between border ${
+                          isSelected
+                            ? "bg-gradient-to-r from-[#0062FF] to-[#0088FF] text-white border-[#38BDF8] shadow-[0_2px_10px_rgba(0,102,255,0.4)]"
+                            : "bg-[#071221] text-slate-300 border-white/10 hover:border-white/25 hover:text-white"
+                        }`}
+                      >
+                        <span className="truncate">{cat}</span>
+                        {isSelected && <Check className="w-3.5 h-3.5 shrink-0 ml-1 text-white" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <p className="text-[11px] text-slate-400">
+                  This image will be published under the <strong className="text-white">&ldquo;{formData.category}&rdquo;</strong> category tab on the live website.
+                </p>
+
                 <select
                   id="gallery-category-select"
                   value={formData.category}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData((prev) => ({
                       ...prev,
                       category: e.target.value as GalleryCategory,
-                    }))
-                  }
-                  className="w-full px-3.5 py-2.5 bg-[#071221] border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+                    }));
+                    setHasManuallySelectedCategory(true);
+                  }}
+                  className="sr-only"
+                  aria-hidden="true"
+                  tabIndex={-1}
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>
@@ -756,17 +863,25 @@ function AdminGalleryContent() {
                   allowVideo={true}
                   maxSizeBytes={10 * 1024 * 1024}
                   onFileSelected={(file) => {
-                    // Auto-populate project title from clean file name if title is empty
+                    const cleanName = file.name
+                      .replace(/\.[^/.]+$/, "")
+                      .replace(/[-_]/g, " ")
+                      .trim();
+                    const capitalized = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+                    
                     setFormData((prev) => {
+                      const next = { ...prev };
                       if (!prev.title.trim()) {
-                        const cleanName = file.name
-                          .replace(/\.[^/.]+$/, "")
-                          .replace(/[-_]/g, " ")
-                          .trim();
-                        const capitalized = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-                        return { ...prev, title: capitalized || "Elevator Project Installation" };
+                        next.title = capitalized;
                       }
-                      return prev;
+                      // If the admin hasn't manually clicked a category pill in this session, detect from file name
+                      if (!hasManuallySelectedCategory) {
+                        const detected = detectCategoryFromText(file.name);
+                        if (detected) {
+                          next.category = detected;
+                        }
+                      }
+                      return next;
                     });
                   }}
                   onMediaTypeChange={(type) =>
