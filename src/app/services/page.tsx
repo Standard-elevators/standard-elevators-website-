@@ -1,15 +1,13 @@
 import { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import CustomizationCarousel from "@/components/CustomizationCarousel";
 import EngineeringServicesCarousel from "@/components/EngineeringServicesCarousel";
 import PrimarySolutionsCarousel from "@/components/PrimarySolutionsCarousel";
-import { 
-  ArrowRight, Building2, Box, Stethoscope, ArrowUpFromLine, Layers, 
-  Hammer, Zap, PaintRoller, Frame, Maximize
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { getPublishedServices, getServicesPageSettings } from "@/lib/firestore-data";
 import { constructMetadata, getBreadcrumbSchema } from "@/lib/seo";
+
+import OtherEngineeringServices from "@/components/OtherEngineeringServices";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -20,27 +18,6 @@ export const metadata: Metadata = constructMetadata({
     "Explore precision elevator solutions: Passenger Lifts, Machine-Room-Less (MRL) systems, Heavy-Duty Goods Lifts, Hospital Lifts, Hydraulic Elevators, and comprehensive engineering services.",
   path: "/services",
 });
-
-function getServiceIcon(slug: string, category?: string) {
-  const cat = (category || "").toLowerCase();
-  if (slug.includes("mrl") || cat.includes("mrl")) return <Building2 className="w-6 h-6" />;
-  if (slug.includes("passenger") || cat.includes("passenger")) return <ArrowUpFromLine className="w-6 h-6" />;
-  if (slug.includes("goods") || slug.includes("freight") || cat.includes("goods")) return <Box className="w-6 h-6" />;
-  if (slug.includes("hospital") || slug.includes("stretcher") || cat.includes("hospital")) return <Stethoscope className="w-6 h-6" />;
-  if (slug.includes("hydraulic") || cat.includes("hydraulic")) return <Layers className="w-6 h-6" />;
-  return <Layers className="w-6 h-6" />;
-}
-
-function getOtherServiceIcon(title: string) {
-  const t = title.toLowerCase();
-  if (t.includes("fabrication")) return <Hammer className="w-5 h-5" />;
-  if (t.includes("glass") || t.includes("acp")) return <Maximize className="w-5 h-5" />;
-  if (t.includes("window") || t.includes("door") || t.includes("upvc")) return <Frame className="w-5 h-5" />;
-  if (t.includes("renovation")) return <PaintRoller className="w-5 h-5" />;
-  if (t.includes("ss") || t.includes("railing")) return <Layers className="w-5 h-5" />;
-  if (t.includes("electrical") || t.includes("wiring")) return <Zap className="w-5 h-5" />;
-  return <Building2 className="w-5 h-5" />;
-}
 
 export default async function ServicesPage() {
   const [services, settings] = await Promise.all([
@@ -91,9 +68,9 @@ export default async function ServicesPage() {
       </section>
 
       {/* SECTION 2: ELEVATOR SOLUTIONS */}
-      <section id="primary-solutions" className="py-24 md:py-32 bg-[#F7FAFD]">
+      <section id="primary-solutions" className="pt-12 pb-6 md:py-32 bg-[#F7FAFD]">
         <div className="site-container px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
+          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-24">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0A2342] mb-6">
               Primary Elevator Solutions
             </h2>
@@ -146,57 +123,7 @@ export default async function ServicesPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-            {(settings.otherServices?.length > 0 ? settings.otherServices : []).map((srv, idx) => {
-              const IconComp = getOtherServiceIcon(srv.title);
-              
-              return (
-                <div key={idx} className="group relative h-[140px] md:h-[280px] rounded-2xl md:rounded-2xl bg-white md:bg-transparent overflow-hidden border border-[#CBD5E1] md:border-none shadow-xs md:shadow-[0_10px_25px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_rgba(0,98,255,0.25)] transition-all duration-500 cursor-pointer flex flex-col items-center justify-center md:block">
-                  
-                  {/* MOBILE VIEW: Clean Card Style */}
-                  <div className="md:hidden flex flex-col items-center text-center p-4">
-                    <div className="w-12 h-12 rounded-full bg-[#E5F3FF] flex items-center justify-center text-[#0A78F5] mb-3">
-                      {IconComp}
-                    </div>
-                    <h3 className="text-[13px] font-bold text-[#0B1F3A] leading-tight">
-                      {srv.title}
-                    </h3>
-                  </div>
-
-                  {/* DESKTOP VIEW: Image Background Style */}
-                  <div className="hidden md:block absolute inset-0 bg-[#0B1F38]">
-                    {srv.image ? (
-                      <Image 
-                        src={srv.image} 
-                        alt={srv.title} 
-                        fill 
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" 
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#0B1F38] via-[#0A2342] to-[#051329]" />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F38]/95 via-[#0B1F38]/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
-                    <div className="absolute inset-0 p-5 flex flex-col justify-end">
-                      <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 flex items-center justify-center text-white mb-4 group-hover:-translate-y-1.5 group-hover:bg-[#0062FF] group-hover:border-[#0062FF] transition-all duration-300 shadow-md">
-                        {IconComp}
-                      </div>
-                      
-                      <h3 className="text-lg md:text-xl font-bold text-white mb-2 group-hover:-translate-y-1.5 transition-transform duration-300 delay-[50ms]">
-                        {srv.title}
-                      </h3>
-                      
-                      <p className="text-[13px] text-slate-300 leading-relaxed font-light line-clamp-2 group-hover:-translate-y-1.5 transition-transform duration-300 delay-100">
-                        {srv.desc}
-                      </p>
-                    </div>
-                    
-                    <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#0062FF] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <OtherEngineeringServices initialData={settings.otherServices} />
         </div>
       </section>
 

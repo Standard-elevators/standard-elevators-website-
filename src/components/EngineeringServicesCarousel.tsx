@@ -3,50 +3,12 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { getServicesPageSettings, DEFAULT_ENGINEERING_SERVICES_DATA, EngineeringServiceSetting } from "@/lib/firestore-data";
 
-const DEFAULT_ENGINEERING_SERVICES = [
-  {
-    id: "01",
-    title: "New Installation",
-    image: "",
-    desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
-    href: "/services", 
-  },
-  {
-    id: "02",
-    title: "Modernization",
-    image: "",
-    desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
-    href: "/services",
-  },
-  {
-    id: "03",
-    title: "Repairs",
-    image: "",
-    desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
-    href: "/services",
-  },
-  {
-    id: "04",
-    title: "Maintenance",
-    image: "",
-    desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
-    href: "/services",
-  },
-  {
-    id: "05",
-    title: "Aftersales Services",
-    image: "",
-    desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
-  }
-];
-
-import { getServicesPageSettings, DEFAULT_ENGINEERING_SERVICES_DATA } from "@/lib/firestore-data";
-
-export default function EngineeringServicesCarousel({ initialData, showViewAllButton }: { initialData?: any[], showViewAllButton?: boolean }) {
-  const [services, setServices] = useState<any[]>(() => {
+export default function EngineeringServicesCarousel({ initialData, showViewAllButton }: { initialData?: EngineeringServiceSetting[], showViewAllButton?: boolean }) {
+  const [services, setServices] = useState<EngineeringServiceSetting[]>(() => {
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("se_services_page_settings");
@@ -69,7 +31,10 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
 
   useEffect(() => {
     if (initialData && initialData.length > 0) {
-      setServices(initialData);
+      const timer = setTimeout(() => {
+        setServices(initialData);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [initialData]);
 
@@ -168,7 +133,7 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
   return (
     <section 
       id="engineering-services"
-      className="py-20 md:py-32 bg-white text-slate-900 relative"
+      className="pt-6 pb-20 md:py-32 bg-white text-slate-900 relative"
       aria-labelledby="engineering-heading"
     >
       {/* Creative Light Background Ambience */}
@@ -186,7 +151,7 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
 
       <div className="site-container px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center">
         {/* Section Heading */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8 md:mb-16">
           <span className="inline-block px-4 py-1.5 rounded-full border border-[#0062FF]/20 bg-[#0062FF]/5 text-[#0062FF] text-xs font-bold uppercase tracking-widest mb-4 backdrop-blur-sm">
             Comprehensive Support
           </span>
@@ -391,20 +356,13 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
                        {srv.desc}
                      </p>
                      
-                     <div className="mt-auto pt-4 flex items-center gap-2.5 border-t border-slate-100/90">
+                     <div className="mt-auto pt-4 flex items-center border-t border-slate-100/90">
                         <Link
                           href={`/contact?service=${encodeURIComponent(srv.title)}`}
-                          className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#0062FF] to-[#0A78F5] hover:from-[#0052DF] hover:to-[#0062FF] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(0,98,255,0.35)] active:scale-95 transition-all"
+                          className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#0062FF] to-[#0A78F5] hover:from-[#0052DF] hover:to-[#0062FF] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(0,98,255,0.35)] active:scale-95 transition-all"
                         >
                           <span>Request a Quote</span>
                           <ArrowRight className="w-3.5 h-3.5" />
-                        </Link>
-                        <Link
-                          href={srv.href || "/services"}
-                          className="py-3 px-3.5 rounded-xl bg-[#F0F7FF] text-[#0877F9] hover:bg-[#E0EFFF] text-[13px] font-bold flex items-center justify-center transition-colors shrink-0"
-                          aria-label={`Explore ${srv.title}`}
-                        >
-                          <ArrowRight className="w-4 h-4 -rotate-45" />
                         </Link>
                       </div>
                   </div>

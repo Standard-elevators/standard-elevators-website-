@@ -17,10 +17,11 @@ function getServiceIcon(slug: string, category?: string) {
 }
 
 import { getPublishedServices, applyLocalServiceOverrides } from "@/lib/firestore-data";
+import { ServiceItem } from "@/types/data";
 import { DEFAULT_SERVICES } from "@/data/defaultData";
 
-export default function PrimarySolutionsCarousel({ services: initialServices }: { services?: any[] }) {
-  const [services, setServices] = useState<any[]>(() => {
+export default function PrimarySolutionsCarousel({ services: initialServices }: { services?: ServiceItem[] }) {
+  const [services, setServices] = useState<ServiceItem[]>(() => {
     const base = initialServices && initialServices.length > 0 ? initialServices : DEFAULT_SERVICES.map(s => ({ ...s, id: s.slug }));
     if (typeof window !== "undefined") {
       return applyLocalServiceOverrides(base);
@@ -28,16 +29,14 @@ export default function PrimarySolutionsCarousel({ services: initialServices }: 
     return base;
   });
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     if (initialServices && initialServices.length > 0) {
-      if (typeof window !== "undefined") {
-        setServices(applyLocalServiceOverrides(initialServices));
-      } else {
-        setServices(initialServices);
-      }
+      const timer = setTimeout(() => {
+        setServices(typeof window !== "undefined" ? applyLocalServiceOverrides(initialServices) : initialServices);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [initialServices]);
 
@@ -50,7 +49,7 @@ export default function PrimarySolutionsCarousel({ services: initialServices }: 
           setServices(data);
         }
       } catch (err) {
-        console.warn("PrimarySolutionsCarousel load failed:", err);
+        console.warn("PrimarySolutionsCarousel load notice:", err);
       }
     }
 
@@ -77,8 +76,9 @@ export default function PrimarySolutionsCarousel({ services: initialServices }: 
     const cards = container.children;
     if (index >= 0 && index < cards.length) {
       const card = cards[index] as HTMLElement;
+      const targetLeft = card.offsetLeft - container.offsetLeft - 16;
       container.scrollTo({
-        left: card.offsetLeft - container.offsetLeft,
+        left: Math.max(0, targetLeft),
         behavior: "smooth"
       });
       setActiveIndex(index);
@@ -86,115 +86,54 @@ export default function PrimarySolutionsCarousel({ services: initialServices }: 
   }, []);
 
   const nextSlide = useCallback(() => {
-    const nextIndex = activeIndex === services.length - 1 ? 0 : activeIndex + 1;
+    const nextIndex = activeIndex >= services.length - 1 ? 0 : activeIndex + 1;
     scrollToIndex(nextIndex);
   }, [activeIndex, services.length, scrollToIndex]);
 
   const prevSlide = useCallback(() => {
-    const prevIndex = activeIndex === 0 ? services.length - 1 : activeIndex - 1;
+    const prevIndex = activeIndex <= 0 ? services.length - 1 : activeIndex - 1;
     scrollToIndex(prevIndex);
   }, [activeIndex, services.length, scrollToIndex]);
 
-  // Autoplay (Continuous slow scroll on mobile only when in viewport)
+  // Real-time scroll synchronization with touch / swipe
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    let animationFrameId: number;
-    let isPaused = false;
-    let isInView = false;
-    let resumeTimeoutId: NodeJS.Timeout;
-    let startDelayTimeoutId: NodeJS.Timeout;
-    
-    const isMobile = () => window.innerWidth < 768;
-
-    const handleInteractionStart = () => {
-      isPaused = true;
-      clearTimeout(resumeTimeoutId);
-    };
-    
-    const handleInteractionEnd = () => {
-      resumeTimeoutId = setTimeout(() => {
-        isPaused = false;
-      }, 3000);
+    let timeoutId: NodeJS.Timeout;
+    const handleScroll = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        if (!container) return;
+        const scrollLeft = container.scrollLeft;
+        const firstCard = container.firstElementChild as HTMLElement;
+        if (!firstCard) return;
+        const cardWidth = firstCard.offsetWidth + 16; // card width + gap
+        const newIndex = Math.round(scrollLeft / cardWidth);
+        setActiveIndex(Math.max(0, Math.min(services.length - 1, newIndex)));
+      }, 50);
     };
 
-    container.addEventListener('touchstart', handleInteractionStart, { passive: true });
-    container.addEventListener('touchend', handleInteractionEnd);
-    container.addEventListener('mousedown', handleInteractionStart);
-    container.addEventListener('mouseup', handleInteractionEnd);
-
-    // Only start scrolling once the section is in view, ensuring Card 1 is fully visible first
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            container.scrollLeft = 0; // First card is completely visible
-            clearTimeout(startDelayTimeoutId);
-            startDelayTimeoutId = setTimeout(() => {
-              isInView = true;
-            }, 2500); // 2.5s pause to read/observe first card
-          } else {
-            isInView = false;
-            clearTimeout(startDelayTimeoutId);
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(container);
-
-    const scrollContinuously = () => {
-      if (isInView && !isPaused && isMobile()) {
-        const maxScroll = container.scrollWidth - container.clientWidth;
-        if (maxScroll > 0) {
-          if (container.scrollLeft >= maxScroll - 1) {
-            container.scrollLeft = 0;
-          } else {
-            container.scrollLeft += 0.5;
-          }
-        }
-      }
-      animationFrameId = requestAnimationFrame(scrollContinuously);
-    };
-
-    animationFrameId = requestAnimationFrame(scrollContinuously);
-
+    container.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
-      observer.disconnect();
-      cancelAnimationFrame(animationFrameId);
-      clearTimeout(resumeTimeoutId);
-      clearTimeout(startDelayTimeoutId);
-      container.removeEventListener('touchstart', handleInteractionStart);
-      container.removeEventListener('touchend', handleInteractionEnd);
-      container.removeEventListener('mousedown', handleInteractionStart);
-      container.removeEventListener('mouseup', handleInteractionEnd);
+      clearTimeout(timeoutId);
+      container.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [services.length]);
 
   return (
-    <div 
-      className="relative w-full"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={() => setIsPaused(true)}
-      onTouchEnd={() => {
-        // Resume autoplay after a short delay
-        setTimeout(() => setIsPaused(false), 2000);
-      }}
-    >
+    <div className="relative w-full">
       {/* Scrollable Container */}
       <div 
         ref={containerRef}
-        className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 lg:gap-10 overflow-x-auto md:snap-none no-scrollbar pb-6 -mx-4 px-4 md:mx-0 md:px-0 items-stretch"
+        className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 lg:gap-10 overflow-x-auto md:overflow-visible no-scrollbar pb-3 md:pb-6 -mx-4 px-4 md:mx-0 md:px-0 items-stretch snap-x snap-mandatory scroll-smooth"
       >
         {services.map((service, index) => {
           const icon = getServiceIcon(service.slug, service.category);
           return (
             <div
               key={service.id || service.slug}
-              className="w-[300px] sm:w-[330px] md:w-auto shrink-0 group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-[0_4px_20px_rgba(10,35,66,0.06)] hover:shadow-[0_20px_40px_rgba(8,119,249,0.12)] hover:border-[#0877F9]/30 transition-all duration-500"
+              className="w-[85vw] max-w-[320px] sm:w-[330px] md:w-auto shrink-0 snap-center group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-[0_4px_20px_rgba(10,35,66,0.06)] hover:shadow-[0_20px_40px_rgba(8,119,249,0.12)] hover:border-[#0877F9]/30 transition-all duration-500"
             >
               <div className="relative w-full aspect-[16/10] bg-[#06172B] overflow-hidden">
                 {service.imageUrl ? (
@@ -214,14 +153,14 @@ export default function PrimarySolutionsCarousel({ services: initialServices }: 
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A2342]/90 via-[#0A2342]/20 to-transparent" />
                 
-                {/* Category Pill Badge - Top Left with clean padding and no collision */}
+                {/* Category Pill Badge */}
                 <div className="absolute top-3 left-3.5 z-10 max-w-[calc(100%-2rem)]">
                   <span className="inline-block px-3 py-1 bg-[#0A2342]/85 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider rounded-lg border border-white/20 shadow-md truncate max-w-full">
                     0{index + 1} &mdash; {service.category || "Lift"}
                   </span>
                 </div>
 
-                {/* Service Type Icon - Bottom Right with premium glow */}
+                {/* Service Type Icon */}
                 <div className="absolute bottom-3.5 right-3.5 z-10">
                   <div className="w-10 h-10 bg-[#0877F9] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#0877F9]/40 group-hover:scale-110 transition-transform duration-500">
                     {icon}
@@ -258,10 +197,11 @@ export default function PrimarySolutionsCarousel({ services: initialServices }: 
       </div>
 
       {/* Mobile Navigation Controls (Arrows & Dots) */}
-      <div className="md:hidden flex items-center justify-center gap-4 mt-2">
+      <div className="md:hidden flex items-center justify-center gap-4 mt-3">
         <button 
+          type="button"
           onClick={prevSlide}
-          className="w-10 h-10 rounded-full bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-center text-[#0A2342] active:bg-[#F1F5F9] transition-colors"
+          className="w-10 h-10 rounded-full bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-center text-[#0A2342] active:scale-95 hover:bg-[#F1F5F9] transition-all"
           aria-label="Previous service"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -269,16 +209,20 @@ export default function PrimarySolutionsCarousel({ services: initialServices }: 
         
         <div className="flex items-center gap-1.5">
           {services.map((_, i) => (
-            <div 
+            <button 
+              type="button"
               key={i} 
-              className={`h-2 rounded-full transition-all duration-300 ${activeIndex === i ? 'w-5 bg-[#0877F9]' : 'w-2 bg-[#CBD5E1]'}`}
+              onClick={() => scrollToIndex(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`h-2 rounded-full transition-all duration-300 ${activeIndex === i ? 'w-6 bg-[#0877F9]' : 'w-2 bg-[#CBD5E1]'}`}
             />
           ))}
         </div>
 
         <button 
+          type="button"
           onClick={nextSlide}
-          className="w-10 h-10 rounded-full bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-center text-[#0A2342] active:bg-[#F1F5F9] transition-colors"
+          className="w-10 h-10 rounded-full bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-center text-[#0A2342] active:scale-95 hover:bg-[#F1F5F9] transition-all"
           aria-label="Next service"
         >
           <ChevronRight className="w-5 h-5" />
