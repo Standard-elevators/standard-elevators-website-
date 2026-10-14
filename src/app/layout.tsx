@@ -28,48 +28,85 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Standard Engineering Works Elevators | Smooth, Smart, Spacious",
+    default: "Standard Engineering Works Elevators | Top Elevator Company Hyderabad & TS, AP",
     template: "%s | Standard Engineering Works Elevators",
   },
-  description: "Premium elevator design, engineering solutions, installation, modernization, and maintenance in Hyderabad, Telangana, and Andhra Pradesh since 2003.",
+  description: "Standard Engineering Works Elevators - Premier elevator design, engineering solutions, new installation, repairs, modernization, and maintenance in Hyderabad, Telangana, and Andhra Pradesh since 2016.",
   keywords: [
-    "elevators",
-    "lifts",
+    "Standard Elevators",
+    "Standard Engineering Works Elevators",
+    "Standard Elevator Works",
+    "Standard Lifts",
     "elevator company Hyderabad",
+    "lift manufacturers in Hyderabad",
+    "elevators in Hyderabad",
+    "lift repair Hyderabad",
+    "elevator installation Hyderabad",
     "passenger lifts",
     "MRL lifts",
     "goods lifts",
     "hospital lifts",
     "elevator modernization",
-    "elevator AMC",
-    "Hyderabad",
+    "elevator AMC Hyderabad",
+    "Hyderabad elevator services",
     "Telangana",
     "Andhra Pradesh",
   ],
   alternates: {
     canonical: SITE_URL,
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
     url: SITE_URL,
     siteName: BUSINESS_INFO.name,
+    title: "Standard Engineering Works Elevators | Smooth, Smart, Spacious",
+    description: "Premier elevator design, new installation, repairs, modernization, and AMC in Telangana & Andhra Pradesh since 2016.",
     images: [
       {
-        url: BUSINESS_INFO.ogImageUrl,
+        url: `${SITE_URL}/og-image.jpg`,
+        secureUrl: `${SITE_URL}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: `${BUSINESS_INFO.name} - Smooth, Smart, Spacious`,
+        type: "image/jpeg",
+        alt: "Standard Engineering Works Elevators Logo",
+      },
+      {
+        url: `${SITE_URL}/logo-square.png`,
+        secureUrl: `${SITE_URL}/logo-square.png`,
+        width: 512,
+        height: 512,
+        type: "image/png",
+        alt: "Standard Engineering Works Elevators Emblem",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    images: [BUSINESS_INFO.ogImageUrl],
+    title: "Standard Engineering Works Elevators | Smooth, Smart, Spacious",
+    description: "Premier elevator design, installation, repairs, and maintenance in Telangana and Andhra Pradesh since 2016.",
+    images: [`${SITE_URL}/og-image.jpg`],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -86,6 +123,15 @@ export default function RootLayout({
       className={`${inter.variable} antialiased`}
     >
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.png" type="image/png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <meta property="og:image" content={`${SITE_URL}/og-image.jpg`} />
+        <meta property="og:image:secure_url" content={`${SITE_URL}/og-image.jpg`} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:image" content={`${SITE_URL}/og-image.jpg`} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

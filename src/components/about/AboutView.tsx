@@ -157,7 +157,7 @@ export default function AboutView() {
 
             {/* Supporting Statement */}
             <p className="text-base sm:text-lg lg:text-[19px] text-slate-200 font-light leading-relaxed max-w-2xl mb-8">
-              Since 2003, we have pioneered custom design, manufacturing, and turnkey installation of high-reliability elevators across Telangana and Andhra Pradesh.
+              Since 2016, we have pioneered custom design, manufacturing, and turnkey installation of high-reliability elevators across Telangana and Andhra Pradesh.
             </p>
 
             {/* CTA action buttons */}
@@ -221,7 +221,7 @@ export default function AboutView() {
                 <span className="px-3 py-1.5 rounded-md bg-[#071426]/90 backdrop-blur-md border border-white/10 text-[11px] font-mono tracking-widest text-[#38BDF8] uppercase">
                   HYDERABAD DESIGN CENTRE
                 </span>
-                <span className="text-white/60 font-mono text-xs">+ 2003</span>
+                <span className="text-white/60 font-mono text-xs">+ 2016</span>
               </div>
 
               {/* Floating Bottom Card Details */}
@@ -257,13 +257,13 @@ export default function AboutView() {
 
                 {/* Heading */}
                 <h2 className="text-[32px] sm:text-4xl lg:text-[46px] font-extrabold text-[#0B1F3A] tracking-tight leading-[1.15] mb-8 text-balance">
-                  Over two decades of <span className="text-[#0A78F5]">vertical mobility</span> innovation.
+                  Over a decade of <span className="text-[#0A78F5]">vertical mobility</span> innovation.
                 </h2>
 
                 {/* Approved Company Narrative */}
                 <div className="space-y-6">
                   <p className="text-slate-800 leading-[1.8] font-medium text-[16px] sm:text-[17px]">
-                    Established in 2003, Standard Engineering Works Elevators has rapidly scaled to become a leading precision elevator company in the region. We operate a full-fledged design centre and manufacturing unit in Hyderabad, ensuring stringent quality control at every stage.
+                    Established in 2016, Standard Engineering Works Elevators has rapidly scaled to become a leading precision elevator company in the region. We operate a full-fledged design centre and manufacturing unit in Hyderabad, ensuring stringent quality control at every stage.
                   </p>
                   <p className="text-slate-800 leading-[1.8] font-medium text-[16px] sm:text-[17px]">
                     Our corporate headquarters features an exclusive showroom showcasing fully functional elevators, offering a wide array of premium aesthetic choices for our customers.

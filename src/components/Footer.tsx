@@ -60,23 +60,20 @@ export default function Footer() {
       */}
 
       {/* ========================================================================= */}
-      {/* BACKGROUND IMAGE SLICE (Desktop & Tablet)                                 */}
+      {/* FOOTER BACKGROUND (Futuristic Elevator Blueprint & Lobby Architecture)     */}
       {/* ========================================================================= */}
-      <div 
-        className="absolute top-0 right-0 bottom-0 w-[40%] hidden lg:block z-0 pointer-events-none"
-        style={{ 
-          clipPath: "polygon(15% 0, 100% 0, 100% 100%, 0 100%)",
-        }}
-      >
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
         <Image 
-          src="/hero-elevator.jpg" 
-          alt="Premium Elevator Architecture" 
+          src="/images/footer-elevator-bg.png" 
+          alt="Standard Engineering Works Elevators Architectural Background" 
           fill 
-          className="object-cover opacity-90"
-          sizes="(max-width: 1024px) 0vw, 40vw"
+          priority
+          className="object-cover object-center lg:object-right-bottom opacity-[0.22] lg:opacity-[0.28]"
+          sizes="100vw"
         />
-        {/* Soft dark gradient fading into the image from left */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#061426]/80 to-transparent" />
+        {/* Soft dark gradient overlays guaranteeing pristine contrast & readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#061426]/95 to-[#061426]/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#061426] via-transparent to-[#061426]/90" />
       </div>
 
       {/* ========================================================================= */}
@@ -85,7 +82,7 @@ export default function Footer() {
       <div className="relative z-10 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 flex flex-col lg:flex-row pt-16 pb-12 lg:pt-20 lg:pb-14">
         
         {/* TEXT COLUMNS WRAPPER */}
-        <div className="w-full grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-10 lg:gap-8 xl:gap-12 lg:pr-[30%]">
+        <div className="w-full grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-10 lg:gap-8 xl:gap-10">
           
           {/* COLUMN 1: BRAND (lg:col-span-4) */}
           <div className="col-span-2 sm:col-span-2 lg:col-span-4 flex flex-col">
@@ -167,48 +164,96 @@ export default function Footer() {
 
           {/* COLUMN 4: CONTACT DETAILS (lg:col-span-3) */}
           <address className="col-span-2 sm:col-span-2 lg:col-span-3 not-italic">
-            <h4 className="text-[16px] font-bold text-white mb-6">Contact Details</h4>
-            <ul className="space-y-5">
-              <li className="flex items-center gap-3.5">
-                <div className="w-[34px] h-[34px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                  <Phone className="w-4 h-4 text-[#B8C8D7] fill-current" />
+            <h4 className="text-[16px] font-bold text-white mb-5">Contact Details</h4>
+            
+            <div className="space-y-5">
+              {/* SUB-SECTION 1: FOR NEW INSTALLATIONS */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#38BDF8] block">
+                  For New Installations
+                </span>
+                <div className="flex items-center gap-3">
+                  <div className="w-[32px] h-[32px] rounded-full bg-[#0877F9]/15 border border-[#0877F9]/30 flex items-center justify-center shrink-0">
+                    <Phone className="w-3.5 h-3.5 text-[#38BDF8]" />
+                  </div>
+                  <div className="min-w-0">
+                    <a 
+                      href="tel:9515231555" 
+                      className="text-[14px] lg:text-[15px] font-bold text-white hover:text-[#38BDF8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9] rounded-sm"
+                      aria-label="Call for New Installations: +91 9515231555"
+                    >
+                      +91 9515231555
+                    </a>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <a 
-                    href="tel:9515231555" 
-                    className="text-[14px] lg:text-[15px] font-semibold text-white hover:text-[#0877F9] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9] rounded-sm"
-                    aria-label="Call +91 9515231555"
-                  >
-                    +91 9515231555
-                  </a>
+              </div>
+
+              {/* SUB-SECTION 2: FOR REPAIRS AND INQUIRIES */}
+              <div className="space-y-2 pt-3 border-t border-white/10">
+                <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#38BDF8] block">
+                  For Repairs &amp; Inquiries
+                </span>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-[32px] h-[32px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                      <Phone className="w-3.5 h-3.5 text-[#B8C8D7]" />
+                    </div>
+                    <div className="min-w-0">
+                      <a 
+                        href="tel:9556785440" 
+                        className="text-[14px] lg:text-[15px] font-semibold text-white hover:text-[#38BDF8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9] rounded-sm"
+                        aria-label="Call for Repairs & Inquiries: +91 95567 85440"
+                      >
+                        +91 95567 85440
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-[32px] h-[32px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                      <Phone className="w-3.5 h-3.5 text-[#B8C8D7]" />
+                    </div>
+                    <div className="min-w-0">
+                      <a 
+                        href="tel:9652969996" 
+                        className="text-[14px] lg:text-[15px] font-semibold text-white hover:text-[#38BDF8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9] rounded-sm"
+                        aria-label="Call for Repairs & Inquiries: +91 96529 69996"
+                      >
+                        +91 96529 69996
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              </li>
-              
-              <li className="flex items-center gap-3.5">
-                <div className="w-[34px] h-[34px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                  <Mail className="w-4 h-4 text-[#B8C8D7]" />
+              </div>
+
+              {/* SUB-SECTION 3: EMAIL & SERVICE LOCATIONS */}
+              <div className="space-y-3 pt-3 border-t border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-[32px] h-[32px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                    <Mail className="w-3.5 h-3.5 text-[#B8C8D7]" />
+                  </div>
+                  <div className="min-w-0 break-words">
+                    <a 
+                      href="mailto:standardelevators.engworks12@gmail.com?subject=Elevator%20Inquiry%20-%20Standard%20Engineering%20Works&body=Hello%20Standard%20Engineering%20Works%20Team%2C%0A%0AI%20am%20interested%20in%20your%20elevator%20solutions%20and%20would%20like%20to%20request%20information%20and%20a%20quotation.%0A%0AMy%20Project%20Details%3A%0A-%20Name%3A%20%0A-%20Phone%3A%20%0A-%20Location%20%2F%20City%3A%20%0A-%20Building%20Type%20(Residential%20%2F%20Commercial%20%2F%20Industrial)%3A%20%0A-%20Elevator%20System%20(Passenger%20%2F%20MRL%20%2F%20Goods%20%2F%20Hospital%20%2F%20Modernization)%3A%20%0A-%20Number%20of%20Floors%20%2F%20Stops%3A%20%0A%0APlease%20get%20in%20touch%20with%20technical%20specifications%20and%20preliminary%20estimates.%0A%0AThank%20you!" 
+                      className="text-[13.5px] lg:text-[14px] font-medium text-[#B8C8D7] hover:text-[#38BDF8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9] rounded-sm"
+                      aria-label="Email Standard Engineering Works"
+                    >
+                      standardelevators.engworks12@gmail.com
+                    </a>
+                  </div>
                 </div>
-                <div className="min-w-0 break-words">
-                  <a 
-                    href="mailto:standardelevators.engworks12@gmail.com?subject=Elevator%20Inquiry%20-%20Standard%20Engineering%20Works&body=Hello%20Standard%20Engineering%20Works%20Team%2C%0A%0AI%20am%20interested%20in%20your%20elevator%20solutions%20and%20would%20like%20to%20request%20information%20and%20a%20quotation.%0A%0AMy%20Project%20Details%3A%0A-%20Name%3A%20%0A-%20Phone%3A%20%0A-%20Location%20%2F%20City%3A%20%0A-%20Building%20Type%20(Residential%20%2F%20Commercial%20%2F%20Industrial)%3A%20%0A-%20Elevator%20System%20(Passenger%20%2F%20MRL%20%2F%20Goods%20%2F%20Hospital%20%2F%20Modernization)%3A%20%0A-%20Number%20of%20Floors%20%2F%20Stops%3A%20%0A%0APlease%20get%20in%20touch%20with%20technical%20specifications%20and%20preliminary%20estimates.%0A%0AThank%20you!" 
-                    className="text-[14px] lg:text-[15px] font-medium text-[#B8C8D7] hover:text-[#0877F9] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0877F9] rounded-sm"
-                    aria-label="Email Standard Engineering Works"
-                  >
-                    standardelevators.engworks12@gmail.com
-                  </a>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-[32px] h-[32px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 text-[#B8C8D7] fill-current" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block text-[14px] font-medium text-white">Telangana &amp; Andhra Pradesh</span>
+                    <span className="block text-[12.5px] text-[#B8C8D7] mt-0.5">(Our Service Locations)</span>
+                  </div>
                 </div>
-              </li>
-              
-              <li className="flex items-start gap-3.5">
-                <div className="w-[34px] h-[34px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-1">
-                  <MapPin className="w-4 h-4 text-[#B8C8D7] fill-current" />
-                </div>
-                <div className="min-w-0">
-                  <span className="block text-[14px] lg:text-[15px] font-medium text-white">Telangana &amp; Andhra Pradesh</span>
-                  <span className="block text-[13px] text-[#B8C8D7] mt-0.5">(Our Service Locations)</span>
-                </div>
-              </li>
-            </ul>
+              </div>
+            </div>
           </address>
 
         </div>
@@ -222,15 +267,15 @@ export default function Footer() {
         {/* Background Image (Mobile Only) */}
         <div className="absolute inset-0 z-0 block lg:hidden">
           <Image 
-            src="/hero-elevator.jpg" 
+            src="/images/footer-elevator-bg.png" 
             alt="Premium Elevator Architecture" 
             fill 
-            className="object-cover object-center opacity-[0.55]"
+            className="object-cover object-center opacity-[0.35]"
             sizes="100vw"
           />
           {/* Gradients to darken image so text remains highly readable */}
-          <div className="absolute inset-0 bg-[#061426]/60" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#061426] via-transparent to-[#061426]/80" />
+          <div className="absolute inset-0 bg-[#061426]/75" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#061426] via-transparent to-[#061426]/90" />
         </div>
 
         {/* ========================================================================= */}

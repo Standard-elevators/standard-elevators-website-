@@ -114,7 +114,7 @@ export default function FounderLeadership() {
 
             {/* Approved Leadership Statements */}
             <p className="text-slate-300 text-base sm:text-[17px] leading-relaxed mb-5 font-light">
-              Under the strategic guidance of our founder, Standard Engineering Works Elevators was established with a singular vision: to revolutionize vertical mobility through uncompromising quality and innovative engineering. Since 2003, this vision has guided every project we undertake.
+              Under the strategic guidance of our founder, Standard Engineering Works Elevators was established with a singular vision: to revolutionize vertical mobility through uncompromising quality and innovative engineering. Since 2016, this vision has guided every project we undertake.
             </p>
             <p className="text-slate-300 text-base sm:text-[17px] leading-relaxed mb-8 font-light">
               Our leadership believes in fostering a culture of continuous improvement, where safety, reliability, and customer satisfaction remain the core pillars of our operational philosophy. We are dedicated to building elevator systems that stand the test of time and elevate the standard of modern infrastructure.

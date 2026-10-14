@@ -8,7 +8,7 @@ export const revalidate = 0;
 export const metadata: Metadata = constructMetadata({
   title: "About Us | Standard Engineering Works Elevators",
   description:
-    "Learn about Standard Engineering Works Elevators, a pioneer in design, manufacturing, supplying, installation, and maintenance of elevators in Hyderabad, Telangana, and AP since 2003.",
+    "Learn about Standard Engineering Works Elevators, a pioneer in design, manufacturing, supplying, installation, and maintenance of elevators in Hyderabad, Telangana, and AP since 2016.",
   path: "/about",
 });
 

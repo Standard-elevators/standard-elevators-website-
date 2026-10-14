@@ -216,7 +216,7 @@ function ContactFormContent() {
               <div className="mb-8">
                 <h2 className="text-2xl lg:text-3xl font-black text-[#102A43] mb-3 tracking-tight">Verified Company Information</h2>
                 <p className="text-[#64748B] leading-relaxed font-light text-[15px]">
-                  A pioneer in vertical mobility since 2003 with 100+ installations across commercial, residential, and healthcare sectors.
+                  A pioneer in vertical mobility since 2016 with 100+ installations across commercial, residential, and healthcare sectors.
                 </p>
               </div>
 
@@ -245,15 +245,23 @@ function ContactFormContent() {
                     <div className="w-12 h-12 rounded-xl bg-[#F0F7FF] border border-[#0062FF]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0062FF] group-hover:text-white transition-colors duration-300">
                       <Phone className="w-5 h-5 text-[#0062FF] group-hover:text-white transition-colors" />
                     </div>
-                    <div>
-                      <h3 className="font-bold text-[#102A43] text-sm tracking-wide uppercase mb-2">Direct Engineering Hotline</h3>
-                      <div className="flex flex-col gap-1.5">
-                        <a href="tel:9515231555" onClick={() => trackEvent("click_phone", { label: "9515231555" })} className="text-[#102A43] font-medium hover:text-[#0062FF] transition-colors text-[15px] flex items-center gap-2">
+                    <div className="space-y-3">
+                      <div>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#0062FF] block mb-0.5">For New Installations</span>
+                        <a href="tel:9515231555" onClick={() => trackEvent("click_phone", { label: "9515231555" })} className="text-[#102A43] font-bold hover:text-[#0062FF] transition-colors text-[15px] flex items-center gap-2">
                           +91 9515231555
                         </a>
-                        <a href="tel:9652951116" onClick={() => trackEvent("click_phone", { label: "9652951116" })} className="text-[#102A43] font-medium hover:text-[#0062FF] transition-colors text-[15px] flex items-center gap-2">
-                          +91 9652951116
-                        </a>
+                      </div>
+                      <div className="pt-2 border-t border-slate-100">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-1">For Repairs &amp; Inquiries</span>
+                        <div className="flex flex-col gap-1">
+                          <a href="tel:9556785440" onClick={() => trackEvent("click_phone", { label: "9556785440" })} className="text-[#102A43] font-medium hover:text-[#0062FF] transition-colors text-[14.5px] flex items-center gap-2">
+                            +91 95567 85440
+                          </a>
+                          <a href="tel:9652969996" onClick={() => trackEvent("click_phone", { label: "9652969996" })} className="text-[#102A43] font-medium hover:text-[#0062FF] transition-colors text-[14.5px] flex items-center gap-2">
+                            +91 96529 69996
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>

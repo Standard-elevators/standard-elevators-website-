@@ -51,13 +51,13 @@ interface Credential {
 
 const CREDENTIALS: Credential[] = [
   {
-    id: "est-2003",
+    id: "est-2016",
     step: "01",
     icon: Building2,
-    value: <CountUp start={1980} end={2003} duration={2.5} />,
+    value: <CountUp start={2000} end={2016} duration={2.5} />,
     labelTop: "ESTABLISHED",
     labelBottom: "IN HYDERABAD",
-    caption: "23+ Years of Continuous Operations",
+    caption: "10+ Years of Continuous Operations",
   },
   {
     id: "installs-100",

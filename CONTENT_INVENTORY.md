@@ -6,10 +6,10 @@ All business facts strictly adhere to the provided company brochure.
 ## Verified Business Facts
 - **Business Name**: Standard Engineering Works Elevators
 - **Tagline**: Smooth | Smart | Spacious
-- **Established**: 2003
+- **Established**: 2016
 - **Installation Base**: 100+ units
 - **Email**: standardelevators.engworks12@gmail.com (Note: Brochure page 12 states this email, whereas the initial prompt stated standardelevators@gmail.com. Requires confirmation.)
-- **Phone**: 9515231555 / 9652951116
+- **Phone**: 9515231555 (New Installations) / 9556785440 & 9652969996 (Repairs & Inquiries)
 - **Service Locations**: Telangana & Andhra Pradesh
 
 ## Primary Elevator Services

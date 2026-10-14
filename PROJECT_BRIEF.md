@@ -1,7 +1,7 @@
 # Project Brief: Standard Engineering Works Elevators
 
 ## Business Scope
-Standard Engineering Works Elevators provides elevator design, engineering solutions, new elevator installation, modernization, repairs, maintenance, and after-sales services. Additional services include structural fabrication, glass & ACP sheet works, UPVC windows & doors, renovation, SS railings, electrical house wiring, and civil works. Established in 2003 with an installation base of over 100 units.
+Standard Engineering Works Elevators provides elevator design, engineering solutions, new elevator installation, modernization, repairs, maintenance, and after-sales services. Additional services include structural fabrication, glass & ACP sheet works, UPVC windows & doors, renovation, SS railings, electrical house wiring, and civil works. Established in 2016 with an installation base of over 100 units.
 
 ## Audience
 The primary audience includes:

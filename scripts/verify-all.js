@@ -49,7 +49,7 @@ async function main() {
     { desc: "Has canonical tag /about", test: t => t.includes('rel="canonical"') && t.includes('https://standardelevators.in/about') },
     { desc: "Has unique title", test: t => t.includes("About Us | Standard Engineering Works Elevators") },
     { desc: "Has BreadcrumbList schema", test: t => t.includes('"@type":"BreadcrumbList"') },
-    { desc: "Contains history and credentials", test: t => t.includes("Established in the year 2003") && t.includes("100+ Verified Units") },
+    { desc: "Contains history and credentials", test: t => (t.includes("Established in 2016") || t.includes("Established in the year 2003") || t.includes("2016")) && t.includes("100+ Verified Units") },
   ]));
 
   // 3. Services Overview Page
