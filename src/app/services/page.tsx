@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import CustomizationCarousel from "@/components/CustomizationCarousel";
 import EngineeringServicesCarousel from "@/components/EngineeringServicesCarousel";
@@ -38,12 +39,23 @@ export default async function ServicesPage() {
 
       {/* SECTION 1: HERO */}
       <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden bg-[#06172B]">
+        {/* Instant High-Priority Poster so hero never shows a blank/dark void */}
+        <Image
+          src="/images/hero-video-poster.jpg"
+          alt="Standard Engineering Works Elevator Solutions"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center pointer-events-none z-0"
+        />
+
         <video
           autoPlay
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
+          poster="/images/hero-video-poster.jpg"
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0"
           style={{ objectPosition: "center center" }}

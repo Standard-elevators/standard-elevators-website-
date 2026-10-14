@@ -102,15 +102,38 @@ export default function FloatingActions() {
       e.stopPropagation();
     }
 
-    // Use Lenis smooth scroll if available (animated, not instant)
     try {
       const lenis = (window as any).__lenis;
       if (lenis && typeof lenis.scrollTo === "function") {
+        if (typeof lenis.resize === "function") {
+          lenis.resize();
+        }
+        const currentScroll = window.scrollY || document.documentElement.scrollTop || 0;
+        lenis.scroll = currentScroll;
+        lenis.actualScroll = currentScroll;
+        lenis.targetScroll = currentScroll;
+
         lenis.scrollTo(0, {
-          duration: 1.4,
+          offset: 0,
+          duration: 1.2,
+          lock: true,
+          force: true,
           easing: (t: number) => 1 - Math.pow(1 - t, 4), // ease-out quartic
+          onComplete: () => {
+            try {
+              window.scrollTo(0, 0);
+            } catch {}
+          },
         });
-        return; // Lenis handles it — no need for native fallback
+
+        // Safeguard timeout: ensure page lands at top even if animation gets interrupted
+        setTimeout(() => {
+          const sy = window.scrollY || document.documentElement.scrollTop || 0;
+          if (sy > 25) {
+            window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+          }
+        }, 1250);
+        return;
       }
     } catch {}
 
