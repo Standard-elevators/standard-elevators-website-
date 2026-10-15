@@ -19,6 +19,33 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'standard-elevators-website.vercel.app',
+          },
+        ],
+        destination: 'https://www.standardelevatorworks.com/:path*',
+        permanent: true,
+      },
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'standardelevatorworks.com',
+          },
+        ],
+        destination: 'https://www.standardelevatorworks.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {

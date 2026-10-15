@@ -57,7 +57,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/icon.png", sizes: "512x512", type: "image/png" },
     ],
     apple: [
@@ -82,12 +84,12 @@ export const metadata: Metadata = {
         alt: "Standard Engineering Works Elevators Logo",
       },
       {
-        url: `${SITE_URL}/logo-square.png`,
-        secureUrl: `${SITE_URL}/logo-square.png`,
-        width: 512,
-        height: 512,
-        type: "image/png",
-        alt: "Standard Engineering Works Elevators Emblem",
+        url: `${SITE_URL}/whatsapp-square.jpg`,
+        secureUrl: `${SITE_URL}/whatsapp-square.jpg`,
+        width: 600,
+        height: 600,
+        type: "image/jpeg",
+        alt: "Standard Engineering Works Elevators",
       },
     ],
   },
@@ -124,13 +126,19 @@ export default function RootLayout({
     >
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
         <link rel="icon" href="/icon.png" type="image/png" sizes="512x512" />
-        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        
+        {/* WhatsApp & Social Media Preview Direct Tags */}
         <meta property="og:image" content={`${SITE_URL}/og-image.jpg`} />
         <meta property="og:image:secure_url" content={`${SITE_URL}/og-image.jpg`} />
         <meta property="og:image:type" content="image/jpeg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Standard Engineering Works Elevators Logo" />
         <meta name="twitter:image" content={`${SITE_URL}/og-image.jpg`} />
         <script
           type="application/ld+json"

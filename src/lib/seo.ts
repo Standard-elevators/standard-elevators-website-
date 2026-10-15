@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://standardelevatorworks.com";
+  "https://www.standardelevatorworks.com";
 
 export const BUSINESS_INFO = {
   name: "Standard Engineering Works Elevators",
@@ -54,7 +54,9 @@ export function constructMetadata({
     },
     icons: {
       icon: [
-        { url: "/favicon.ico" },
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+        { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
         { url: "/icon.png", sizes: "512x512", type: "image/png" },
       ],
       apple: [
@@ -79,11 +81,11 @@ export function constructMetadata({
           alt: `${title} - ${BUSINESS_INFO.name}`,
         },
         {
-          url: `${SITE_URL}/logo-square.png`,
-          secureUrl: `${SITE_URL}/logo-square.png`,
-          width: 512,
-          height: 512,
-          type: "image/png",
+          url: `${SITE_URL}/whatsapp-square.jpg`,
+          secureUrl: `${SITE_URL}/whatsapp-square.jpg`,
+          width: 600,
+          height: 600,
+          type: "image/jpeg",
           alt: `${BUSINESS_INFO.name} Logo`,
         },
       ],

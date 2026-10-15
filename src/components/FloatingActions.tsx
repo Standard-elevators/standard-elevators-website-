@@ -102,37 +102,36 @@ export default function FloatingActions() {
       e.stopPropagation();
     }
 
+    const currentScroll =
+      window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    if (currentScroll <= 10) return;
+
     try {
       const lenis = (window as any).__lenis;
       if (lenis && typeof lenis.scrollTo === "function") {
-        if (typeof lenis.resize === "function") {
-          lenis.resize();
+        if (typeof lenis.reset === "function") {
+          lenis.reset();
         }
-        const currentScroll = window.scrollY || document.documentElement.scrollTop || 0;
-        lenis.scroll = currentScroll;
-        lenis.actualScroll = currentScroll;
-        lenis.targetScroll = currentScroll;
-
         lenis.scrollTo(0, {
           offset: 0,
-          duration: 1.2,
-          lock: true,
+          duration: 1.1,
+          lock: false,
           force: true,
           easing: (t: number) => 1 - Math.pow(1 - t, 4), // ease-out quartic
-          onComplete: () => {
-            try {
-              window.scrollTo(0, 0);
-            } catch {}
-          },
         });
 
-        // Safeguard timeout: ensure page lands at top even if animation gets interrupted
+        // Fast safeguard: if scroll hasn't moved after 120ms, execute native smooth scroll
+        const initialY = currentScroll;
         setTimeout(() => {
           const sy = window.scrollY || document.documentElement.scrollTop || 0;
-          if (sy > 25) {
-            window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+          if (sy >= initialY - 10 && sy > 50) {
+            try {
+              window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+            } catch {
+              window.scrollTo(0, 0);
+            }
           }
-        }, 1250);
+        }, 120);
         return;
       }
     } catch {}
@@ -152,20 +151,21 @@ export default function FloatingActions() {
     >
       {/* Scroll to Top (Elevator Push Button) - Positioned in the TOP slot */}
       <button
+        type="button"
         onClick={scrollToTop}
-        className={`relative shrink-0 flex items-center justify-center transition-all duration-500 rounded-full focus:outline-none group ${
+        className={`relative shrink-0 flex items-center justify-center transition-all duration-500 rounded-full focus:outline-none cursor-pointer group ${
           isVisible ? "opacity-100 translate-y-0 scale-100 pointer-events-auto h-12 w-12 md:h-[56px] md:w-[56px] mb-4 md:mb-5" : "opacity-0 translate-y-4 scale-90 pointer-events-none h-0 w-12 md:w-[56px] mb-0 overflow-hidden"
         }`}
         aria-label="Scroll to top"
       >
         {/* 1. OUTER MOUNTING RING (Machined Steel) */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-b from-[#e8e8e8] via-[#a3a3a3] to-[#5a5a5a] shadow-[0_6px_15px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,1),inset_0_-2px_3px_rgba(0,0,0,0.5)]"></div>
+        <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-[#e8e8e8] via-[#a3a3a3] to-[#5a5a5a] shadow-[0_6px_15px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,1),inset_0_-2px_3px_rgba(0,0,0,0.5)]"></div>
         
         {/* 2. INNER RECESS (Dark shadow gap) */}
-        <div className="absolute inset-[3px] md:inset-[4px] rounded-full bg-gradient-to-b from-[#111111] to-[#333333] shadow-[inset_0_3px_5px_rgba(0,0,0,0.9)]"></div>
+        <div className="pointer-events-none absolute inset-[3px] md:inset-[4px] rounded-full bg-gradient-to-b from-[#111111] to-[#333333] shadow-[inset_0_3px_5px_rgba(0,0,0,0.9)]"></div>
         
         {/* 3. PHYSICAL BUTTON SURFACE (Raised Brushed Steel) */}
-        <div className="absolute inset-[4px] md:inset-[5px] rounded-full bg-gradient-to-b from-[#fdfdfd] via-[#d4d4d4] to-[#9a9a9a] flex items-center justify-center transition-all duration-150 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-active:scale-[0.96] shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.7)] group-active:shadow-[inset_0_1px_2px_rgba(255,255,255,0.6),inset_0_-1px_2px_rgba(0,0,0,0.2),0_1px_3px_rgba(0,0,0,0.5)] group-hover:brightness-105">
+        <div className="pointer-events-none absolute inset-[4px] md:inset-[5px] rounded-full bg-gradient-to-b from-[#fdfdfd] via-[#d4d4d4] to-[#9a9a9a] flex items-center justify-center transition-all duration-150 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-active:scale-[0.96] shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.7)] group-active:shadow-[inset_0_1px_2px_rgba(255,255,255,0.6),inset_0_-1px_2px_rgba(0,0,0,0.2),0_1px_3px_rgba(0,0,0,0.5)] group-hover:brightness-105">
           
           {/* Radial brushed metal sheen */}
           <div className="absolute inset-0 rounded-full opacity-[0.25] mix-blend-overlay pointer-events-none" 
@@ -180,7 +180,7 @@ export default function FloatingActions() {
             strokeWidth="3.5" 
             strokeLinecap="round" 
             strokeLinejoin="round" 
-            className="relative z-10 w-5 h-5 md:w-[22px] md:h-[22px] text-[#1a1a1a] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)] transition-all duration-300 group-hover:text-[#0877F9] group-hover:drop-shadow-[0_0_8px_rgba(8,119,249,0.7)] group-active:drop-shadow-[0_0_4px_rgba(8,119,249,0.5)]"
+            className="pointer-events-none relative z-10 w-5 h-5 md:w-[22px] md:h-[22px] text-[#1a1a1a] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)] transition-all duration-300 group-hover:text-[#0877F9] group-hover:drop-shadow-[0_0_8px_rgba(8,119,249,0.7)] group-active:drop-shadow-[0_0_4px_rgba(8,119,249,0.5)]"
           >
             <polyline points="18 15 12 8 6 15"></polyline>
           </svg>

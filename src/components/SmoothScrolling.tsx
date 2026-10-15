@@ -60,22 +60,9 @@ export default function SmoothScrolling({ children }: { children: React.ReactNod
     }
     rafId = requestAnimationFrame(raf);
 
-    // Keep Lenis in sync with native scroll events (scrollbar dragging, touch, trackpad, keyboard)
-    const handleNativeScroll = () => {
-      if (lenis && !lenis.isScrolling) {
-        const sy = window.scrollY || document.documentElement.scrollTop || 0;
-        const lenisAny = lenis as any;
-        lenisAny.scroll = sy;
-        lenisAny.actualScroll = sy;
-        lenisAny.targetScroll = sy;
-      }
-    };
-    window.addEventListener("scroll", handleNativeScroll, { passive: true });
-
     return () => {
       cancelAnimationFrame(rafId);
       document.removeEventListener("click", handleAnchorClick);
-      window.removeEventListener("scroll", handleNativeScroll);
       lenis.destroy();
       if (typeof window !== "undefined") {
         delete (window as unknown as { __lenis?: Lenis }).__lenis;
