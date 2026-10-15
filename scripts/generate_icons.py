@@ -15,28 +15,28 @@ def create_brand_icons():
     cw, ch = chevron.size
     
     # Sample dark luxury background color from the corner of logo.jpg
-    bg_color = (6, 12, 22) # Rich deep obsidian navy
+    bg_color = (6, 12, 22, 255) # Rich deep obsidian navy with 100% alpha
     
-    # 1. Create a 1024x1024 master icon
+    # 1. Create a 1024x1024 master icon in RGBA
     target_dim = max(cw, ch) + 80
-    master = Image.new('RGB', (target_dim, target_dim), bg_color)
+    master = Image.new('RGBA', (target_dim, target_dim), bg_color)
     paste_x = (target_dim - cw) // 2
     paste_y = (target_dim - ch) // 2
-    master.paste(chevron, (paste_x, paste_y))
+    master.paste(chevron.convert('RGBA'), (paste_x, paste_y))
     
     # Enhance contrast and sharpness slightly so 16x16 / 32x32 favicons pop vividly
-    enhancer = ImageEnhance.Sharpness(master)
-    master_sharp = enhancer.enhance(1.2)
-    contrast = ImageEnhance.Contrast(master_sharp)
-    master_high_contrast = contrast.enhance(1.1)
+    enhancer = ImageEnhance.Sharpness(master.convert('RGB'))
+    master_sharp = enhancer.enhance(1.2).convert('RGBA')
+    contrast = ImageEnhance.Contrast(master_sharp.convert('RGB'))
+    master_high_contrast = contrast.enhance(1.1).convert('RGBA')
 
     # Save master preview
     master_high_contrast.save('public/icon-master.png', quality=100)
     print("Created public/icon-master.png")
 
-    # 2. Generate multi-resolution favicon.ico
-    # Windows / Chrome / Edge tabs use 16x16, 24x24, 32x32, 48x48, 64x64, 128x128, 256x256
-    ico_sizes = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+    # 2. Generate multi-resolution pure RGBA favicon.ico
+    # Windows / Chrome / Edge tabs use 16x16, 24x24, 32x32, 48x48
+    ico_sizes = [(16, 16), (24, 24), (32, 32), (48, 48)]
     master_high_contrast.save('public/favicon.ico', format='ICO', sizes=ico_sizes)
     master_high_contrast.save('src/app/favicon.ico', format='ICO', sizes=ico_sizes)
     print("Created public/favicon.ico and src/app/favicon.ico")

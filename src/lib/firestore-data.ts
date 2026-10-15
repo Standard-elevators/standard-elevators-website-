@@ -86,8 +86,9 @@ export async function restFetchCollection(collectionName: string): Promise<Array
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 6000);
   try {
+    const isServer = typeof window === "undefined";
     const res = await fetch(`${FIRESTORE_BASE_URL}/${collectionName}`, {
-      cache: "no-store",
+      ...(isServer ? { next: { revalidate: 120 } } : { cache: "default" }),
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
@@ -109,8 +110,9 @@ export async function restFetchDocument(path: string): Promise<Record<string, un
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
+    const isServer = typeof window === "undefined";
     const res = await fetch(`${FIRESTORE_BASE_URL}/${path}`, {
-      cache: "no-store",
+      ...(isServer ? { next: { revalidate: 120 } } : { cache: "default" }),
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
@@ -786,7 +788,10 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
     }
   } catch {}
 
-  return applyLocalGalleryOverrides([]);
+  const fallbackGallery: GalleryItem[] = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `gallery-default-${idx}` }));
+  cachedGallery = fallbackGallery;
+  lastGalleryFetchTime = now;
+  return applyLocalGalleryOverrides(fallbackGallery);
 }
 
 export async function getAllGallery(): Promise<GalleryItem[]> {
@@ -814,7 +819,8 @@ export async function getAllGallery(): Promise<GalleryItem[]> {
     }
   } catch {}
 
-  return applyLocalGalleryOverrides([]);
+  const fallbackGallery: GalleryItem[] = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `gallery-default-${idx}` }));
+  return applyLocalGalleryOverrides(fallbackGallery);
 }
 
 export async function createGalleryItem(
@@ -1045,27 +1051,27 @@ export function notifyServicesPageUpdated(): void {
 export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
   {
     title: "New Installation",
-    image: "",
+    image: "/images/enginerring services/New Installation.png",
     desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
   },
   {
     title: "Modernization",
-    image: "",
+    image: "/images/enginerring services/Modernization.png",
     desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
   },
   {
     title: "Repairs",
-    image: "",
+    image: "/images/enginerring services/Repairs.png",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
   },
   {
     title: "Maintenance",
-    image: "",
+    image: "/images/enginerring services/Maintenance.png",
     desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
   },
   {
     title: "Aftersales Services",
-    image: "",
+    image: "/images/enginerring services/Aftersales Services.png",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
   }
 ];
@@ -1073,44 +1079,44 @@ export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
 export const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
   {
     title: "Cabin Models",
-    image: "",
+    image: "/images/card_installation.jpg",
     description: "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
     items: ["Standard SS", "Premium Glass", "Custom Designs"],
   },
   {
     title: "Door Options",
-    image: "",
+    image: "/images/card_modernization.jpg",
     description: "High-performance automatic and manual door systems engineered for rapid, safe, and silent operation.",
     items: ["Automatic Sliding Doors", "Manual Collapsible", "Premium Glass Doors"],
   },
   {
     title: "Control & Safety",
-    image: "",
+    image: "/images/engineer_panel.jpg",
     description: "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
     items: ["Microprocessor Control", "ARD (Auto Rescue Device)", "Advanced Safety Gears"],
   },
   {
     title: "Machinery",
-    image: "",
+    image: "/images/elevator-systems-bg.jpg",
     description: "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
     items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"],
   },
   {
     title: "Interiors",
-    image: "",
+    image: "/images/futuristic-glass-elevator-blue.png",
     description: "Elevate your space with luxurious flooring, elegant ceilings, and sophisticated custom LED lighting.",
     items: ["Custom Flooring", "Elegant Ceilings", "Integrated LED Lighting"],
   },
 ];
 
 export const DEFAULT_OTHER_SERVICES_DATA: OtherServiceSetting[] = [
-  { title: "Structural Fabrication", image: "", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
-  { title: "Glass & ACP Sheets", image: "", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
-  { title: "UPVC Window & Door", image: "", desc: "High-quality UPVC systems for residential and commercial spaces." },
-  { title: "Renovation Works", image: "", desc: "Complete architectural and interior renovation services." },
-  { title: "SS Railing", image: "", desc: "Custom stainless steel handrails and balustrades." },
-  { title: "Electrical House Wirings", image: "", desc: "Complete residential and commercial electrical wiring systems." },
-  { title: "Civil Works", image: "", desc: "Comprehensive civil construction and shaft preparation." },
+  { title: "Structural Fabrication", image: "/images/card_installation.jpg", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
+  { title: "Glass & ACP Sheets", image: "/images/card_modernization.jpg", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
+  { title: "UPVC Window & Door", image: "/images/card_maintenance.jpg", desc: "High-quality UPVC systems for residential and commercial spaces." },
+  { title: "Renovation Works", image: "/images/engineer_panel.jpg", desc: "Complete architectural and interior renovation services." },
+  { title: "SS Railing", image: "/images/credentials-architecture-bg.jpg", desc: "Custom stainless steel handrails and balustrades." },
+  { title: "Electrical House Wirings", image: "/images/bg_engineering.jpg", desc: "Complete residential and commercial electrical wiring systems." },
+  { title: "Civil Works", image: "/images/bg_engineering_light.jpg", desc: "Comprehensive civil construction and shaft preparation." },
 ];
 
 const DEFAULT_SERVICES_PAGE_SETTINGS: ServicesPageSettings = {

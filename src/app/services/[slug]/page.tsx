@@ -4,8 +4,7 @@ import { getPublishedServices } from "@/lib/firestore-data";
 import { constructMetadata, getBreadcrumbSchema, getServiceSchema } from "@/lib/seo";
 import ServiceDetailView from "@/components/ServiceDetailView";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 120;
 
 interface Props {
   params: Promise<{ slug: string }>;

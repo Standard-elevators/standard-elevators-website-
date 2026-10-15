@@ -10,8 +10,7 @@ import { constructMetadata, getBreadcrumbSchema } from "@/lib/seo";
 
 import OtherEngineeringServices from "@/components/OtherEngineeringServices";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 120;
 
 export const metadata: Metadata = constructMetadata({
   title: "Elevator Solutions & Services | Standard Engineering Works Elevators",

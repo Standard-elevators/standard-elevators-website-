@@ -57,15 +57,15 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon.ico?v=3", sizes: "any" },
+      { url: "/favicon-32x32.png?v=3", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png?v=3", sizes: "16x16", type: "image/png" },
+      { url: "/icon.png?v=3", sizes: "512x512", type: "image/png" },
     ],
     apple: [
-      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-icon.png?v=3", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: "/favicon.ico",
+    shortcut: "/favicon.ico?v=3",
   },
   openGraph: {
     type: "website",
@@ -125,12 +125,12 @@ export default function RootLayout({
       className={`${inter.variable} antialiased`}
     >
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
-        <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
-        <link rel="icon" href="/icon.png" type="image/png" sizes="512x512" />
-        <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
-        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+        <link rel="icon" href="/favicon-32x32.png?v=3" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/favicon-16x16.png?v=3" type="image/png" sizes="16x16" />
+        <link rel="icon" href="/icon.png?v=3" type="image/png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/apple-icon.png?v=3" sizes="180x180" />
+        <link rel="shortcut icon" href="/favicon.ico?v=3" />
         
         {/* WhatsApp & Social Media Preview Direct Tags */}
         <meta property="og:image" content={`${SITE_URL}/og-image.jpg`} />
