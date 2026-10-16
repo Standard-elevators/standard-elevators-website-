@@ -14,11 +14,18 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
         const raw = localStorage.getItem("se_services_page_settings");
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed.engineeringServices?.length > 0) return parsed.engineeringServices;
+          if (parsed.engineeringServices?.length > 0) {
+            const hasImages = parsed.engineeringServices.some((s: any) => s.image && s.image.trim().length > 0);
+            if (hasImages) return parsed.engineeringServices;
+          }
         }
       } catch {}
     }
-    return initialData && initialData.length > 0 ? initialData : DEFAULT_ENGINEERING_SERVICES_DATA;
+    if (initialData && initialData.length > 0) {
+      const hasImages = initialData.some((s) => s.image && s.image.trim().length > 0);
+      if (hasImages) return initialData;
+    }
+    return DEFAULT_ENGINEERING_SERVICES_DATA;
   });
   const [activeIndex, setActiveIndex] = useState(0);
   const [interactionState, setInteractionState] = useState(0);
@@ -31,10 +38,12 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
 
   useEffect(() => {
     if (initialData && initialData.length > 0) {
-      const timer = setTimeout(() => {
-        setServices(initialData);
-      }, 0);
-      return () => clearTimeout(timer);
+      const merged = initialData.map((item, idx) => ({
+        ...item,
+        id: item.id || DEFAULT_ENGINEERING_SERVICES_DATA[idx]?.id || `0${idx + 1}`,
+        image: item.image && item.image.trim().length > 0 ? item.image : (DEFAULT_ENGINEERING_SERVICES_DATA[idx]?.image || ""),
+      }));
+      setServices(merged);
     }
   }, [initialData]);
 
@@ -44,7 +53,12 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
       try {
         const data = await getServicesPageSettings();
         if (isMounted && data?.engineeringServices && data.engineeringServices.length > 0) {
-          setServices(data.engineeringServices);
+          const merged = data.engineeringServices.map((item, idx) => ({
+            ...item,
+            id: item.id || DEFAULT_ENGINEERING_SERVICES_DATA[idx]?.id || `0${idx + 1}`,
+            image: item.image && item.image.trim().length > 0 ? item.image : (DEFAULT_ENGINEERING_SERVICES_DATA[idx]?.image || ""),
+          }));
+          setServices(merged);
         }
       } catch (err) {
         console.warn("EngineeringServicesCarousel load failed:", err);
@@ -244,13 +258,6 @@ export default function EngineeringServicesCarousel({ initialData, showViewAllBu
                       >
                         <span>Request a Quote</span>
                         <ArrowRight className="w-4 h-4" />
-                      </Link>
-                      <Link
-                        href={srv.href || "/services"}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-semibold backdrop-blur-md border border-white/20 transition-all hover:scale-[1.02]"
-                      >
-                        <span>Explore Details</span>
                       </Link>
                     </div>
                   </div>

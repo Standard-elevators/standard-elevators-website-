@@ -9,28 +9,33 @@ import ImageUpload from "@/components/admin/ImageUpload";
 
 const DEFAULT_ENGINEERING_SERVICES: EngineeringServiceSetting[] = [
   {
+    id: "01",
     title: "New Installation",
-    image: "",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307498/standard_elevators/engineering/New_Installation.png",
     desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
   },
   {
+    id: "02",
     title: "Modernization",
-    image: "",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307797/standard_elevators/engineering/Modernization.png",
     desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
   },
   {
+    id: "03",
     title: "Repairs",
-    image: "",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307815/standard_elevators/engineering/Repairs.png",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
   },
   {
+    id: "04",
     title: "Maintenance",
-    image: "",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307825/standard_elevators/engineering/Maintenance.png",
     desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
   },
   {
+    id: "05",
     title: "Aftersales Services",
-    image: "",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307835/standard_elevators/engineering/Aftersales_Services.png",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
   }
 ];
@@ -52,8 +57,16 @@ export default function EngineeringAdminPage() {
   useEffect(() => {
     getServicesPageSettings().then(data => {
       const fetchedItems = data.engineeringServices || [];
-      // Use default data if no data exists in Firestore
-      setItems(fetchedItems.length > 0 ? fetchedItems : DEFAULT_ENGINEERING_SERVICES);
+      if (fetchedItems.length > 0) {
+        const merged = fetchedItems.map((item, idx) => ({
+          ...item,
+          id: item.id || DEFAULT_ENGINEERING_SERVICES[idx]?.id || `0${idx + 1}`,
+          image: item.image && item.image.trim().length > 0 ? item.image : (DEFAULT_ENGINEERING_SERVICES[idx]?.image || "")
+        }));
+        setItems(merged);
+      } else {
+        setItems(DEFAULT_ENGINEERING_SERVICES);
+      }
       setIsLoading(false);
     });
   }, []);

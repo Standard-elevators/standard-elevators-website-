@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { readLiveContent, writeLiveContent } from "@/lib/server-content-store";
+import {
+  readLiveContent,
+  writeLiveContent,
+  saveToFirestoreRest,
+  deleteFromFirestoreRest,
+} from "@/lib/server-content-store";
 import { ServiceItem, GalleryItem } from "@/types/data";
 import { ServicesPageSettings } from "@/lib/firestore-data";
 
@@ -71,6 +76,12 @@ export async function POST(req: Request) {
 
       store.services.sort((a, b) => a.orderIndex - b.orderIndex);
       await writeLiveContent(store, true);
+
+      // Persist permanently to Cloud Firestore
+      saveToFirestoreRest(`services/${id}`, serviceToSave as any).catch((err) => {
+        console.warn("Failed to persist service to Firestore REST:", err);
+      });
+
       return NextResponse.json({ success: true, service: serviceToSave });
     }
 
@@ -82,6 +93,12 @@ export async function POST(req: Request) {
 
       store.services = store.services.filter((s) => s.id !== id && s.slug !== id);
       await writeLiveContent(store, true);
+
+      // Delete permanently from Cloud Firestore
+      deleteFromFirestoreRest(`services/${id}`).catch((err) => {
+        console.warn("Failed to delete service from Firestore REST:", err);
+      });
+
       return NextResponse.json({ success: true, id });
     }
 
@@ -113,6 +130,12 @@ export async function POST(req: Request) {
 
       store.gallery.sort((a, b) => a.orderIndex - b.orderIndex);
       await writeLiveContent(store, true);
+
+      // Persist permanently to Cloud Firestore
+      saveToFirestoreRest(`gallery/${id}`, itemToSave as any).catch((err) => {
+        console.warn("Failed to persist gallery to Firestore REST:", err);
+      });
+
       return NextResponse.json({ success: true, galleryItem: itemToSave });
     }
 
@@ -124,6 +147,12 @@ export async function POST(req: Request) {
 
       store.gallery = store.gallery.filter((g) => g.id !== id);
       await writeLiveContent(store, true);
+
+      // Delete permanently from Cloud Firestore
+      deleteFromFirestoreRest(`gallery/${id}`).catch((err) => {
+        console.warn("Failed to delete gallery from Firestore REST:", err);
+      });
+
       return NextResponse.json({ success: true, id });
     }
 
@@ -136,6 +165,17 @@ export async function POST(req: Request) {
       };
 
       await writeLiveContent(store, true);
+
+      // Persist permanently to Cloud Firestore
+      saveToFirestoreRest("settings/services_page", {
+        engineeringServices: store.servicesPage.engineeringServices,
+        customization: store.servicesPage.customization,
+        otherServices: store.servicesPage.otherServices,
+        updatedAt: new Date().toISOString(),
+      }).catch((err) => {
+        console.warn("Failed to persist servicesPage to Firestore REST:", err);
+      });
+
       return NextResponse.json({ success: true, servicesPage: store.servicesPage });
     }
 

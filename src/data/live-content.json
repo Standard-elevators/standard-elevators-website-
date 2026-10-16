@@ -16,9 +16,7 @@
       "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307972/standard_elevators/services/MRL_Lifts_Machine_Room_Less.png",
       "imagePublicId": "standard_elevators/services/MRL_Lifts_Machine_Room_Less",
       "orderIndex": 1,
-      "status": "published",
-      "updatedAt": "2026-10-15T16:47:04.701Z",
-      "updatedBy": "standardengineeringworks12@gmail.com"
+      "status": "published"
     },
     {
       "id": "passenger-lifts",
@@ -36,9 +34,7 @@
       "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308852/standard_elevators/services/Passenger_Lifts_Dynamo_Premium_-_Copy.png",
       "imagePublicId": "standard_elevators/services/Passenger_Lifts_Dynamo_Premium_-_Copy",
       "orderIndex": 2,
-      "status": "published",
-      "updatedAt": "2026-10-08T03:04:25.951Z",
-      "updatedBy": "standardengineeringworks12@gmail.com"
+      "status": "published"
     },
     {
       "id": "goods-lifts",
@@ -56,9 +52,7 @@
       "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308873/standard_elevators/services/Goods_Lifts_CARVI_CARGO1.png",
       "imagePublicId": "standard_elevators/services/Goods_Lifts_CARVI_CARGO1",
       "orderIndex": 3,
-      "status": "published",
-      "updatedAt": "2026-10-08T03:04:32.442Z",
-      "updatedBy": "standardengineeringworks12@gmail.com"
+      "status": "published"
     },
     {
       "id": "hospital-lifts",
@@ -76,9 +70,7 @@
       "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308889/standard_elevators/services/Hospital_Stretcher_Lifts_HOSPITRY_-_Copy.png",
       "imagePublicId": "standard_elevators/services/Hospital_Stretcher_Lifts_HOSPITRY_-_Copy",
       "orderIndex": 4,
-      "status": "published",
-      "updatedAt": "2026-10-06T17:48:12.013Z",
-      "updatedBy": "standardelevators@gmail.com"
+      "status": "published"
     },
     {
       "id": "hydraulic-elevators",
@@ -96,15 +88,13 @@
       "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308904/standard_elevators/services/Hydraulic_Elevators_-_Copy.png",
       "imagePublicId": "standard_elevators/services/Hydraulic_Elevators_-_Copy",
       "orderIndex": 5,
-      "status": "published",
-      "updatedAt": "2026-10-09T06:07:43.999Z",
-      "updatedBy": "standardengineeringworks12@gmail.com"
+      "status": "published"
     },
     {
       "id": "belt-motors-lift",
       "slug": "belt-motors-lift",
       "title": "Belt Motors Lift",
-      "description": "Designed for premium villas, duplex residences, and luxury suites, our Belt Motor Lift combines refined aesthetics with smooth, comfortable vertical transportation. Engineered for modern residential spaces, it offers an elegant lift solution that complements upscale architecture while prioritizing passenger comfort, dependable operation, and efficient use of space. Customization options can be tailored to suit the design and requirements of your property.",
+      "description": "Designed for premium villas, duplex residences, and luxury suites, our Belt Motor Lift combines refined aesthetics with smooth, comfortable vertical transportation. Engineered for modern residential spaces, it offers an elegant lift solution that complements upscale architecture while prioritizing passenger comfort, dependable operation, and efficient use of space.",
       "specs": [
         "Application: Premium villas and luxury residences",
         "Suitable for: Duplex homes and multi-storey residential suites",
@@ -119,105 +109,45 @@
       "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1792045042/standard_elevators/services/Luxury_Glass_Elevator_Atrium.png",
       "imagePublicId": "standard_elevators/services/Luxury_Glass_Elevator_Atrium",
       "orderIndex": 6,
-      "status": "published",
-      "updatedAt": "2026-10-15T06:18:35.907Z",
-      "updatedBy": "standardengineeringworks12@gmail.com"
+      "status": "published"
     }
   ],
-  "gallery": [
-    {
-      "id": "gallery-1792082791549",
-      "title": "passsenger lifs",
-      "category": "Passenger Lifts",
-      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1792082722/standard_elevators/gallery/MRL_Lifts_Machine_Room_Less.png",
-      "imagePublicId": "standard_elevators/gallery/MRL_Lifts_Machine_Room_Less",
-      "mediaType": "image",
-      "altText": "passsenger lifs",
-      "orderIndex": 1,
-      "status": "published",
-      "createdAt": "2026-10-15T16:46:31.551Z",
-      "updatedAt": "2026-10-15T16:46:31.551Z",
-      "updatedBy": "standardengineeringworks12@gmail.com"
-    },
-    {
-      "id": "gallery-1791648874151",
-      "title": "Goods Lifts (CARVI & CARGO1)",
-      "category": "Goods Lifts",
-      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791648807/standard_elevators/gallery/Goods_Lifts_CARVI_CARGO1.png",
-      "imagePublicId": "standard_elevators/gallery/Goods_Lifts_CARVI_CARGO1",
-      "mediaType": "image",
-      "altText": "Goods Lifts (CARVI & CARGO1)",
-      "orderIndex": 2,
-      "status": "published",
-      "createdAt": "2026-10-10T16:14:34.153Z",
-      "updatedAt": "2026-10-10T16:14:34.153Z",
-      "updatedBy": "standardengineeringworks12@gmail.com"
-    },
-    {
-      "id": "gallery-1791648994320",
-      "title": "Hydraulic Elevators   Copy",
-      "category": "Installation",
-      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791648927/standard_elevators/gallery/Hydraulic_Elevators_-_Copy.png",
-      "imagePublicId": "standard_elevators/gallery/Hydraulic_Elevators_-_Copy",
-      "mediaType": "image",
-      "altText": "Hydraulic Elevators   Copy",
-      "orderIndex": 3,
-      "status": "published",
-      "createdAt": "2026-10-10T16:16:34.322Z",
-      "updatedAt": "2026-10-10T16:16:34.322Z",
-      "updatedBy": "standardengineeringworks12@gmail.com"
-    },
-    {
-      "id": "gallery-1791648763832",
-      "title": "Passenger Lifts (Dynamo Premium)   Copy",
-      "category": "Passenger Lifts",
-      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791648696/standard_elevators/gallery/Passenger_Lifts_Dynamo_Premium_-_Copy.png",
-      "imagePublicId": "standard_elevators/gallery/Passenger_Lifts_Dynamo_Premium_-_Copy",
-      "mediaType": "image",
-      "altText": "Passenger Lifts (Dynamo Premium)   Copy",
-      "orderIndex": 10,
-      "status": "published",
-      "createdAt": "2026-10-10T16:12:43.833Z",
-      "updatedAt": "2026-10-10T16:12:43.833Z",
-      "updatedBy": "standardengineeringworks12@gmail.com"
-    }
-  ],
+  "gallery": [],
   "servicesPage": {
     "engineeringServices": [
       {
         "id": "01",
         "title": "New Installation",
-        "image": "",
+        "image": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307498/standard_elevators/engineering/New_Installation.png",
         "desc": "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration."
       },
       {
         "id": "02",
         "title": "Modernization",
-        "image": "",
+        "image": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307797/standard_elevators/engineering/Modernization.png",
         "desc": "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives."
       },
       {
         "id": "03",
         "title": "Repairs",
-        "image": "",
+        "image": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307815/standard_elevators/engineering/Repairs.png",
         "desc": "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems."
       },
       {
         "id": "04",
         "title": "Maintenance",
-        "image": "",
+        "image": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307825/standard_elevators/engineering/Maintenance.png",
         "desc": "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan."
       },
       {
         "id": "05",
         "title": "Aftersales Services",
-        "image": "",
+        "image": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307835/standard_elevators/engineering/Aftersales_Services.png",
         "desc": "Dedicated post-installation support and technical assistance for all our elevator products."
       }
     ],
     "customization": [
       {
-        "id": 0,
         "title": "Cabin Models",
         "image": "",
         "description": "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
@@ -228,7 +158,6 @@
         ]
       },
       {
-        "id": 1,
         "title": "Door Options",
         "image": "",
         "description": "High-performance automatic and manual door systems engineered for rapid, safe, and silent operation.",
@@ -239,7 +168,6 @@
         ]
       },
       {
-        "id": 2,
         "title": "Control & Safety",
         "image": "",
         "description": "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
@@ -250,7 +178,6 @@
         ]
       },
       {
-        "id": 3,
         "title": "Machinery",
         "image": "",
         "description": "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
@@ -261,7 +188,6 @@
         ]
       },
       {
-        "id": 4,
         "title": "Interiors",
         "image": "",
         "description": "Elevate your space with luxurious flooring, elegant ceilings, and sophisticated custom LED lighting.",

@@ -1134,28 +1134,33 @@ export function notifyServicesPageUpdated(): void {
 
 export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
   {
+    id: "01",
     title: "New Installation",
-    image: "/images/enginerring services/New Installation.png",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307498/standard_elevators/engineering/New_Installation.png",
     desc: "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration.",
   },
   {
+    id: "02",
     title: "Modernization",
-    image: "/images/enginerring services/Modernization.png",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307797/standard_elevators/engineering/Modernization.png",
     desc: "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives.",
   },
   {
+    id: "03",
     title: "Repairs",
-    image: "/images/enginerring services/Repairs.png",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307815/standard_elevators/engineering/Repairs.png",
     desc: "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems.",
   },
   {
+    id: "04",
     title: "Maintenance",
-    image: "/images/enginerring services/Maintenance.png",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307825/standard_elevators/engineering/Maintenance.png",
     desc: "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan.",
   },
   {
+    id: "05",
     title: "Aftersales Services",
-    image: "/images/enginerring services/Aftersales Services.png",
+    image: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307835/standard_elevators/engineering/Aftersales_Services.png",
     desc: "Dedicated post-installation support and technical assistance for all our elevator products.",
   }
 ];
@@ -1217,12 +1222,43 @@ export async function getServicesPageSettings(): Promise<ServicesPageSettings> {
       if (res.ok) {
         const data = await res.json();
         if (data && data.servicesPage) {
-          return data.servicesPage;
+          const eng = data.servicesPage.engineeringServices;
+          const hasImages = Array.isArray(eng) && eng.some((s: EngineeringServiceSetting) => s.image && s.image.trim().length > 0);
+          if (hasImages) {
+            return data.servicesPage;
+          }
         }
       }
     } catch {}
   }
 
+  // 2. Direct Firestore REST fallback (works on both client and server)
+  try {
+    const docData = await restFetchDocument("settings/services_page");
+    if (docData) {
+      const eng = Array.isArray(docData.engineeringServices)
+        ? (docData.engineeringServices as EngineeringServiceSetting[])
+        : undefined;
+      const cust = Array.isArray(docData.customization)
+        ? (docData.customization as CustomizationSetting[])
+        : undefined;
+      const other = Array.isArray(docData.otherServices)
+        ? (docData.otherServices as OtherServiceSetting[])
+        : undefined;
+
+      if (eng || cust || other) {
+        return {
+          engineeringServices: eng && eng.length > 0 ? eng : DEFAULT_ENGINEERING_SERVICES_DATA,
+          customization: cust && cust.length > 0 ? cust : DEFAULT_CUSTOMIZATION_DATA,
+          otherServices: other && other.length > 0 ? other : DEFAULT_OTHER_SERVICES_DATA,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Direct Firestore REST fetch notice in getServicesPageSettings:", err);
+  }
+
+  // 3. LocalStorage fallback
   let localData: ServicesPageSettings | null = null;
   if (typeof window !== "undefined") {
     try {
