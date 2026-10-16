@@ -6,7 +6,6 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, ImageIcon, Loader2, ChevronLeft, ChevronRight, X, Play } from "lucide-react";
 import { getPublishedGallery, applyLocalGalleryOverrides } from "@/lib/firestore-data";
-import { DEFAULT_GALLERY } from "@/data/defaultData";
 import { GalleryItem } from "@/types/data";
 
 type GalleryCategoryFilter = "All" | "Passenger Lifts" | "Goods Lifts" | "Hospital Lifts" | "MRL Lifts" | "Installation" | "Cabins" | "Doors" | "Components";
@@ -28,11 +27,10 @@ function GalleryContent() {
   const setActiveCategory = (cat: GalleryCategoryFilter) => setSelectedCategory(cat);
 
   const [items, setItems] = useState<GalleryItem[]>(() => {
-    const base = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` }));
     if (typeof window !== "undefined") {
-      return applyLocalGalleryOverrides(base);
+      return applyLocalGalleryOverrides([]);
     }
-    return base;
+    return [];
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -183,50 +181,57 @@ function GalleryContent() {
 
             {/* Secondary Visual Preview */}
             <div className="hidden lg:flex flex-1 relative h-[250px] w-full justify-center items-center perspective-[1200px]">
-              {items.length > 0 ? (
-                <>
-                  {/* Floating Back Left (Furthest) */}
-                  {items[5] && (
-                    <div className="absolute w-[140px] h-[100px] z-[5] rounded-lg overflow-hidden border border-white/5 shadow-sm transform -translate-x-40 -translate-y-20 opacity-20 rotate-[-12deg]">
-                      <Image src={items[5].imageUrl} alt={items[5].title} fill className="object-cover grayscale" sizes="150px" />
+              {(() => {
+                const previewItems = items.filter((i) => Boolean(i.imageUrl && i.imageUrl.trim()));
+                if (previewItems.length === 0) {
+                  return (
+                    <div className="absolute w-[260px] h-[190px] bg-[#061426]/50 rounded-2xl border border-white/10 flex flex-col items-center justify-center backdrop-blur-sm">
+                      <ImageIcon className="text-[#8FA2B8] w-8 h-8 opacity-50 mb-2" />
+                      <span className="text-[#8FA2B8] text-xs font-medium uppercase tracking-wider">Preview Pending</span>
                     </div>
-                  )}
-                  {/* Floating Back Right (Furthest) */}
-                  {items[4] && (
-                    <div className="absolute w-[160px] h-[120px] z-[10] rounded-lg overflow-hidden border border-white/10 shadow-md transform translate-x-44 -translate-y-16 opacity-30 rotate-[10deg]">
-                      <Image src={items[4].imageUrl} alt={items[4].title} fill className="object-cover" sizes="180px" />
+                  );
+                }
+
+                return (
+                  <>
+                    {/* Floating Back Left (Furthest) */}
+                    {previewItems[5] && (
+                      <div className="absolute w-[140px] h-[100px] z-[5] rounded-lg overflow-hidden border border-white/5 shadow-sm transform -translate-x-40 -translate-y-20 opacity-20 rotate-[-12deg]">
+                        <Image src={previewItems[5].imageUrl} alt={previewItems[5].title} fill className="object-cover grayscale" sizes="150px" />
+                      </div>
+                    )}
+                    {/* Floating Back Right (Furthest) */}
+                    {previewItems[4] && (
+                      <div className="absolute w-[160px] h-[120px] z-[10] rounded-lg overflow-hidden border border-white/10 shadow-md transform translate-x-44 -translate-y-16 opacity-30 rotate-[10deg]">
+                        <Image src={previewItems[4].imageUrl} alt={previewItems[4].title} fill className="object-cover" sizes="180px" />
+                      </div>
+                    )}
+                    {/* Floating Left */}
+                    {previewItems[3] && (
+                      <div className="absolute w-[180px] h-[130px] z-[15] rounded-xl overflow-hidden border border-white/10 shadow-lg transform -translate-x-32 translate-y-12 opacity-50 rotate-[-8deg]">
+                        <Image src={previewItems[3].imageUrl} alt={previewItems[3].title} fill className="object-cover" sizes="200px" />
+                      </div>
+                    )}
+                    {/* Supporting Image Right */}
+                    {previewItems[2] && (
+                      <div className="absolute w-[200px] h-[140px] z-[20] rounded-xl overflow-hidden border border-white/10 shadow-xl transform translate-x-28 translate-y-8 opacity-70 rotate-[5deg]">
+                        <Image src={previewItems[2].imageUrl} alt={previewItems[2].title} fill className="object-cover" sizes="200px" />
+                      </div>
+                    )}
+                    {/* Supporting Image Left */}
+                    {previewItems[1] && (
+                      <div className="absolute w-[220px] h-[160px] z-[25] rounded-xl overflow-hidden border border-white/20 shadow-2xl transform -translate-x-20 -translate-y-6 opacity-90 rotate-[-3deg]">
+                        <Image src={previewItems[1].imageUrl} alt={previewItems[1].title} fill className="object-cover" sizes="250px" />
+                      </div>
+                    )}
+                    {/* Dominant Front Image */}
+                    <div className="absolute w-[260px] h-[190px] z-[30] rounded-2xl overflow-hidden border border-white/30 shadow-[0_20px_40px_rgba(0,0,0,0.5)] transform translate-x-4 translate-y-2">
+                      <Image src={previewItems[0].imageUrl} alt={previewItems[0].title || "Featured"} fill className="object-cover" sizes="300px" priority />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#061426]/40 to-transparent"></div>
                     </div>
-                  )}
-                  {/* Floating Left */}
-                  {items[3] && (
-                    <div className="absolute w-[180px] h-[130px] z-[15] rounded-xl overflow-hidden border border-white/10 shadow-lg transform -translate-x-32 translate-y-12 opacity-50 rotate-[-8deg]">
-                      <Image src={items[3].imageUrl} alt={items[3].title} fill className="object-cover" sizes="200px" />
-                    </div>
-                  )}
-                  {/* Supporting Image Right */}
-                  {items[2] && (
-                    <div className="absolute w-[200px] h-[140px] z-[20] rounded-xl overflow-hidden border border-white/10 shadow-xl transform translate-x-28 translate-y-8 opacity-70 rotate-[5deg]">
-                      <Image src={items[2].imageUrl} alt={items[2].title} fill className="object-cover" sizes="200px" />
-                    </div>
-                  )}
-                  {/* Supporting Image Left */}
-                  {items[1] && (
-                    <div className="absolute w-[220px] h-[160px] z-[25] rounded-xl overflow-hidden border border-white/20 shadow-2xl transform -translate-x-20 -translate-y-6 opacity-90 rotate-[-3deg]">
-                      <Image src={items[1].imageUrl} alt={items[1].title} fill className="object-cover" sizes="250px" />
-                    </div>
-                  )}
-                  {/* Dominant Front Image */}
-                  <div className="absolute w-[260px] h-[190px] z-[30] rounded-2xl overflow-hidden border border-white/30 shadow-[0_20px_40px_rgba(0,0,0,0.5)] transform translate-x-4 translate-y-2">
-                    <Image src={items[0]?.imageUrl} alt={items[0]?.title || "Featured"} fill className="object-cover" sizes="300px" priority />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#061426]/40 to-transparent"></div>
-                  </div>
-                </>
-              ) : (
-                 <div className="absolute w-[260px] h-[190px] bg-[#061426]/50 rounded-2xl border border-white/10 flex flex-col items-center justify-center backdrop-blur-sm">
-                   <ImageIcon className="text-[#8FA2B8] w-8 h-8 opacity-50 mb-2" />
-                   <span className="text-[#8FA2B8] text-xs font-medium uppercase tracking-wider">Preview Pending</span>
-                 </div>
-              )}
+                  </>
+                );
+              })()}
             </div>
 
           </div>
@@ -339,7 +344,7 @@ function GalleryContent() {
                           <span>Video</span>
                         </div>
                       </>
-                    ) : (
+                    ) : item.imageUrl && item.imageUrl.trim() ? (
                       <Image
                         src={item.imageUrl}
                         alt={item.altText || item.title}
@@ -347,6 +352,11 @@ function GalleryContent() {
                         className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-[#06172B] via-[#0A2342] to-[#040D1A] flex flex-col items-center justify-center p-4">
+                        <ImageIcon className="w-10 h-10 text-[#38BDF8]/40 mb-2" />
+                        <span className="text-white/70 text-xs font-semibold text-center">{item.title}</span>
+                      </div>
                     )}
                     
                     {/* Glass Overlay (Premium Gradient) */}
@@ -452,7 +462,7 @@ function GalleryContent() {
                   playsInline
                   className="max-w-full max-h-full object-contain rounded-xl shadow-2xl z-10"
                 />
-              ) : (
+              ) : selectedItem.imageUrl && selectedItem.imageUrl.trim() ? (
                 <Image
                   src={selectedItem.imageUrl}
                   alt={selectedItem.altText || selectedItem.title}
@@ -461,6 +471,11 @@ function GalleryContent() {
                   className="object-contain"
                   sizes="100vw"
                 />
+              ) : (
+                <div className="w-[300px] h-[300px] bg-[#061426] rounded-2xl border border-white/10 flex flex-col items-center justify-center">
+                  <ImageIcon className="w-16 h-16 text-[#38BDF8]/40 mb-3" />
+                  <p className="text-white/70 font-semibold">{selectedItem.title}</p>
+                </div>
               )}
             </div>
 

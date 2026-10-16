@@ -163,7 +163,7 @@ export default function ServiceDetailView({ initialService, slug }: { initialSer
       {/* HERO SECTION */}
       <section className="relative w-full pt-32 pb-16 md:pt-40 md:pb-24 lg:pt-44 lg:pb-28 bg-[#06172B] overflow-hidden">
         <div className="absolute inset-0 z-0">
-          {service.imageUrl && (
+          {Boolean(service.imageUrl && service.imageUrl.trim()) && (
             <Image
               src={service.imageUrl}
               alt={service.title}
@@ -221,7 +221,7 @@ export default function ServiceDetailView({ initialService, slug }: { initialSer
         <div className="site-container px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="aspect-[16/10] relative rounded-2xl overflow-hidden bg-[#0A2342] shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-[#E2E8F0]">
-              {service.imageUrl ? (
+              {Boolean(service.imageUrl && service.imageUrl.trim()) ? (
                 <Image
                   src={service.imageUrl}
                   alt={service.title}

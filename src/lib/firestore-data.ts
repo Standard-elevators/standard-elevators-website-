@@ -25,7 +25,14 @@ import { DEFAULT_SERVICES, DEFAULT_GALLERY } from "@/data/defaultData";
 
 const FIREBASE_PROJECT_ID =
   process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "standard-engineering-wor-c28e6";
+const FIREBASE_API_KEY =
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyCL_QxgFxT8hzsHltmJcrURm5EKo8xML50";
 const FIRESTORE_BASE_URL = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents`;
+
+function getFirestoreRestUrl(path: string): string {
+  const separator = path.includes("?") ? "&" : "?";
+  return `${FIRESTORE_BASE_URL}/${path}${separator}key=${FIREBASE_API_KEY}`;
+}
 
 function toFirestoreValue(val: unknown): Record<string, unknown> {
   if (val === null || val === undefined) return { nullValue: null };
@@ -87,7 +94,7 @@ export async function restFetchCollection(collectionName: string): Promise<Array
   const timeoutId = setTimeout(() => controller.abort(), 6000);
   try {
     const isServer = typeof window === "undefined";
-    const res = await fetch(`${FIRESTORE_BASE_URL}/${collectionName}`, {
+    const res = await fetch(getFirestoreRestUrl(collectionName), {
       ...(isServer ? { next: { revalidate: 120 } } : { cache: "default" }),
       signal: controller.signal,
     });
@@ -111,7 +118,7 @@ export async function restFetchDocument(path: string): Promise<Record<string, un
   const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const isServer = typeof window === "undefined";
-    const res = await fetch(`${FIRESTORE_BASE_URL}/${path}`, {
+    const res = await fetch(getFirestoreRestUrl(path), {
       ...(isServer ? { next: { revalidate: 120 } } : { cache: "default" }),
       signal: controller.signal,
     });
@@ -138,7 +145,7 @@ export async function restPatchDocument(path: string, data: Record<string, unkno
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 8000);
   try {
-    const res = await fetch(`${FIRESTORE_BASE_URL}/${path}`, {
+    const res = await fetch(getFirestoreRestUrl(path), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fields }),
@@ -159,7 +166,7 @@ export async function restDeleteDocument(path: string): Promise<void> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 6000);
   try {
-    const res = await fetch(`${FIRESTORE_BASE_URL}/${path}`, {
+    const res = await fetch(getFirestoreRestUrl(path), {
       method: "DELETE",
       signal: controller.signal,
     });
@@ -355,11 +362,24 @@ export function removeServiceOverride(id: string) {
 export function applyLocalServiceOverrides(baseServices: ServiceItem[]): ServiceItem[] {
   const overrides = getLocalServiceOverrides();
   const deleted = new Set(getLocalDeletedServices());
+  deleted.add("test");
 
-  // Filter out deleted items
+  // Clean rogue 'test' from client localStorage if present
+  if (typeof window !== "undefined") {
+    try {
+      if (overrides["test"]) {
+        delete overrides["test"];
+        localStorage.setItem(SERVICES_OVERRIDES_KEY, JSON.stringify(overrides));
+      }
+    } catch {}
+  }
+
+  // Filter out deleted items and rogue test items
   const services = baseServices.filter(s => {
-    const sId = s.id || "";
-    const sSlug = s.slug || "";
+    const sId = (s.id || "").toLowerCase();
+    const sSlug = (s.slug || "").toLowerCase();
+    const sTitle = (s.title || "").toLowerCase();
+    if (sId === "test" || sSlug === "test" || sTitle === "test") return false;
     return (!sId || !deleted.has(sId)) && (!sSlug || !deleted.has(sSlug));
   });
 
@@ -367,14 +387,16 @@ export function applyLocalServiceOverrides(baseServices: ServiceItem[]): Service
   const map = new Map<string, ServiceItem>();
   services.forEach(s => {
     const key = s.slug || s.id || "";
-    if (key) map.set(key, s);
+    if (key && key.toLowerCase() !== "test") map.set(key, s);
   });
 
   Object.values(overrides).forEach(override => {
-    const oId = override.id || "";
-    const oSlug = override.slug || "";
+    const oId = (override.id || "").toLowerCase();
+    const oSlug = (override.slug || "").toLowerCase();
+    const oTitle = (override.title || "").toLowerCase();
+    if (oId === "test" || oSlug === "test" || oTitle === "test") return;
     if ((!oId || !deleted.has(oId)) && (!oSlug || !deleted.has(oSlug))) {
-      const key = oSlug || oId;
+      const key = override.slug || override.id;
       if (key) {
         const existing = map.get(key) || {};
         map.set(key, { ...existing, ...override });
@@ -399,48 +421,44 @@ export async function getPublishedServices(): Promise<ServiceItem[]> {
     return applyLocalServiceOverrides(cachedServices);
   }
 
-  // 1. Try Ultra-Fast Firestore REST API first (sub-300ms, no WebChannel timeouts)
-  try {
-    const rawList = await restFetchCollection("services");
-    if (rawList && rawList.length > 0) {
-      const items = rawList
-        .map(rawToService)
-        .filter((s) => s.status === "published")
-        .sort((a, b) => a.orderIndex - b.orderIndex);
-
-      if (items.length > 0) {
-        cachedServices = items;
-        lastServicesFetchTime = now;
-        return applyLocalServiceOverrides(items);
+  // 1. If on client, fetch from authoritative API
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch("/api/content?type=services", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.services) && data.services.length > 0) {
+          const items = data.services
+            .filter((s: ServiceItem) => s.status === "published")
+            .sort((a: ServiceItem, b: ServiceItem) => a.orderIndex - b.orderIndex);
+          cachedServices = items;
+          lastServicesFetchTime = now;
+          return applyLocalServiceOverrides(items);
+        }
       }
+    } catch (clientErr) {
+      console.warn("Client fetch /api/content notice:", clientErr);
+    }
+  }
+
+  // 2. Try authenticated REST fetch if /api/content wasn't available
+  try {
+    const rawServices = await restFetchCollection("services");
+    if (rawServices && rawServices.length > 0) {
+      const items = rawServices
+        .map(rawToService)
+        .filter((s) => s.status === "published" && s.id !== "test" && s.slug !== "test")
+        .sort((a, b) => a.orderIndex - b.orderIndex);
+      cachedServices = items;
+      lastServicesFetchTime = now;
+      return applyLocalServiceOverrides(items);
     }
   } catch (restErr) {
-    console.warn("Firestore REST getPublishedServices notice, falling back:", restErr);
+    console.warn("REST fetch services fallback notice:", restErr);
   }
 
-  // 2. Try Firebase SDK client
-  try {
-    const { validateFirebaseConfig } = await import('@/lib/firebase');
-    if (validateFirebaseConfig().isValid) {
-      const servicesRef = collection(db, "services");
-      const q = query(servicesRef, where("status", "==", "published"));
-      const snapshot = await withTimeout(getDocs(q), 4000);
-
-      if (!snapshot.empty) {
-        const result = snapshot.docs
-          .map(snapshotToService)
-          .sort((a, b) => a.orderIndex - b.orderIndex);
-        cachedServices = result;
-        lastServicesFetchTime = now;
-        return applyLocalServiceOverrides(result);
-      }
-    }
-  } catch (sdkError) {
-    console.warn("Firebase SDK query failed or timed out:", sdkError);
-  }
-
-  // 3. Guaranteed offline / initial structure fallback
-  const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug }));
+  // 3. Clean baseline (no mock images)
+  const fallback = DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug, imageUrl: "" }));
   cachedServices = fallback;
   lastServicesFetchTime = now;
   return applyLocalServiceOverrides(fallback);
@@ -453,49 +471,38 @@ export async function getServiceBySlug(slug: string): Promise<ServiceItem | null
   const cleanSlug = sanitizeSlug(slug);
   if (!cleanSlug) return null;
 
-  try {
-    const raw = await restFetchDocument(`services/${cleanSlug}`);
-    if (raw) {
-      const item = rawToService({ id: cleanSlug, ...raw });
-      return applyLocalServiceOverrides([item])[0] || item;
-    }
-  } catch {}
-
   const all = await getPublishedServices();
-  return all.find(s => s.slug === cleanSlug) || null;
+  return all.find((s) => s.slug === cleanSlug || s.id === cleanSlug) || null;
 }
 
 /**
  * Fetch all services for the admin panel (including drafts).
  */
 export async function getAllServices(): Promise<ServiceItem[]> {
-  // 1. Try REST API
-  try {
-    const rawList = await restFetchCollection("services");
-    if (rawList && rawList.length > 0) {
-      const list = rawList.map(rawToService).sort((a, b) => a.orderIndex - b.orderIndex);
-      return applyLocalServiceOverrides(list);
-    }
-  } catch (restErr) {
-    console.warn("REST getAllServices notice:", restErr);
-  }
-
-  // 2. Try Client SDK
-  try {
-    const { validateFirebaseConfig } = await import('@/lib/firebase');
-    if (validateFirebaseConfig().isValid) {
-      const servicesRef = collection(db, "services");
-      const q = query(servicesRef, orderBy("orderIndex", "asc"));
-      const snapshot = await withTimeout(getDocs(q), 4000);
-      if (!snapshot.empty) {
-        return applyLocalServiceOverrides(snapshot.docs.map(snapshotToService));
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch("/api/content?type=services", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.services) && data.services.length > 0) {
+          return applyLocalServiceOverrides(data.services);
+        }
       }
-    }
-  } catch (error) {
-    console.warn("Firestore admin services query notice:", error);
+    } catch {}
   }
 
-  return applyLocalServiceOverrides(DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug })));
+  try {
+    const rawServices = await restFetchCollection("services");
+    if (rawServices && rawServices.length > 0) {
+      const items = rawServices
+        .map(rawToService)
+        .filter((s) => s.id !== "test" && s.slug !== "test")
+        .sort((a, b) => a.orderIndex - b.orderIndex);
+      return applyLocalServiceOverrides(items);
+    }
+  } catch {}
+
+  return applyLocalServiceOverrides(DEFAULT_SERVICES.map((s) => ({ ...s, id: s.slug, imageUrl: "" })));
 }
 
 /**
@@ -553,7 +560,20 @@ export async function createService(
     try { window.dispatchEvent(new CustomEvent("se_services_updated")); } catch {}
   }
 
-  // 2. Commit permanently to Firestore via Direct REST API
+  // 2. Commit to authoritative server store
+  if (typeof window !== "undefined") {
+    try {
+      await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "saveService", data: itemPayload }),
+      });
+    } catch (e) {
+      console.warn("Failed to sync service to server content store:", e);
+    }
+  }
+
+  // 3. Commit permanently to Firestore via Direct REST API
   try {
     await restPatchDocument(`services/${docId}`, {
       title: itemPayload.title,
@@ -611,7 +631,20 @@ export async function updateService(
     (key) => updatePayload[key] === undefined && delete updatePayload[key]
   );
 
-  // 2. Commit permanently to Cloud Firestore via REST API
+  // 2. Commit to authoritative server store
+  if (typeof window !== "undefined") {
+    try {
+      await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "saveService", data: { id, ...data } }),
+      });
+    } catch (e) {
+      console.warn("Failed to sync service update to server store:", e);
+    }
+  }
+
+  // 3. Commit permanently to Cloud Firestore via REST API
   try {
     await restPatchDocument(`services/${id}`, updatePayload);
   } catch (restErr) {
@@ -636,7 +669,20 @@ export async function deleteService(id: string): Promise<void> {
     try { window.dispatchEvent(new CustomEvent("se_services_updated")); } catch {}
   }
 
-  // 2. Delete from Cloud Firestore via REST API
+  // 2. Commit deletion to authoritative server store
+  if (typeof window !== "undefined") {
+    try {
+      await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "deleteService", data: { id } }),
+      });
+    } catch (e) {
+      console.warn("Failed to sync service deletion to server store:", e);
+    }
+  }
+
+  // 3. Delete from Cloud Firestore via REST API
   try {
     await restDeleteDocument(`services/${id}`);
   } catch (restErr) {
@@ -753,74 +799,72 @@ export async function getPublishedGallery(): Promise<GalleryItem[]> {
     return applyLocalGalleryOverrides(cachedGallery);
   }
 
-  // 1. Try REST API
-  try {
-    const rawList = await restFetchCollection("gallery");
-    if (rawList && rawList.length > 0) {
-      const items = rawList
-        .map(rawToGallery)
-        .filter((i) => i.status === "published")
-        .sort((a, b) => a.orderIndex - b.orderIndex);
-
-      if (items.length > 0) {
-        cachedGallery = items;
-        lastGalleryFetchTime = now;
-        return applyLocalGalleryOverrides(items);
+  // 1. If on client, fetch from authoritative API
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch("/api/content?type=gallery", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.gallery)) {
+          const items = data.gallery
+            .filter((g: GalleryItem) => g.status === "published")
+            .sort((a: GalleryItem, b: GalleryItem) => a.orderIndex - b.orderIndex);
+          cachedGallery = items;
+          lastGalleryFetchTime = now;
+          return applyLocalGalleryOverrides(items);
+        }
       }
+    } catch (clientErr) {
+      console.warn("Client fetch /api/content gallery notice:", clientErr);
     }
-  } catch (restErr) {
-    console.warn("REST getPublishedGallery notice:", restErr);
   }
 
-  // 2. Try SDK
+  // 2. Try authenticated REST fetch if /api/content wasn't available
   try {
-    const { validateFirebaseConfig } = await import('@/lib/firebase');
-    if (validateFirebaseConfig().isValid) {
-      const galleryRef = collection(db, "gallery");
-      const q = query(galleryRef, where("status", "==", "published"));
-      const snapshot = await withTimeout(getDocs(q), 4000);
-      if (!snapshot.empty) {
-        const result = snapshot.docs.map(snapshotToGallery).sort((a, b) => a.orderIndex - b.orderIndex);
-        cachedGallery = result;
-        lastGalleryFetchTime = now;
-        return applyLocalGalleryOverrides(result);
-      }
+    const rawGallery = await restFetchCollection("gallery");
+    if (rawGallery && rawGallery.length > 0) {
+      const items = rawGallery
+        .map(rawToGallery)
+        .filter((g) => g.status === "published")
+        .sort((a, b) => a.orderIndex - b.orderIndex);
+      cachedGallery = items;
+      lastGalleryFetchTime = now;
+      return applyLocalGalleryOverrides(items);
     }
-  } catch {}
+  } catch (restErr) {
+    console.warn("REST fetch gallery fallback notice:", restErr);
+  }
 
-  const fallbackGallery: GalleryItem[] = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `gallery-default-${idx}` }));
-  cachedGallery = fallbackGallery;
+  // 3. Clean fallback when no uploads exist
+  cachedGallery = [];
   lastGalleryFetchTime = now;
-  return applyLocalGalleryOverrides(fallbackGallery);
+  return applyLocalGalleryOverrides([]);
 }
 
 export async function getAllGallery(): Promise<GalleryItem[]> {
-  // 1. Try REST API
-  try {
-    const rawList = await restFetchCollection("gallery");
-    if (rawList && rawList.length > 0) {
-      const list = rawList.map(rawToGallery).sort((a, b) => a.orderIndex - b.orderIndex);
-      return applyLocalGalleryOverrides(list);
-    }
-  } catch (restErr) {
-    console.warn("REST getAllGallery notice:", restErr);
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch("/api/content?type=gallery", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.gallery)) {
+          return applyLocalGalleryOverrides(data.gallery);
+        }
+      }
+    } catch {}
   }
 
-  // 2. Try SDK
   try {
-    const { validateFirebaseConfig } = await import('@/lib/firebase');
-    if (validateFirebaseConfig().isValid) {
-      const galleryRef = collection(db, "gallery");
-      const q = query(galleryRef, orderBy("orderIndex", "asc"));
-      const snapshot = await withTimeout(getDocs(q), 4000);
-      if (!snapshot.empty) {
-        return applyLocalGalleryOverrides(snapshot.docs.map(snapshotToGallery));
-      }
+    const rawGallery = await restFetchCollection("gallery");
+    if (rawGallery && rawGallery.length > 0) {
+      const items = rawGallery
+        .map(rawToGallery)
+        .sort((a, b) => a.orderIndex - b.orderIndex);
+      return applyLocalGalleryOverrides(items);
     }
   } catch {}
 
-  const fallbackGallery: GalleryItem[] = DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `gallery-default-${idx}` }));
-  return applyLocalGalleryOverrides(fallbackGallery);
+  return applyLocalGalleryOverrides([]);
 }
 
 export async function createGalleryItem(
@@ -857,6 +901,20 @@ export async function createGalleryItem(
   cachedGallery = null;
   notifyGalleryUpdated();
 
+  // Commit to authoritative server store
+  if (typeof window !== "undefined") {
+    try {
+      await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "saveGallery", data: item }),
+      });
+    } catch (e) {
+      console.warn("Failed to sync gallery item to server store:", e);
+    }
+  }
+
+  // Sync to Firestore via REST API
   try {
     await restPatchDocument(`gallery/${docId}`, {
       ...item,
@@ -892,6 +950,19 @@ export async function updateGalleryItem(
   cachedGallery = null;
   notifyGalleryUpdated();
 
+  // Commit to authoritative server store
+  if (typeof window !== "undefined") {
+    try {
+      await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "saveGallery", data: { id, ...data } }),
+      });
+    } catch (e) {
+      console.warn("Failed to sync gallery update to server store:", e);
+    }
+  }
+
   const updatePayload: Record<string, unknown> = {
     ...data,
     mediaType: isVideo ? "video" : "image",
@@ -913,6 +984,19 @@ export async function deleteGalleryItem(id: string): Promise<void> {
   removeGalleryOverride(id);
   cachedGallery = null;
   notifyGalleryUpdated();
+
+  // Commit deletion to authoritative server store
+  if (typeof window !== "undefined") {
+    try {
+      await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "deleteGallery", data: { id } }),
+      });
+    } catch (e) {
+      console.warn("Failed to sync gallery delete to server store:", e);
+    }
+  }
 
   try {
     await restDeleteDocument(`gallery/${id}`);
@@ -1079,44 +1163,44 @@ export const DEFAULT_ENGINEERING_SERVICES_DATA: EngineeringServiceSetting[] = [
 export const DEFAULT_CUSTOMIZATION_DATA: CustomizationSetting[] = [
   {
     title: "Cabin Models",
-    image: "/images/card_installation.jpg",
+    image: "",
     description: "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
     items: ["Standard SS", "Premium Glass", "Custom Designs"],
   },
   {
     title: "Door Options",
-    image: "/images/card_modernization.jpg",
+    image: "",
     description: "High-performance automatic and manual door systems engineered for rapid, safe, and silent operation.",
     items: ["Automatic Sliding Doors", "Manual Collapsible", "Premium Glass Doors"],
   },
   {
     title: "Control & Safety",
-    image: "/images/engineer_panel.jpg",
+    image: "",
     description: "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
     items: ["Microprocessor Control", "ARD (Auto Rescue Device)", "Advanced Safety Gears"],
   },
   {
     title: "Machinery",
-    image: "/images/elevator-systems-bg.jpg",
+    image: "",
     description: "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
     items: ["Geared Machines", "Gearless Machines", "Hydraulic Drives"],
   },
   {
     title: "Interiors",
-    image: "/images/futuristic-glass-elevator-blue.png",
+    image: "",
     description: "Elevate your space with luxurious flooring, elegant ceilings, and sophisticated custom LED lighting.",
     items: ["Custom Flooring", "Elegant Ceilings", "Integrated LED Lighting"],
   },
 ];
 
 export const DEFAULT_OTHER_SERVICES_DATA: OtherServiceSetting[] = [
-  { title: "Structural Fabrication", image: "/images/card_installation.jpg", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
-  { title: "Glass & ACP Sheets", image: "/images/card_modernization.jpg", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
-  { title: "UPVC Window & Door", image: "/images/card_maintenance.jpg", desc: "High-quality UPVC systems for residential and commercial spaces." },
-  { title: "Renovation Works", image: "/images/engineer_panel.jpg", desc: "Complete architectural and interior renovation services." },
-  { title: "SS Railing", image: "/images/credentials-architecture-bg.jpg", desc: "Custom stainless steel handrails and balustrades." },
-  { title: "Electrical House Wirings", image: "/images/bg_engineering.jpg", desc: "Complete residential and commercial electrical wiring systems." },
-  { title: "Civil Works", image: "/images/bg_engineering_light.jpg", desc: "Comprehensive civil construction and shaft preparation." },
+  { title: "Structural Fabrication", image: "", desc: "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings." },
+  { title: "Glass & ACP Sheets", image: "", desc: "Premium architectural glass and Aluminum Composite Panel exterior cladding." },
+  { title: "UPVC Window & Door", image: "", desc: "High-quality UPVC systems for residential and commercial spaces." },
+  { title: "Renovation Works", image: "", desc: "Complete architectural and interior renovation services." },
+  { title: "SS Railing", image: "", desc: "Custom stainless steel handrails and balustrades." },
+  { title: "Electrical House Wirings", image: "", desc: "Complete residential and commercial electrical wiring systems." },
+  { title: "Civil Works", image: "", desc: "Comprehensive civil construction and shaft preparation." },
 ];
 
 const DEFAULT_SERVICES_PAGE_SETTINGS: ServicesPageSettings = {
@@ -1126,6 +1210,19 @@ const DEFAULT_SERVICES_PAGE_SETTINGS: ServicesPageSettings = {
 };
 
 export async function getServicesPageSettings(): Promise<ServicesPageSettings> {
+  // 1. If on client, fetch from authoritative API
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch("/api/content?type=servicesPage", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.servicesPage) {
+          return data.servicesPage;
+        }
+      }
+    } catch {}
+  }
+
   let localData: ServicesPageSettings | null = null;
   if (typeof window !== "undefined") {
     try {
@@ -1134,52 +1231,6 @@ export async function getServicesPageSettings(): Promise<ServicesPageSettings> {
     } catch {}
   }
 
-  // 1. Fetch from Firestore REST API (immediate ~200ms response)
-  try {
-    const raw = await restFetchDocument("settings/services_page");
-    if (raw) {
-      const merged: ServicesPageSettings = {
-        engineeringServices: Array.isArray(raw.engineeringServices) && raw.engineeringServices.length > 0
-          ? raw.engineeringServices
-          : (localData?.engineeringServices || DEFAULT_ENGINEERING_SERVICES_DATA),
-        customization: Array.isArray(raw.customization) && raw.customization.length > 0
-          ? raw.customization
-          : (localData?.customization || DEFAULT_CUSTOMIZATION_DATA),
-        otherServices: Array.isArray(raw.otherServices) && raw.otherServices.length > 0
-          ? raw.otherServices
-          : (localData?.otherServices || DEFAULT_OTHER_SERVICES_DATA),
-      };
-
-      if (typeof window !== "undefined") {
-        try { localStorage.setItem(SERVICES_PAGE_STORAGE_KEY, JSON.stringify(merged)); } catch {}
-      }
-      return merged;
-    }
-  } catch (restErr) {
-    console.warn("REST getServicesPageSettings notice:", restErr);
-  }
-
-  // 2. Try SDK if available
-  try {
-    const { validateFirebaseConfig } = await import('@/lib/firebase');
-    if (validateFirebaseConfig().isValid) {
-      const docRef = doc(db, "settings", "services_page");
-      const snapshot = await withTimeout(getDoc(docRef), 4000);
-      if (snapshot.exists()) {
-        const fsData = snapshot.data() as ServicesPageSettings;
-        const merged: ServicesPageSettings = {
-          engineeringServices: fsData.engineeringServices?.length ? fsData.engineeringServices : (localData?.engineeringServices || DEFAULT_ENGINEERING_SERVICES_DATA),
-          customization: fsData.customization?.length ? fsData.customization : (localData?.customization || DEFAULT_CUSTOMIZATION_DATA),
-          otherServices: fsData.otherServices?.length ? fsData.otherServices : (localData?.otherServices || DEFAULT_OTHER_SERVICES_DATA),
-        };
-        if (typeof window !== "undefined") {
-          try { localStorage.setItem(SERVICES_PAGE_STORAGE_KEY, JSON.stringify(merged)); } catch {}
-        }
-        return merged;
-      }
-    }
-  } catch {}
-
   if (localData && (localData.engineeringServices?.length || localData.customization?.length || localData.otherServices?.length)) {
     return {
       engineeringServices: localData.engineeringServices?.length ? localData.engineeringServices : DEFAULT_ENGINEERING_SERVICES_DATA,
@@ -1187,6 +1238,7 @@ export async function getServicesPageSettings(): Promise<ServicesPageSettings> {
       otherServices: localData.otherServices?.length ? localData.otherServices : DEFAULT_OTHER_SERVICES_DATA,
     };
   }
+
   return DEFAULT_SERVICES_PAGE_SETTINGS;
 }
 
@@ -1201,7 +1253,20 @@ export async function updateServicesPageSettings(data: Partial<ServicesPageSetti
     } catch {}
   }
 
-  // 2. Commit permanently to Firestore via Direct REST API
+  // 2. Persist to authoritative server store
+  if (typeof window !== "undefined") {
+    try {
+      await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "saveServicesPage", data }),
+      });
+    } catch (e) {
+      console.warn("Failed to sync servicesPage to server store:", e);
+    }
+  }
+
+  // 3. Commit to Firestore via REST API
   try {
     await restPatchDocument("settings/services_page", {
       ...data,

@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, ImageIcon, Loader2 } from "lucide-react";
 import { getPublishedGallery } from "@/lib/firestore-data";
-import { DEFAULT_GALLERY } from "@/data/defaultData";
 import { GalleryItem } from "@/types/data";
 
 export default function ProjectPortfolio() {

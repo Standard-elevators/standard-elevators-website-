@@ -264,7 +264,37 @@ export async function uploadImageToCloudinary(
         options.onProgress
       );
     } catch (err) {
-      console.warn("Cloudinary unsigned upload failed, trying Firebase Storage fallback:", err);
+      console.warn("Cloudinary unsigned upload failed, trying direct server upload fallback:", err);
+    }
+  }
+
+  // Tier 2.5: Direct Server Upload Fallback (/api/upload)
+  if (typeof window !== "undefined") {
+    try {
+      const directFormData = new FormData();
+      directFormData.append("file", file);
+      const directRes = await fetch("/api/upload", {
+        method: "POST",
+        body: directFormData,
+      });
+      if (directRes.ok) {
+        const directData = await directRes.json();
+        if (directData?.secure_url) {
+          if (options.onProgress) options.onProgress(100);
+          return {
+            public_id: directData.public_id || `upload_${Date.now()}`,
+            secure_url: directData.secure_url,
+            url: directData.url || directData.secure_url,
+            format: (file as File).name?.split('.').pop() || "jpg",
+            width: 1200,
+            height: 800,
+            bytes: file.size,
+            created_at: new Date().toISOString(),
+          };
+        }
+      }
+    } catch (directErr) {
+      console.warn("Direct upload fallback notice, trying storage:", directErr);
     }
   }
 

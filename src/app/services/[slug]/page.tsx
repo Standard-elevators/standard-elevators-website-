@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPublishedServices } from "@/lib/firestore-data";
+import { readLiveContent } from "@/lib/server-content-store";
 import { constructMetadata, getBreadcrumbSchema, getServiceSchema } from "@/lib/seo";
 import ServiceDetailView from "@/components/ServiceDetailView";
 
@@ -12,8 +12,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const services = await getPublishedServices();
-  const service = services.find((s) => s.slug === slug);
+  const store = await readLiveContent();
+  const service = store.services.find((s) => s.slug === slug || s.id === slug);
 
   if (!service) {
     return constructMetadata({
@@ -33,8 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DynamicServicePage({ params }: Props) {
   const { slug } = await params;
-  const services = await getPublishedServices();
-  const service = services.find((s) => s.slug === slug);
+  const store = await readLiveContent();
+  const service = store.services.find((s) => s.slug === slug || s.id === slug);
 
   if (!service) {
     notFound();

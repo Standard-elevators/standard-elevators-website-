@@ -13,7 +13,7 @@ export const DEFAULT_SERVICES: Omit<ServiceItem, "id">[] = [
       "Up to 15 stops",
     ],
     category: "Commercial & Residential",
-    imageUrl: "/images/card_installation.jpg",
+    imageUrl: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307972/standard_elevators/services/MRL_Lifts_Machine_Room_Less.png",
     orderIndex: 1,
     status: "published",
   },
@@ -29,7 +29,7 @@ export const DEFAULT_SERVICES: Omit<ServiceItem, "id">[] = [
       "Up to 10 stops",
     ],
     category: "Residential & Commercial",
-    imageUrl: "/images/3d_apartments.jpg",
+    imageUrl: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308852/standard_elevators/services/Passenger_Lifts_Dynamo_Premium_-_Copy.png",
     orderIndex: 2,
     status: "published",
   },
@@ -45,7 +45,7 @@ export const DEFAULT_SERVICES: Omit<ServiceItem, "id">[] = [
       "Electric & Hydraulic",
     ],
     category: "Industrial & Freight",
-    imageUrl: "/images/3d_industrial.jpg",
+    imageUrl: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308873/standard_elevators/services/Goods_Lifts_CARVI_CARGO1.png",
     orderIndex: 3,
     status: "published",
   },
@@ -61,7 +61,7 @@ export const DEFAULT_SERVICES: Omit<ServiceItem, "id">[] = [
       "Gearless & Geared",
     ],
     category: "Healthcare",
-    imageUrl: "/images/3d_healthcare_v2.jpg",
+    imageUrl: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308889/standard_elevators/services/Hospital_Stretcher_Lifts_HOSPITRY_-_Copy.png",
     orderIndex: 4,
     status: "published",
   },
@@ -77,68 +77,14 @@ export const DEFAULT_SERVICES: Omit<ServiceItem, "id">[] = [
       "Hydraulic operating system",
     ],
     category: "Commercial & Residential",
-    imageUrl: "/images/3d_commercial.jpg",
+    imageUrl: "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308904/standard_elevators/services/Hydraulic_Elevators_-_Copy.png",
     orderIndex: 5,
     status: "published",
   },
 ];
 
-export const DEFAULT_GALLERY: Omit<GalleryItem, "id">[] = [
-  {
-    title: "Heavy-Duty Elevator Shaft Installation",
-    category: "Installation",
-    imageUrl: "/images/card_installation.jpg",
-    mediaType: "image",
-    altText: "Elevator Shaft Installation by Standard Engineering Works",
-    orderIndex: 1,
-    status: "published",
-  },
-  {
-    title: "Architectural Glass Cabin Interior",
-    category: "Cabins",
-    imageUrl: "/images/futuristic-glass-elevator-blue.png",
-    mediaType: "image",
-    altText: "Luxury Glass Cabin Interior",
-    orderIndex: 2,
-    status: "published",
-  },
-  {
-    title: "Advanced Microprocessor Control Panel",
-    category: "Components",
-    imageUrl: "/images/engineer_panel.jpg",
-    mediaType: "image",
-    altText: "Elevator Microprocessor Control System",
-    orderIndex: 3,
-    status: "published",
-  },
-  {
-    title: "Automatic Center-Opening Doors",
-    category: "Doors",
-    imageUrl: "/images/card_modernization.jpg",
-    mediaType: "image",
-    altText: "Precision Automatic Center-Opening Doors",
-    orderIndex: 4,
-    status: "published",
-  },
-  {
-    title: "Commercial MRL Structural Framework",
-    category: "Installation",
-    imageUrl: "/images/bg_engineering.jpg",
-    mediaType: "image",
-    altText: "Commercial MRL Structural Framework",
-    orderIndex: 5,
-    status: "published",
-  },
-  {
-    title: "High-Efficiency Gearless Traction Machine",
-    category: "Components",
-    imageUrl: "/images/card_maintenance.jpg",
-    mediaType: "image",
-    altText: "High-Efficiency Gearless Traction Machine",
-    orderIndex: 6,
-    status: "published",
-  },
-];
+// Gallery has NO hardcoded demo or fabricated projects. Only admin-uploaded projects are rendered.
+export const DEFAULT_GALLERY: Omit<GalleryItem, "id">[] = [];
 
 export const ENGINEERING_SERVICES_DATA = [
   {
@@ -174,16 +120,16 @@ export const ENGINEERING_SERVICES_DATA = [
 ];
 
 export const CUSTOMIZATION_DATA = [
-  { title: "Cabin Models", image: "/images/card_installation.jpg", desc: "Standard SS, Premium Glass, and Custom Designs.", slug: "cabin-models" },
-  { title: "Door Options", image: "/images/card_modernization.jpg", desc: "Collapsible, Imperforated, Swing, and Auto Doors.", slug: "door-options" },
-  { title: "Control & Safety", image: "/images/engineer_panel.jpg", desc: "Micro Processor Control, ARD, and Safety Gears.", slug: "control-safety" },
-  { title: "Machinery", image: "/images/elevator-systems-bg.jpg", desc: "Geared, Gearless, and Hydraulic Drives.", slug: "machinery" },
-  { title: "Interiors", image: "/images/futuristic-glass-elevator-blue.png", desc: "Flooring, Ceiling Designs, Handles, and Lighting.", slug: "interiors" },
+  { title: "Cabin Models", image: "", desc: "Standard SS, Premium Glass, and Custom Designs.", slug: "cabin-models" },
+  { title: "Door Options", image: "", desc: "Collapsible, Imperforated, Swing, and Auto Doors.", slug: "door-options" },
+  { title: "Control & Safety", image: "", desc: "Micro Processor Control, ARD, and Safety Gears.", slug: "control-safety" },
+  { title: "Machinery", image: "", desc: "Geared, Gearless, and Hydraulic Drives.", slug: "machinery" },
+  { title: "Interiors", image: "", desc: "Flooring, Ceiling Designs, Handles, and Lighting.", slug: "interiors" },
 ];
 
 export const GALLERY_CATEGORIES_MENU = [
-  { name: "Installation", href: "/gallery?category=Installation#gallery-grid", desc: "Site preparations and shaft structural work", image: "/images/card_installation.jpg" },
-  { name: "Cabins", href: "/gallery?category=Cabins#gallery-grid", desc: "Premium elevator cabins and custom interiors", image: "/images/futuristic-glass-elevator-blue.png" },
-  { name: "Doors", href: "/gallery?category=Doors#gallery-grid", desc: "Automatic, manual, and swing door designs", image: "/images/card_modernization.jpg" },
-  { name: "Components", href: "/gallery?category=Components#gallery-grid", desc: "Microprocessor control panels and machinery", image: "/images/engineer_panel.jpg" },
+  { name: "Installation", href: "/gallery?category=Installation#gallery-grid", desc: "Site preparations and shaft structural work", image: "" },
+  { name: "Cabins", href: "/gallery?category=Cabins#gallery-grid", desc: "Premium elevator cabins and custom interiors", image: "" },
+  { name: "Doors", href: "/gallery?category=Doors#gallery-grid", desc: "Automatic, manual, and swing door designs", image: "" },
+  { name: "Components", href: "/gallery?category=Components#gallery-grid", desc: "Microprocessor control panels and machinery", image: "" },
 ];

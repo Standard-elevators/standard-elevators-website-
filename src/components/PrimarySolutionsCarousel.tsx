@@ -136,7 +136,7 @@ export default function PrimarySolutionsCarousel({ services: initialServices }: 
               className="w-[85vw] max-w-[320px] sm:w-[330px] md:w-auto shrink-0 snap-center group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-[0_4px_20px_rgba(10,35,66,0.06)] hover:shadow-[0_20px_40px_rgba(8,119,249,0.12)] hover:border-[#0877F9]/30 transition-all duration-500"
             >
               <div className="relative w-full aspect-[16/10] bg-[#06172B] overflow-hidden">
-                {service.imageUrl ? (
+                {Boolean(service.imageUrl && service.imageUrl.trim()) ? (
                   <Image
                     src={service.imageUrl}
                     alt={service.title}

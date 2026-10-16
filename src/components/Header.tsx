@@ -16,7 +16,7 @@ import {
   DEFAULT_ENGINEERING_SERVICES_DATA,
   DEFAULT_CUSTOMIZATION_DATA,
 } from "@/lib/firestore-data";
-import { DEFAULT_SERVICES, DEFAULT_GALLERY } from "@/data/defaultData";
+import { DEFAULT_SERVICES } from "@/data/defaultData";
 import { ServiceItem, GalleryItem } from "@/types/data";
 
 export default function Header() {
@@ -55,7 +55,7 @@ export default function Header() {
   });
   const [dynamicGallery, setDynamicGallery] = useState<GalleryItem[]>(() => {
     if (typeof window !== "undefined") {
-      return applyLocalGalleryOverrides(DEFAULT_GALLERY.map((g, idx) => ({ ...g, id: `default-g-${idx + 1}` })));
+      return applyLocalGalleryOverrides([]);
     }
     return [];
   });

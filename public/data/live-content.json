@@ -1,0 +1,313 @@
+{
+  "services": [
+    {
+      "id": "mrl-lifts",
+      "slug": "mrl-lifts",
+      "title": "MRL Lifts (Machine Room Less)",
+      "description": "Highly cost-effective and environmentally-friendly. The gearless traction feature presents superior performance and great ride quality without the need for a dedicated machine room.",
+      "specs": [
+        "Commercial & Residential",
+        "3 phase, 415v, 50Hz",
+        "6-20 persons (408-1380 kg)",
+        "1.0 - 1.50 m/s",
+        "Up to 15 stops"
+      ],
+      "category": "Commercial & Residential",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791307972/standard_elevators/services/MRL_Lifts_Machine_Room_Less.png",
+      "imagePublicId": "standard_elevators/services/MRL_Lifts_Machine_Room_Less",
+      "orderIndex": 1,
+      "status": "published",
+      "updatedAt": "2026-10-15T16:47:04.701Z",
+      "updatedBy": "standardengineeringworks12@gmail.com"
+    },
+    {
+      "id": "passenger-lifts",
+      "slug": "passenger-lifts",
+      "title": "Passenger Lifts (Dynamo Premium)",
+      "description": "Fast, safe, and reliable. Customized passenger elevators equipped with the latest technology, complying with all safety regulations for comfort and style.",
+      "specs": [
+        "Apartments & Commercial",
+        "5-20 persons (340-1380 kg)",
+        "0.65 to 1.50 m/s",
+        "Electric & Hydraulic",
+        "Up to 10 stops"
+      ],
+      "category": "Residential & Commercial",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308852/standard_elevators/services/Passenger_Lifts_Dynamo_Premium_-_Copy.png",
+      "imagePublicId": "standard_elevators/services/Passenger_Lifts_Dynamo_Premium_-_Copy",
+      "orderIndex": 2,
+      "status": "published",
+      "updatedAt": "2026-10-08T03:04:25.951Z",
+      "updatedBy": "standardengineeringworks12@gmail.com"
+    },
+    {
+      "id": "goods-lifts",
+      "slug": "goods-lifts",
+      "title": "Goods Lifts (CARVI & CARGO1)",
+      "description": "Designed for heavy lifting all day, every day. Outstanding accuracy, smooth travel, and enormous energy savings for industrial and commercial environments.",
+      "specs": [
+        "Industrial & Hospitals",
+        "500-5000 kg",
+        "0.3 to 1.0 m/s",
+        "Up to 15 stops",
+        "Electric & Hydraulic"
+      ],
+      "category": "Industrial & Freight",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308873/standard_elevators/services/Goods_Lifts_CARVI_CARGO1.png",
+      "imagePublicId": "standard_elevators/services/Goods_Lifts_CARVI_CARGO1",
+      "orderIndex": 3,
+      "status": "published",
+      "updatedAt": "2026-10-08T03:04:32.442Z",
+      "updatedBy": "standardengineeringworks12@gmail.com"
+    },
+    {
+      "id": "hospital-lifts",
+      "slug": "hospital-lifts",
+      "title": "Hospital & Stretcher Lifts (HOSPITRY)",
+      "description": "Mission-critical equipment designed to carry hospital beds (stretchers) along with personnel safely, smoothly, and precisely.",
+      "specs": [
+        "Hospital Stretcher & Bed Lifts",
+        "8-20 Persons",
+        "0.5 to 1.5 m/s",
+        "Up to 15 stops",
+        "Gearless & Geared"
+      ],
+      "category": "Healthcare",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308889/standard_elevators/services/Hospital_Stretcher_Lifts_HOSPITRY_-_Copy.png",
+      "imagePublicId": "standard_elevators/services/Hospital_Stretcher_Lifts_HOSPITRY_-_Copy",
+      "orderIndex": 4,
+      "status": "published",
+      "updatedAt": "2026-10-06T17:48:12.013Z",
+      "updatedBy": "standardelevators@gmail.com"
+    },
+    {
+      "id": "hydraulic-elevators",
+      "slug": "hydraulic-elevators",
+      "title": "Hydraulic Elevators",
+      "description": "Ideal for low-rise applications. Features a direct landing system, automatic rescue device, and reduced overhead and pit requirements for easy maintenance.",
+      "specs": [
+        "Commercial & Low-rise",
+        "6-20 persons (408-1380 kg)",
+        "1.0 / 1.25 / 1.50 m/s",
+        "Up to 4 stops",
+        "Hydraulic operating system"
+      ],
+      "category": "Commercial & Residential",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791308904/standard_elevators/services/Hydraulic_Elevators_-_Copy.png",
+      "imagePublicId": "standard_elevators/services/Hydraulic_Elevators_-_Copy",
+      "orderIndex": 5,
+      "status": "published",
+      "updatedAt": "2026-10-09T06:07:43.999Z",
+      "updatedBy": "standardengineeringworks12@gmail.com"
+    },
+    {
+      "id": "belt-motors-lift",
+      "slug": "belt-motors-lift",
+      "title": "Belt Motors Lift",
+      "description": "Designed for premium villas, duplex residences, and luxury suites, our Belt Motor Lift combines refined aesthetics with smooth, comfortable vertical transportation. Engineered for modern residential spaces, it offers an elegant lift solution that complements upscale architecture while prioritizing passenger comfort, dependable operation, and efficient use of space. Customization options can be tailored to suit the design and requirements of your property.",
+      "specs": [
+        "Application: Premium villas and luxury residences",
+        "Suitable for: Duplex homes and multi-storey residential suites",
+        "Drive system: Belt-driven motor system",
+        "Ride experience: Designed for smooth, comfortable travel",
+        "Design: Premium cabin finishes and contemporary styling",
+        "Configuration: Customizable to project requirements",
+        "Installation: Subject to site assessment and technical feasibility",
+        "Safety: Safety features as per the selected model and applicable standards"
+      ],
+      "category": "Premium Residential Elevators",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1792045042/standard_elevators/services/Luxury_Glass_Elevator_Atrium.png",
+      "imagePublicId": "standard_elevators/services/Luxury_Glass_Elevator_Atrium",
+      "orderIndex": 6,
+      "status": "published",
+      "updatedAt": "2026-10-15T06:18:35.907Z",
+      "updatedBy": "standardengineeringworks12@gmail.com"
+    }
+  ],
+  "gallery": [
+    {
+      "id": "gallery-1792082791549",
+      "title": "passsenger lifs",
+      "category": "Passenger Lifts",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1792082722/standard_elevators/gallery/MRL_Lifts_Machine_Room_Less.png",
+      "imagePublicId": "standard_elevators/gallery/MRL_Lifts_Machine_Room_Less",
+      "mediaType": "image",
+      "altText": "passsenger lifs",
+      "orderIndex": 1,
+      "status": "published",
+      "createdAt": "2026-10-15T16:46:31.551Z",
+      "updatedAt": "2026-10-15T16:46:31.551Z",
+      "updatedBy": "standardengineeringworks12@gmail.com"
+    },
+    {
+      "id": "gallery-1791648874151",
+      "title": "Goods Lifts (CARVI & CARGO1)",
+      "category": "Goods Lifts",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791648807/standard_elevators/gallery/Goods_Lifts_CARVI_CARGO1.png",
+      "imagePublicId": "standard_elevators/gallery/Goods_Lifts_CARVI_CARGO1",
+      "mediaType": "image",
+      "altText": "Goods Lifts (CARVI & CARGO1)",
+      "orderIndex": 2,
+      "status": "published",
+      "createdAt": "2026-10-10T16:14:34.153Z",
+      "updatedAt": "2026-10-10T16:14:34.153Z",
+      "updatedBy": "standardengineeringworks12@gmail.com"
+    },
+    {
+      "id": "gallery-1791648994320",
+      "title": "Hydraulic Elevators   Copy",
+      "category": "Installation",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791648927/standard_elevators/gallery/Hydraulic_Elevators_-_Copy.png",
+      "imagePublicId": "standard_elevators/gallery/Hydraulic_Elevators_-_Copy",
+      "mediaType": "image",
+      "altText": "Hydraulic Elevators   Copy",
+      "orderIndex": 3,
+      "status": "published",
+      "createdAt": "2026-10-10T16:16:34.322Z",
+      "updatedAt": "2026-10-10T16:16:34.322Z",
+      "updatedBy": "standardengineeringworks12@gmail.com"
+    },
+    {
+      "id": "gallery-1791648763832",
+      "title": "Passenger Lifts (Dynamo Premium)   Copy",
+      "category": "Passenger Lifts",
+      "imageUrl": "https://res.cloudinary.com/ikgbbha9/image/upload/v1791648696/standard_elevators/gallery/Passenger_Lifts_Dynamo_Premium_-_Copy.png",
+      "imagePublicId": "standard_elevators/gallery/Passenger_Lifts_Dynamo_Premium_-_Copy",
+      "mediaType": "image",
+      "altText": "Passenger Lifts (Dynamo Premium)   Copy",
+      "orderIndex": 10,
+      "status": "published",
+      "createdAt": "2026-10-10T16:12:43.833Z",
+      "updatedAt": "2026-10-10T16:12:43.833Z",
+      "updatedBy": "standardengineeringworks12@gmail.com"
+    }
+  ],
+  "servicesPage": {
+    "engineeringServices": [
+      {
+        "id": "01",
+        "title": "New Installation",
+        "image": "",
+        "desc": "Complete turnkey installation of passenger, hospital, goods, and bespoke elevators with structural integration."
+      },
+      {
+        "id": "02",
+        "title": "Modernization",
+        "image": "",
+        "desc": "Upgrade outdated elevator systems with modern microprocessor controllers, new cabins, and energy-efficient drives."
+      },
+      {
+        "id": "03",
+        "title": "Repairs",
+        "image": "",
+        "desc": "Expert diagnostic and repair services for mechanical, electrical, and hydraulic elevator systems."
+      },
+      {
+        "id": "04",
+        "title": "Maintenance",
+        "image": "",
+        "desc": "Comprehensive preventative maintenance programs to ensure safety, reliability, and extended equipment lifespan."
+      },
+      {
+        "id": "05",
+        "title": "Aftersales Services",
+        "image": "",
+        "desc": "Dedicated post-installation support and technical assistance for all our elevator products."
+      }
+    ],
+    "customization": [
+      {
+        "id": 0,
+        "title": "Cabin Models",
+        "image": "",
+        "description": "Premium architectural cabins with customizable paneling, finishes, and handrails to match any aesthetic.",
+        "items": [
+          "Standard SS",
+          "Premium Glass",
+          "Custom Designs"
+        ]
+      },
+      {
+        "id": 1,
+        "title": "Door Options",
+        "image": "",
+        "description": "High-performance automatic and manual door systems engineered for rapid, safe, and silent operation.",
+        "items": [
+          "Automatic Sliding Doors",
+          "Manual Collapsible",
+          "Premium Glass Doors"
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Control & Safety",
+        "image": "",
+        "description": "Advanced microprocessor controllers and intelligent sensors ensuring smooth, reliable, and perfectly leveled rides.",
+        "items": [
+          "Microprocessor Control",
+          "ARD (Auto Rescue Device)",
+          "Advanced Safety Gears"
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Machinery",
+        "image": "",
+        "description": "Heavy-duty geared, gearless, and hydraulic drive systems engineered for maximum durability and efficiency.",
+        "items": [
+          "Geared Machines",
+          "Gearless Machines",
+          "Hydraulic Drives"
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Interiors",
+        "image": "",
+        "description": "Elevate your space with luxurious flooring, elegant ceilings, and sophisticated custom LED lighting.",
+        "items": [
+          "Custom Flooring",
+          "Elegant Ceilings",
+          "Integrated LED Lighting"
+        ]
+      }
+    ],
+    "otherServices": [
+      {
+        "title": "Structural Fabrication",
+        "image": "",
+        "desc": "Heavy-duty MS and SS structural fabrication for elevator shafts and commercial buildings."
+      },
+      {
+        "title": "Glass & ACP Sheets",
+        "image": "",
+        "desc": "Premium architectural glass and Aluminum Composite Panel exterior cladding."
+      },
+      {
+        "title": "UPVC Window & Door",
+        "image": "",
+        "desc": "High-quality UPVC systems for residential and commercial spaces."
+      },
+      {
+        "title": "Renovation Works",
+        "image": "",
+        "desc": "Complete architectural and interior renovation services."
+      },
+      {
+        "title": "SS Railing",
+        "image": "",
+        "desc": "Custom stainless steel handrails and balustrades."
+      },
+      {
+        "title": "Electrical House Wirings",
+        "image": "",
+        "desc": "Complete residential and commercial electrical wiring systems."
+      },
+      {
+        "title": "Civil Works",
+        "image": "",
+        "desc": "Comprehensive civil construction and shaft preparation."
+      }
+    ]
+  }
+}

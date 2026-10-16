@@ -5,7 +5,7 @@ import CustomizationCarousel from "@/components/CustomizationCarousel";
 import EngineeringServicesCarousel from "@/components/EngineeringServicesCarousel";
 import PrimarySolutionsCarousel from "@/components/PrimarySolutionsCarousel";
 import { ArrowRight } from "lucide-react";
-import { getPublishedServices, getServicesPageSettings } from "@/lib/firestore-data";
+import { readLiveContent } from "@/lib/server-content-store";
 import { constructMetadata, getBreadcrumbSchema } from "@/lib/seo";
 
 import OtherEngineeringServices from "@/components/OtherEngineeringServices";
@@ -20,10 +20,11 @@ export const metadata: Metadata = constructMetadata({
 });
 
 export default async function ServicesPage() {
-  const [services, settings] = await Promise.all([
-    getPublishedServices(),
-    getServicesPageSettings(),
-  ]);
+  const store = await readLiveContent();
+  const services = store.services
+    .filter((s) => s.status === "published")
+    .sort((a, b) => a.orderIndex - b.orderIndex);
+  const settings = store.servicesPage;
   const breadcrumbSchema = getBreadcrumbSchema([
     { name: "Home", url: "/" },
     { name: "Elevator Services", url: "/services" },
